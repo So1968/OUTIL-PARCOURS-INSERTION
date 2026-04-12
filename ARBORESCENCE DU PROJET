@@ -1,0 +1,76 @@
+ARBORESCENCE DU PROJET
+
+artag-app/
+  README.md
+  AGENTS.md
+  PROJECT_BRIEF_CODEX.md
+  PROMPT_GLOBAL_FINAL_POUR_CODEX.md
+  STACK_RECOMMANDEE.md
+  .env.example
+
+  frontend/
+    index.html
+    package.json
+    vite.config.js
+    public/
+    src/
+      app/
+      pages/
+      components/
+      features/
+      services/
+      styles/
+
+  backend/
+    package.json
+    prisma/
+      schema.prisma
+      migrations/
+    src/
+      app.js
+      server.js
+      config/
+      lib/
+      middleware/
+      modules/
+        auth/
+        users/
+        dossiers/
+        socle-autonomie/
+        modules-metier/
+        syntheses/
+        continuite/
+        historique/
+        journal/
+        direction/
+
+  docs/
+    00_REGLE_ABSOLUE.md
+    01_VISION_GENERALE.md
+    02_ARCHITECTURE_GLOBALE.md
+    03_PROFILS_ACCES_DROITS.md
+    04_ACCUEIL.md
+    05_DOSSIER_OUVERT.md
+    06_BLOC_IDENTITE.md
+    07_SOCLE_AUTONOMIE.md
+    08_SYNTHESE_COURTE.md
+    09_NOTE_CONTINUITE.md
+    10_BLOC_PRO_RELATION_AIDE.md
+    11_LOGIQUE_OUVERTURE_MODULES.md
+    12_TRACABILITE.md
+    13_HISTORIQUE_VERSIONS.md
+    14_MODULES_PRINCIPAUX.md
+    15_MODULES_SECONDAIRES.md
+    16_DIRECTION_PILOTAGE.md
+    17_INDICATEURS_DIRECTION.md
+    18_SECURITE.md
+    19_MODE_DEMONSTRATION.md
+    20_PALETTE_ET_UI.md
+    21_INTERDITS.md
+    22_ASSETS_ET_NOMS.md
+    23_ORDRE_DE_TRAVAIL.md
+    24_COUCHE_DIDACTIQUE_ET_DOCUMENTAIRE.md
+    25_ETHIQUE.md
+    26_INFRA_HEBERGEMENT_ET_ACCES_EXTERNES.md
+    avancement.md
+    architecture.md
