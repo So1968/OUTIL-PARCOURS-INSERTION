@@ -1,3 +1,5 @@
+PROJECT_BRIEF_CODEX.md
+
 # PROMPT MAÎTRE — CODEX — APPLICATION WEB MÉTIER ARTAG
 
 ## CONTEXTE
@@ -19,11 +21,8 @@ Le projet doit être conçu comme une application web métier avec :
 - mode travail
 - mode démonstration
 
----
-
 ## MISSION GÉNÉRALE
 Reprendre un projet déjà cadré.
-
 Ne pas repartir de zéro.
 Ne pas changer la direction du projet.
 Corriger et structurer l’existant de façon progressive.
@@ -35,8 +34,6 @@ Toujours séparer :
 - données
 - indicateurs
 - interface visuelle
-
----
 
 ## RÈGLES ABSOLUES
 - Ne pas reconstruire tout le projet d’un coup.
@@ -50,8 +47,6 @@ Toujours séparer :
 - Toujours favoriser la lisibilité, la reprise rapide et la continuité de service.
 - Ne jamais transformer l’outil en site vitrine, dashboard startup ou simple maquette décorative.
 
----
-
 ## RÈGLE DE PROGRESSION
 Tu dois progresser de manière non destructive.
 
@@ -60,8 +55,6 @@ Cela signifie :
 - ne pas supprimer brutalement une base utile
 - privilégier les ajouts progressifs, les refactorings ciblés et les migrations maîtrisées
 - préserver ce qui fonctionne déjà
-
----
 
 ## DOCUMENT D’AVANCEMENT OBLIGATOIRE
 Tu dois tenir à jour un document d’avancement du projet.
@@ -81,8 +74,6 @@ Il doit être mis à jour à chaque étape importante et contenir au minimum :
 - les dettes techniques éventuelles
 - les hypothèses encore ouvertes
 
----
-
 ## PRUDENCE TECHNIQUE
 Si tu envisages d’intégrer une solution technique inhabituelle, complexe, expérimentale, surdimensionnée ou difficile à maintenir, tu dois demander l’autorisation avant de l’intégrer.
 
@@ -101,8 +92,6 @@ Dans ce cas :
 5. demande explicitement l’autorisation
 
 Sans autorisation explicite, tu n’intègres pas de solution inhabituelle.
-
----
 
 ## MÉTHODE DE TRAVAIL
 Avant de coder :
@@ -124,8 +113,6 @@ Quand tu termines :
 - liste les risques ou limites éventuelles
 - propose l’étape suivante la plus logique
 
----
-
 ## ORDRE DE RECONSTRUCTION OBLIGATOIRE
 1. Architecture générale
 2. Logique des droits d’accès
@@ -143,8 +130,6 @@ Quand tu termines :
 14. Couche didactique intégrée
 15. Finalisation visuelle
 
----
-
 ## ARCHITECTURE CIBLE
 Concevoir le projet comme une vraie application web métier déployable.
 
@@ -155,8 +140,6 @@ Prévoir au minimum :
 - authentification nominative
 - journalisation
 - historique des modifications
-
----
 
 ## STACK TECHNIQUE À UTILISER
 
@@ -196,15 +179,11 @@ Ne pas surcharger la stack.
 Rester standard, maintenable, lisible.
 Privilégier les choix les plus robustes et les plus simples à maintenir pour une application web métier interne multi-utilisatrices.
 
----
-
 ## PORTES D’ENTRÉE
 - Parcours social / socio-professionnel
 - Appui TNS
 - Direction
 - Connexion nominative
-
----
 
 ## PROFILS / DROITS D’ACCÈS
 - professionnelle parcours social / socio-professionnel
@@ -212,8 +191,6 @@ Privilégier les choix les plus robustes et les plus simples à maintenir pour u
 - direction
 - admin technique
 - professionnelle relais temporaire si besoin
-
----
 
 ## DOSSIER UNIQUE PARTAGÉ
 Contient :
@@ -231,8 +208,6 @@ Contient :
 - partenaires mobilisés
 - prochaine étape
 
----
-
 ## ESPACE PROFESSIONNEL RÉSERVÉ
 Contient :
 - relation d’aide
@@ -241,13 +216,9 @@ Contient :
 - notes sensibles
 - brouillons
 
----
-
 ## PRINCIPE CENTRAL
 - le dossier unique suit la personne
 - l’espace professionnel réservé suit la professionnelle
-
----
 
 ## PARCOURS VISUELS VALIDÉS
 
@@ -259,8 +230,6 @@ Situer → Consolider → Se projeter → Avancer vers l’activité → Stabili
 
 ### Appui TNS
 Entrer → Consolider → Clarifier → Structurer → Ajuster
-
----
 
 ## BLOC IDENTITÉ
 Affichage principal :
@@ -278,8 +247,6 @@ Fonctions :
 - imprimer un flash situation
 - continuer vers le bloc usager
 
----
-
 ## SOCLE AUTONOMIE
 Fonction :
 repérage global, digne, naturel à l’oral, sans score brut visible.
@@ -294,8 +261,6 @@ repérage global, digne, naturel à l’oral, sans score brut visible.
 7. Vie familiale / disponibilité
 8. Projet / mise en mouvement
 
----
-
 ## OUVERTURE DES MODULES
 Logique mixte :
 - l’outil suggère ou recommande
@@ -308,8 +273,6 @@ Tracer :
 - module reporté
 - module non ouvert à ce stade
 
----
-
 ## MODULES PRINCIPAUX
 1. Droits / démarches
 2. Habitat / parcours résidentiel
@@ -318,15 +281,11 @@ Tracer :
 5. Santé
 6. Écrit / illettrisme
 
----
-
 ## MODULES SECONDAIRES
 - Numérique
 - Mobilité
 - Vie familiale
 - Projet professionnel détaillé
-
----
 
 ## RÈGLE COMMUNE POUR TOUS LES MODULES
 Toujours distinguer :
@@ -334,19 +293,13 @@ Toujours distinguer :
 2. ce qui relève d’un relais interne
 3. ce qui relève d’une orientation externe
 
----
-
 ## BLOC PROFESSIONNEL / RELATION D’AIDE
 Strictement interne.
 Jamais visible par l’usager.
 
----
-
 ## SYNTHÈSE COURTE + NOTE DE CONTINUITÉ
 Très visibles dans le dossier partagé.
 Elles servent à la reprise rapide et au relais.
-
----
 
 ## TRAÇABILITÉ
 Tracer automatiquement autant que possible :
@@ -360,8 +313,6 @@ Tracer automatiquement autant que possible :
 - impression
 - export
 
----
-
 ## HISTORIQUE DES VERSIONS
 Conserver les versions précédentes pour :
 - synthèse courte
@@ -370,8 +321,6 @@ Conserver les versions précédentes pour :
 - ouverture / fermeture de modules
 - changement de référente
 - éléments importants du dossier partagé
-
----
 
 ## SÉCURISATION
 Connexion :
@@ -384,8 +333,6 @@ Prévoir :
 - verrouillage temporaire
 - déconnexion automatique
 - journalisation des connexions et actions sensibles
-
----
 
 ## MODE TRAVAIL / MODE DÉMONSTRATION
 
@@ -417,8 +364,6 @@ Afficher si possible :
 - ce que dit le document
 - comment c’est traduit dans l’outil
 
----
-
 ## COUCHE DIDACTIQUE INTÉGRÉE
 L’outil est à la fois un outil d’accompagnement et un outil didactique pour les professionnelles.
 
@@ -436,13 +381,9 @@ Objectif :
 - soutenir la posture professionnelle
 - éviter d’aller chercher ailleurs des repères de base
 
----
-
 ## INDICATEURS DIRECTION
 Uniquement dans l’espace direction / pilotage.
 Ne jamais les afficher dans les espaces ordinaires des professionnelles.
-
----
 
 ## PRINCIPES ÉTHIQUES À RESPECTER
 - repérage ≠ diagnostic total
@@ -456,8 +397,6 @@ Toujours préserver :
 - la singularité des situations
 - la qualité de la relation d’aide
 - la lisibilité réelle du travail
-
----
 
 ## VISUEL — DIRECTION GÉNÉRALE
 Ne pas figer le style avant d’avoir stabilisé :
@@ -479,8 +418,6 @@ Ambiance recherchée :
 - sans effet mystique
 - sans effet mortuaire
 
----
-
 ## PALETTE VALIDÉE LA PLUS RÉCENTE
 - fond principal : #FAF6EF
 - fond cartes : #EFE4D2
@@ -490,8 +427,6 @@ Ambiance recherchée :
 - texte principal : #3F372F
 - texte secondaire : #6F6559
 - contours : #DCCFBE
-
----
 
 ## SIGNATURE
 Prévoir la mention :
@@ -505,7 +440,5 @@ Toujours écrire :
 - Sofia avec un f
 - de los Rios
 
----
-
 ## CRITÈRE DE RÉUSSITE
-Le projet doit évoluer comme une application web métier cohérente, déployable sur serveur, lisible, sécurisée, transmissible, et fidèle au cadrage métier déjà validé.
+Le projet doit évoluer comme une application web métier cohérente, déployable sur serveur, lisible, sécurisée, transmissible et fidèle au cadrage métier déjà validé.
