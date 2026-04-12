@@ -12,4 +12,12 @@ L’outil doit garder la mémoire du travail réalisé sans demander à la profe
 - changements de référente
 - impressions
 - exports
--
+- accès direction
+- événements de sécurité
+
+## Intention
+Rendre visible le travail réel, soutenir la continuité de service et sécuriser les transmissions, sans transformer l’outil en machine à ressaisie.
+
+## Règle
+La traçabilité doit soutenir le travail et la responsabilité.
+Elle ne doit pas devenir un outil de surveillance brute.
