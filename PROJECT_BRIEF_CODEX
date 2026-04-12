@@ -1,0 +1,350 @@
+PROMPT MAÎTRE — CODEX — APPLICATION WEB MÉTIER ARTAG
+
+CONTEXTE
+Tu travailles sur une application web métier interne, destinée à être déployée sur un serveur (Apache, Nginx ou équivalent) et utilisée depuis un navigateur.
+Ce n’est pas un simple prototype visuel.
+Le projet doit être conçu comme une application web métier avec :
+- frontend
+- backend
+- base de données
+- authentification nominative
+- droits d’accès
+- traçabilité
+- historique des versions
+- pilotage direction
+- continuité de service
+
+MISSION GÉNÉRALE
+Reprendre un projet déjà cadré.
+Ne pas repartir de zéro.
+Ne pas changer la direction du projet.
+Corriger et structurer l’existant de façon progressive.
+Toujours séparer :
+- logique métier
+- architecture technique
+- sécurité
+- données
+- indicateurs
+- interface visuelle
+
+RÈGLES ABSOLUES
+- Ne pas reconstruire tout le projet d’un coup.
+- Ne pas faire de refonte sauvage.
+- Ne pas modifier des blocs non demandés.
+- Ne pas mélanger logique métier et habillage.
+- Ne pas improviser une nouvelle direction visuelle.
+- Toujours préserver la dignité de la personne accompagnée.
+- Ne jamais produire de formulation stigmatisante, humiliante ou infantilisante.
+- Ne jamais afficher de score brut usager.
+- Toujours favoriser la lisibilité, la reprise rapide et la continuité de service.
+
+RÈGLE DE PROGRESSION
+Tu dois progresser de manière NON DESTRUCTIVE.
+Cela signifie :
+- ne pas casser l’existant sans raison forte
+- ne pas supprimer brutalement une base utile
+- privilégier les ajouts progressifs, refactorings ciblés et migrations maîtrisées
+- préserver ce qui fonctionne déjà
+
+DOCUMENT D’AVANCEMENT OBLIGATOIRE
+Tu dois tenir à jour un document d’avancement du projet.
+Prévoir un fichier dédié, par exemple :
+- docs/avancement.md
+ou
+- PROJECT_STATUS.md
+
+Il doit être mis à jour à chaque étape importante et contenir au minimum :
+- ce qui a été décidé
+- ce qui a été créé
+- ce qui a été modifié
+- ce qui a été laissé inchangé
+- ce qui reste à faire
+- les points de vigilance
+- les dettes techniques éventuelles
+- les hypothèses encore ouvertes
+
+PRUDENCE TECHNIQUE
+Si tu envisages d’intégrer une solution technique inhabituelle, complexe, expérimentale, surdimensionnée ou difficile à maintenir, tu dois demander l’autorisation avant de l’intégrer.
+
+Cela concerne par exemple :
+- stack trop lourde
+- techno exotique
+- dépendance peu standard
+- architecture trop sophistiquée
+- outil tiers engageant fortement le projet
+
+Dans ce cas :
+1. explique la solution envisagée
+2. explique pourquoi tu y penses
+3. explique les avantages
+4. explique les risques / coûts / impacts
+5. demande explicitement l’autorisation
+
+Sans autorisation explicite, tu n’intègres pas de solution “fofole”.
+
+MÉTHODE DE TRAVAIL
+Avant de coder :
+1. résume en 10 lignes maximum ce que tu vas modifier
+2. précise ce que tu ne touches pas
+3. liste les fichiers concernés
+4. indique les hypothèses éventuelles
+5. n’attends que si une information est réellement bloquante
+
+Quand tu codes :
+- fais des modifications minimales et ciblées
+- garde la structure existante si elle est exploitable
+- indique clairement quoi remplacer
+- n’écris pas toute l’application si ce n’est pas nécessaire
+
+Quand tu termines :
+- résume ce qui a été fait
+- signale les points restant à faire
+- liste les risques ou limites éventuelles
+- propose l’étape suivante la plus logique
+
+ORDRE DE RECONSTRUCTION OBLIGATOIRE
+1. Architecture générale
+2. Logique des droits d’accès
+3. Dossier unique partagé + espace professionnel réservé
+4. Parcours visuels
+5. Bloc Identité / repères de parcours
+6. Socle autonomie
+7. Bloc professionnel / relation d’aide
+8. Synthèse courte + note de continuité
+9. Modules spécifiques
+10. Traçabilité automatique
+11. Vue direction / secours
+12. Sécurisation
+13. Mode démonstration sourcé
+
+ARCHITECTURE CIBLE
+Concevoir le projet comme une vraie application web métier déployable.
+Prévoir au minimum :
+- frontend web
+- API backend
+- base de données relationnelle
+- authentification nominative
+- journalisation
+- historique des modifications
+
+STACK TECHNIQUE À UTILISER
+- frontend : React + Vite
+- backend : Node.js + Express
+- base de données : PostgreSQL
+- ORM : Prisma
+
+Créer une architecture simple, propre et extensible, adaptée à une application web métier interne utilisée depuis navigateur et déployable derrière Apache ou Nginx.
+
+PORTES D’ENTRÉE
+- Parcours social / socio-professionnel
+- Appui TNS
+- Direction
+- Connexion nominative
+
+PROFILS / DROITS D’ACCÈS
+- professionnelle parcours social / socio-professionnel
+- professionnelle appui TNS
+- direction
+- admin technique
+- professionnelle relais temporaire si besoin
+
+DOSSIER UNIQUE PARTAGÉ
+Contient :
+- identité
+- historique de parcours
+- socle autonomie
+- freins repérés
+- points d’appui
+- évolution globale
+- modules ouverts
+- actions engagées
+- échéances
+- synthèse courte
+- note de continuité
+- partenaires mobilisés
+- prochaine étape
+
+ESPACE PROFESSIONNEL RÉSERVÉ
+Contient :
+- relation d’aide
+- hypothèses
+- posture professionnelle
+- notes sensibles
+- brouillons
+
+PRINCIPE CENTRAL
+- le dossier unique suit la personne
+- l’espace professionnel réservé suit la professionnelle
+
+PARCOURS VISUELS VALIDÉS
+Parcours social :
+Accueillir → Consolider → Approfondir → Agir → Stabiliser
+
+Parcours socio-professionnel :
+Situer → Consolider → Se projeter → Avancer vers l’activité → Stabiliser
+
+Appui TNS :
+Entrer → Consolider → Clarifier → Structurer → Ajuster
+
+BLOC IDENTITÉ
+Affichage principal :
+- Nom
+- Prénom
+- Âge
+- Numéro Insertis
+
+Ne pas afficher la date de naissance dans les informations principales.
+
+Fonctions :
+- retrouver le dossier
+- voir l’historique
+- voir l’évolution
+- imprimer un flash situation
+- continuer vers le bloc usager
+
+SOCLE AUTONOMIE
+Fonction :
+repérage global, digne, naturel à l’oral, sans score brut visible.
+
+8 questions validées :
+1. Démarches / accès aux droits
+2. Organisation du quotidien
+3. Budget / argent
+4. Santé / accès aux soins
+5. Mobilité / déplacements
+6. Écrit / numérique
+7. Vie familiale / disponibilité
+8. Projet / mise en mouvement
+
+OUVERTURE DES MODULES
+Logique mixte :
+- l’outil suggère ou recommande
+- la professionnelle décide
+
+Tracer :
+- module suggéré
+- module recommandé
+- module ouvert
+- module reporté
+- module non ouvert à ce stade
+
+MODULES PRINCIPAUX
+1. Droits / démarches
+2. Habitat / parcours résidentiel
+3. TNS
+4. Budget
+5. Santé
+6. Écrit / illettrisme
+
+MODULES SECONDAIRES
+- Numérique
+- Mobilité
+- Vie familiale
+- Projet professionnel détaillé
+
+RÈGLE COMMUNE POUR TOUS LES MODULES
+Toujours distinguer :
+1. ce que la professionnelle peut traiter elle-même
+2. ce qui relève d’un relais interne
+3. ce qui relève d’une orientation externe
+
+BLOC PROFESSIONNEL / RELATION D’AIDE
+Strictement interne.
+Jamais visible par l’usager.
+
+SYNTHÈSE COURTE + NOTE DE CONTINUITÉ
+Très visibles dans le dossier partagé.
+Elles servent à la reprise rapide et au relais.
+
+TRAÇABILITÉ
+Tracer automatiquement autant que possible :
+- date
+- professionnelle
+- bloc concerné
+- module ouvert
+- action réalisée
+- entretien relais
+- évolution d’axe
+- impression
+- export
+
+HISTORIQUE DES VERSIONS
+Conserver les versions précédentes pour :
+- synthèse courte
+- note de continuité
+- socle autonomie
+- ouverture / fermeture de modules
+- changement de référente
+- éléments importants du dossier partagé
+
+SÉCURISATION
+Connexion :
+- mail professionnel
+- mot de passe personnel
+
+Prévoir :
+- mot de passe oublié par mail professionnel
+- essais restants affichés
+- verrouillage temporaire
+- déconnexion automatique
+- journalisation des connexions et actions sensibles
+
+MODE DÉMONSTRATION SOURCÉ
+Uniquement pour la version démo.
+Pour tout élément fondé sur :
+- référentiel
+- projet social
+- comité des financeurs
+
+Afficher si possible :
+- source
+- page
+- ce que dit le document
+- comment c’est traduit dans l’outil
+
+INDICATEURS DIRECTION
+Uniquement dans l’espace direction / pilotage.
+Ne jamais les afficher dans les espaces ordinaires des professionnelles.
+
+VISUEL — DIRECTION GÉNÉRALE
+Ne pas figer le style avant d’avoir stabilisé :
+- architecture
+- parcours
+- blocs métier
+- droits d’accès
+- traçabilité
+
+Ambiance recherchée :
+- chaleureuse
+- sobre
+- professionnelle
+- naturelle
+- mobile dans l’esprit
+- sans folklore
+- sans cliché
+- sans effet brochure
+- sans effet mystique
+- sans effet mortuaire
+
+PALETTE VALIDÉE LA PLUS RÉCENTE
+- fond principal : #FAF6EF
+- fond cartes : #EFE4D2
+- couleur principale : #7A845F
+- couleur secondaire : #A8B08D
+- accent : #C2974A
+- texte principal : #3F372F
+- texte secondaire : #6F6559
+- contours : #DCCFBE
+
+SIGNATURE
+Prévoir la mention :
+Outil conçu par Sofia de los Rios dans le cadre de sa mission
+ou
+Outil conçu par Sofia de los Rios dans le cadre de sa mission à l’ARTAG
+
+Toujours écrire :
+- Sofia avec un f
+- de los Rios
+
+CRITÈRE DE RÉUSSITE
+Le projet doit évoluer comme une application web métier cohérente, déployable sur serveur, lisible, sécurisée, transmissible, et fidèle au cadrage métier déjà validé.
