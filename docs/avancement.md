@@ -58,6 +58,59 @@ Objectif : construire une application web métier déployable sur serveur, acces
 - préparation de l’architecture applicative
 - préparation du modèle de données initial
 
+## Étape réalisée — socle frontend exécutable minimal
+- création d'une base frontend autonome dans `frontend/`
+- ajout d'un `package.json` frontend avec React, React DOM, React Router et Vite
+- ajout des fichiers indispensables au démarrage :
+  - `frontend/index.html`
+  - `frontend/vite.config.js`
+  - `frontend/src/main.jsx`
+  - `frontend/src/App.jsx`
+  - `frontend/src/styles.css`
+- création d'un routing minimal pour :
+  - accueil
+  - parcours social / socio-professionnel
+  - appui TNS
+  - direction
+- conservation et remise en forme du visuel d'accueil déjà amorcé
+- correction du raccordement du logo ARTAG via `public/logo-artag.png`
+- maintien d'un périmètre strictement frontend, sans ajout de logique métier sensible
+
+## Validation de l'étape 1
+- application frontend démarrée correctement en local
+- pages principales accessibles
+- routing validé
+- build frontend validé
+- logo ARTAG correctement raccordé et servi depuis `public/logo-artag.png`
+
+## Clôture de l'étape 1
+- étape 1 clôturée et considérée comme conforme
+
+## Validation de l'étape 2
+- source de vérité du logo conforme : `public/logo-artag.png`
+- emplacement du fichier conforme
+- usage réel du logo conforme dans le frontend
+- suppression de l’asset parasite `src/logo-artag.png`
+- étape 2 validée et conforme
+
+## Validation de l'étape 3
+- structure frontend simple de rôles en place
+- séparation visuelle claire des 3 accès
+- protection frontend minimale des routes en place
+- redirection vers l’accueil en cas d’accès non autorisé
+- absence de backend, d’authentification réelle, de session et de stockage persistant
+- étape 3 validée et conforme
+
+## Laissé inchangé volontairement
+- aucun backend Express à ce stade
+- aucune base PostgreSQL à ce stade
+- aucun schéma Prisma à ce stade
+- aucune authentification réelle à ce stade
+- aucun module métier, aucun socle autonomie métier, aucune traçabilité serveur
+
+## Points de vigilance immédiats
+- les pages parcours, TNS et direction restent des points d'entrée techniques minimaux, pas encore des écrans métier finalisés
+
 ## Prochaine étape logique
 Créer l’ossature technique du projet :
 - frontend
