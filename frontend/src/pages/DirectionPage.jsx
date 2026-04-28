@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 
 export function DirectionPage() {
   return (
@@ -8,19 +8,22 @@ export function DirectionPage() {
         <div>
           <h1>Direction</h1>
           <p className="page-intro">
-            Accès minimal distinct en place. Les vues de pilotage et les indicateurs ne sont pas
-            encore développés dans cette étape.
+            Acces minimal distinct en place. Les vues de pilotage et les
+            indicateurs ne sont pas encore developpes dans cette etape.
           </p>
         </div>
       </header>
 
       <section className="page-card">
-        <h2>Accès séparé</h2>
-        <p>Cette page confirme l'existence d'une entrée direction distincte du parcours usager.</p>
+        <h2>Acces separe valide</h2>
+        <p>
+          Cette page confirme l'existence d'une entree Direction distincte du
+          parcours social / socio-professionnel et de l'Appui TNS.
+        </p>
       </section>
 
       <Link className="back-link" to="/">
-        Retour à l'accueil
+        Retour a l'accueil
       </Link>
     </main>
   );
