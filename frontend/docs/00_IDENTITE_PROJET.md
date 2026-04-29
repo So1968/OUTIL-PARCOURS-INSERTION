@@ -1,42 +1,34 @@
 ﻿# Fiche identité projet
 
 ## NOM DU PROJET
-OUTIL-PARCOURS-INSERTION / ARTAG
+MÉLO NAIL
 
 ## À NE PAS CONFONDRE AVEC
-- Mélo Nail : site vitrine pour Mélodie Blanco, prothésiste ongulaire à Neyron.
+- ARTAG / OUTIL-PARCOURS-INSERTION : outil parcours insertion / appui TNS.
 - Projet Michel : projet distinct, à traiter séparément.
 - Candilys : projet associatif familial, culturel et artistique.
 
 ## OBJECTIF DU PROJET
-Créer un outil structuré pour clarifier les parcours d'accompagnement, soutenir l'appui TNS et améliorer la lisibilité du travail autour des situations sociales et socio-professionnelles.
+Créer un site vitrine doux, professionnel, élégant et local pour Mélo Nail, activité de prothésie ongulaire portée par Mélodie Blanco à Neyron.
 
 ## CONTEXTE
-Ce projet s'inscrit dans le contexte ARTAG.
-Il concerne l'accompagnement des publics, les parcours RSA, l'appui aux situations liées à l'activité indépendante/TNS, la coordination interne et la clarification des rôles.
+Projet de site vitrine avec une identité visuelle féminine, sobre, chic, moderne et rassurante.
+Le site doit présenter les prestations, l’univers de Mélodie, les photos de poses, les informations pratiques et les moyens de contact/réservation.
 
 ## RÈGLE ABSOLUE
-Ne jamais mélanger ce projet avec un autre projet de Sofia.
-
-Avant toute réponse, l'agent doit vérifier :
-- de quel projet il s'agit ;
-- quel est l'objectif du projet ;
-- quels éléments sont déjà validés ;
-- ce qu'il ne faut pas modifier.
+Ne jamais mélanger ce projet avec ARTAG, Candilys ou le projet Michel.
 
 ## POSITIONNEMENT
-Ce projet n'est pas un simple site vitrine.
-Ce n'est pas le projet Mélo Nail.
-Ce n'est pas le projet Michel.
-Ce n'est pas Candilys.
-
-C'est un outil de travail lié au projet ARTAG / parcours insertion / appui TNS.
+Ce projet est un site vitrine professionnel.
+Ce n’est pas un outil institutionnel.
+Ce n’est pas un outil d’accompagnement social.
+Ce n’est pas le projet ARTAG.
 
 ## MODE DE TRAVAIL ATTENDU
-- Ne pas repartir de zéro.
-- Consolider l'existant.
-- Garder une trace dans Git.
+- Respecter l’univers doux, chic, sobre et professionnel.
+- Ne pas rendre le site agressif, cheap ou trop chargé.
+- Consolider l’existant sans tout refaire.
 - Proposer les fichiers à modifier.
-- Donner les contenus prêts à copier-coller.
+- Donner le contenu prêt à copier-coller.
+- Garder une trace dans Git.
 - Produire des commits clairs.
-- Protéger les contenus validés.
