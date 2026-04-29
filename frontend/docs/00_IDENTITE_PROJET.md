@@ -1,34 +1,30 @@
-﻿# Fiche identité projet
+﻿# Identité du projet
 
-## NOM DU PROJET
-MÉLO NAIL
+## Nom du projet
+OUTIL-PARCOURS-INSERTION / ARTAG
 
-## À NE PAS CONFONDRE AVEC
-- ARTAG / OUTIL-PARCOURS-INSERTION : outil parcours insertion / appui TNS.
-- Projet Michel : projet distinct, à traiter séparément.
-- Candilys : projet associatif familial, culturel et artistique.
+## Objectif
+Structurer et clarifier les parcours d’accompagnement et l’appui TNS dans le cadre ARTAG.
 
-## OBJECTIF DU PROJET
-Créer un site vitrine doux, professionnel, élégant et local pour Mélo Nail, activité de prothésie ongulaire portée par Mélodie Blanco à Neyron.
+## Règle absolue
+Ce projet doit être traité comme un projet autonome.
 
-## CONTEXTE
-Projet de site vitrine avec une identité visuelle féminine, sobre, chic, moderne et rassurante.
-Le site doit présenter les prestations, l’univers de Mélodie, les photos de poses, les informations pratiques et les moyens de contact/réservation.
+L’agent doit :
+- vérifier le nom du projet avant toute réponse ;
+- rester strictement dans le périmètre ARTAG ;
+- ne pas importer d’éléments venant d’un autre projet ;
+- ne pas mélanger les objectifs, contenus ou décisions ;
+- demander clarification en cas de doute.
 
-## RÈGLE ABSOLUE
-Ne jamais mélanger ce projet avec ARTAG, Candilys ou le projet Michel.
+## Contenus validés
+- Structure générale de l’outil
+- Logique parcours social / socio-professionnel
+- Appui TNS comme appui ciblé, sans file active
 
-## POSITIONNEMENT
-Ce projet est un site vitrine professionnel.
-Ce n’est pas un outil institutionnel.
-Ce n’est pas un outil d’accompagnement social.
-Ce n’est pas le projet ARTAG.
+## À ne pas modifier sans validation
+- Positionnement appui TNS vs accompagnement global
+- Logique de coordination, et non “faire à la place”
+- Structure globale des modules
 
-## MODE DE TRAVAIL ATTENDU
-- Respecter l’univers doux, chic, sobre et professionnel.
-- Ne pas rendre le site agressif, cheap ou trop chargé.
-- Consolider l’existant sans tout refaire.
-- Proposer les fichiers à modifier.
-- Donner le contenu prêt à copier-coller.
-- Garder une trace dans Git.
-- Produire des commits clairs.
+## Prochaine action
+Poursuivre la stabilisation de l’outil ARTAG.
