@@ -1,5 +1,7 @@
 ﻿import React from "react";
 import { Link } from "react-router-dom";
+import { useRole } from "../auth/RoleContext";
+import { ROLE_APPUI_TNS, ROLE_DIRECTION, ROLE_PROFESSIONNELLE } from "../auth/roles";
 
 const parcoursSteps = [
   {
@@ -56,6 +58,8 @@ const parcoursSteps = [
 ];
 
 export function HomePage() {
+  const { setCurrentRole } = useRole();
+
   return (
     <main className="home-page">
       <header className="page-header">
@@ -63,7 +67,11 @@ export function HomePage() {
           <img className="page-logo" src="/logo-artag.png" alt="ARTAG" />
         </div>
 
-        <Link className="direction-link" to="/direction">
+        <Link
+          className="direction-link"
+          to="/direction"
+          onClick={() => setCurrentRole(ROLE_DIRECTION)}
+        >
           <span className="direction-door">
             <span className="direction-door-handle" />
           </span>
@@ -79,12 +87,20 @@ export function HomePage() {
       </section>
 
       <section className="home-actions">
-        <Link className="home-card" to="/parcours">
+        <Link
+          className="home-card"
+          to="/parcours-social-socio-professionnel"
+          onClick={() => setCurrentRole(ROLE_PROFESSIONNELLE)}
+        >
           <h2>Parcours social<br />socio-professionnel</h2>
           <p>Diagnostic, contrat, actions, suivi et progression vers l’autonomie.</p>
         </Link>
 
-        <Link className="home-card home-card-light" to="/appui-tns">
+        <Link
+          className="home-card home-card-light"
+          to="/appui-tns"
+          onClick={() => setCurrentRole(ROLE_APPUI_TNS)}
+        >
           <h2>Appui TNS</h2>
           <p>Appui spécifique et complémentaire au parcours pour les situations liées à l’activité indépendante.</p>
         </Link>
@@ -115,4 +131,3 @@ export function HomePage() {
     </main>
   );
 }
-
