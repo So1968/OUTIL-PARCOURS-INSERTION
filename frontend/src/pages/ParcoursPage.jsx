@@ -8,15 +8,15 @@ export function ParcoursPage() {
         <div>
           <h1>Parcours social / socio-professionnel</h1>
           <p className="page-intro">
-            Rechercher un dossier existant ou ouvrir un nouveau parcours.
+            Retrouver un dossier existant ou ouvrir un nouveau parcours.
           </p>
         </div>
       </header>
 
       <section className="parcours-grid">
         <article className="page-card parcours-card">
-          <h2>Rechercher une personne</h2>
-          <p>Retrouver rapidement un dossier déjà ouvert.</p>
+          <h2>Dossier existant</h2>
+          <p>Retrouver un parcours déjà ouvert et poursuivre le suivi.</p>
 
           <input
             className="search-input"

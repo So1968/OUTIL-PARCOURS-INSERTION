@@ -554,3 +554,101 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+/* Correction demandée : bloc gauche encadré + bouton retour */
+.parcours-card:first-child {
+  border: 2px solid #bfa67f;
+  background: #fffdf8;
+  box-shadow: 0 18px 42px rgba(70, 52, 30, 0.14);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 48px;
+  padding: 13px 22px;
+  border-radius: 999px;
+  border: 1px solid #bfa67f;
+  background: #fffdf8;
+  color: #5f4f3d;
+  text-decoration: none;
+  font-weight: 800;
+  box-shadow: 0 10px 24px rgba(70, 52, 30, 0.10);
+}
+
+/* Ajustements lisibilité page parcours */
+.parcours-shell h1 {
+  font-size: clamp(2.4rem, 4vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.parcours-card {
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.parcours-card:hover {
+  background: #ffffff;
+  transform: translateY(-3px);
+  box-shadow: 0 22px 48px rgba(70, 52, 30, 0.16);
+}
+
+.parcours-card:first-child {
+  border: 2px solid #bfa67f;
+  background: #fbf3e4;
+}
+
+.parcours-card:first-child:hover {
+  background: #ffffff;
+}
+
+.parcours-card-primary {
+  background: #eef4e6;
+  border: 2px solid #8aa064;
+}
+
+.parcours-card-primary:hover {
+  background: #ffffff;
+}
+
+.secondary-button,
+.back-link {
+  border: 1px solid #6f8f43;
+  background: #6f8f43;
+  color: #ffffff;
+}
+
+.secondary-button:hover,
+.back-link:hover {
+  background: #5f7d38;
+  color: #ffffff;
+}
+
+.primary-button {
+  background: #6f8f43;
+  color: #ffffff;
+}
+
+.primary-button:hover {
+  background: #5f7d38;
+  color: #ffffff;
+}
+
+/* Rééquilibrage demandé : titre plus sobre + retour blanc */
+.parcours-shell h1 {
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+.back-link {
+  background: #ffffff;
+  color: #5f4f3d;
+  border: 1px solid #bfa67f;
+}
+
+.back-link:hover {
+  background: #fffdf8;
+  color: #5f4f3d;
+}
