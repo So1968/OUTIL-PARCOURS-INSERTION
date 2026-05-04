@@ -652,3 +652,15 @@ a {
   background: #fffdf8;
   color: #5f4f3d;
 }
+
+/* Règle UI ARTAG : logo toujours en haut à gauche */
+.page-logo {
+  position: fixed;
+  top: 34px;
+  left: 34px;
+  z-index: 20;
+}
+
+.page-header-simple {
+  padding-left: 90px;
+}
