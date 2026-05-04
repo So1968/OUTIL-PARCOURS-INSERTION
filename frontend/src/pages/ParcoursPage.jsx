@@ -2,48 +2,43 @@
 
 export function ParcoursPage() {
   return (
-    <main className="page-shell">
+    <main className="page-shell parcours-shell">
       <header className="page-header page-header-simple">
         <img className="page-logo" src="/logo-artag.png" alt="ARTAG" />
-
         <div>
           <h1>Parcours social / socio-professionnel</h1>
           <p className="page-intro">
-            Rechercher une personne ou démarrer un nouveau parcours.
+            Rechercher un dossier existant ou ouvrir un nouveau parcours.
           </p>
         </div>
       </header>
 
-      <section className="page-card">
-        <h2>Recherche simple</h2>
+      <section className="parcours-grid">
+        <article className="page-card parcours-card">
+          <h2>Rechercher une personne</h2>
+          <p>Retrouver rapidement un dossier déjà ouvert.</p>
 
-        <input
-          className="search-input"
-          type="search"
-          placeholder="Rechercher une personne ou un dossier…"
-        />
+          <input
+            className="search-input"
+            type="text"
+            placeholder="Nom, prénom, identifiant..."
+          />
 
-        <div className="search-results">
-          <div className="search-item">
-            <div>
-              <strong>Liste des usagers</strong>
-              <p>Accéder aux dossiers existants.</p>
-            </div>
+          <Link className="secondary-button" to="/parcours-social-socio-professionnel/dossier">
+            Accéder au dossier
+          </Link>
+        </article>
 
-            <Link className="open-link" to="/parcours-social-socio-professionnel/dossier">
-              Ouvrir
-            </Link>
-          </div>
-        </div>
-      </section>
+        <article className="page-card parcours-card parcours-card-primary">
+          <h2>Démarrer un parcours</h2>
+          <p>
+            Créer un dossier avant de renseigner le socle autonomie et les premières étapes.
+          </p>
 
-      <section className="page-card">
-        <h2>Démarrer un accompagnement</h2>
-        <p>Créer ou ouvrir un dossier avant de commencer le socle autonomie.</p>
-
-        <Link className="primary-button" to="/parcours-social-socio-professionnel/dossier">
-          Créer / ouvrir un dossier
-        </Link>
+          <Link className="primary-button" to="/parcours-social-socio-professionnel/dossier">
+            Créer un dossier
+          </Link>
+        </article>
       </section>
 
       <Link className="back-link" to="/">
