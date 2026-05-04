@@ -664,3 +664,573 @@ a {
 .page-header-simple {
   padding-left: 90px;
 }
+
+/* Page dossier — pilotage léger aligné architecture Git */
+.dossier-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 42px 28px 72px;
+}
+
+.parcours-track-card {
+  margin-bottom: 24px;
+}
+
+.parcours-track {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.track-step {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #f4eee4;
+  border: 1px solid #dccfbe;
+  font-weight: 700;
+  color: #5f4f3d;
+}
+
+.track-step.active {
+  background: #6f8f43;
+  border-color: #6f8f43;
+  color: #ffffff;
+}
+
+.section-help {
+  color: #6f665d;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.pilotage-list {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 20px;
+}
+
+.pilotage-list p {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fffdf8;
+  border: 1px solid #eadfce;
+}
+
+.module-tags,
+.status-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.module-tags span,
+.status-stack span {
+  padding: 10px 13px;
+  border-radius: 999px;
+  background: #f4eee4;
+  border: 1px solid #dccfbe;
+  font-weight: 700;
+  color: #5f4f3d;
+}
+
+.side-card {
+  border-left: 4px solid #8fa06d;
+}
+
+.dossier-side .secondary-button {
+  width: 100%;
+}
+
+/* Rééquilibrage page dossier */
+.dossier-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 44px 32px 80px;
+}
+
+.dossier-page .page-header {
+  margin-bottom: 28px;
+}
+
+.dossier-page .page-card {
+  background: #fffdf8;
+  border: 1px solid #e3d5c0;
+  border-radius: 26px;
+  box-shadow: 0 12px 30px rgba(73, 54, 33, 0.06);
+}
+
+.dossier-identity-card {
+  display: block;
+  padding: 26px 30px;
+  background: #efe4d2 !important;
+  margin-bottom: 24px;
+}
+
+.dossier-identity-card h2 {
+  margin-bottom: 18px;
+}
+
+.identity-grid-main {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px 26px;
+}
+
+.identity-grid-main p {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 253, 248, 0.72);
+}
+
+.parcours-track-card {
+  padding: 24px 30px;
+  margin-bottom: 26px;
+}
+
+.parcours-track {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.track-step {
+  text-align: center;
+}
+
+.dossier-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.85fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.dossier-main,
+.dossier-side {
+  display: grid;
+  gap: 22px;
+}
+
+.dossier-main .page-card,
+.dossier-side .page-card {
+  padding: 26px 30px;
+}
+
+.dossier-side {
+  position: sticky;
+  top: 96px;
+}
+
+.side-card {
+  border-left: 0 !important;
+}
+
+.status-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.status-stack span,
+.module-tags span {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #f4eee4;
+  border: 1px solid #dccfbe;
+  font-weight: 700;
+  color: #5f4f3d;
+}
+
+.module-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pilotage-list {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 22px;
+}
+
+.pilotage-list p {
+  margin: 0;
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: #fffdf8;
+  border: 1px solid #eadfce;
+}
+
+.dossier-side .secondary-button {
+  width: 100%;
+}
+
+@media (max-width: 980px) {
+  .identity-grid-main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .parcours-track {
+    grid-template-columns: 1fr;
+  }
+
+  .dossier-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .dossier-side {
+    position: static;
+  }
+}
+
+/* Agrandissement page dossier — version plus lisible */
+.dossier-page {
+  max-width: 1380px;
+  padding: 56px 42px 90px;
+}
+
+.dossier-page .page-header {
+  max-width: 1180px;
+  margin: 0 auto 34px;
+}
+
+.dossier-page h1 {
+  font-size: clamp(2.4rem, 3.4vw, 4rem);
+}
+
+.dossier-page h2 {
+  font-size: 1.55rem;
+}
+
+.dossier-page p,
+.dossier-page span,
+.dossier-page a,
+.dossier-page input {
+  font-size: 1.05rem;
+}
+
+.dossier-identity-card,
+.parcours-track-card,
+.dossier-layout {
+  max-width: 1180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dossier-identity-card {
+  padding: 34px 38px;
+}
+
+.identity-grid-main p {
+  padding: 14px 16px;
+}
+
+.parcours-track-card {
+  padding: 30px 38px;
+}
+
+.track-step {
+  padding: 14px 18px;
+}
+
+.dossier-layout {
+  grid-template-columns: minmax(0, 1.7fr) minmax(360px, 0.9fr);
+  gap: 34px;
+}
+
+.dossier-main .page-card,
+.dossier-side .page-card {
+  padding: 34px 38px;
+}
+
+.pilotage-list p {
+  padding: 16px 18px;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 48px;
+  padding: 0 22px;
+  font-size: 1.05rem;
+}
+
+/* Formulaire identité dossier */
+.identity-form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px 22px;
+}
+
+.identity-form-grid label {
+  display: grid;
+  gap: 8px;
+  font-weight: 800;
+  color: #2f2a25;
+}
+
+.identity-form-grid label span {
+  font-size: 0.95rem;
+}
+
+.identity-form-grid input,
+.identity-form-grid select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid #d8cbb8;
+  background: #fffdf8;
+  color: #2f2a25;
+  font: inherit;
+}
+
+.identity-form-grid input[readonly] {
+  background: #f4eee4;
+  color: #5f4f3d;
+  cursor: not-allowed;
+}
+
+@media (max-width: 980px) {
+  .identity-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .identity-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Étirement page dossier — meilleure occupation écran large */
+.dossier-page {
+  max-width: 1580px;
+  width: min(96vw, 1580px);
+  padding-left: 34px;
+  padding-right: 34px;
+}
+
+.dossier-page .page-header,
+.dossier-identity-card,
+.parcours-track-card,
+.dossier-layout {
+  max-width: 1500px;
+  width: 100%;
+}
+
+.dossier-layout {
+  grid-template-columns: minmax(0, 1.9fr) minmax(380px, 0.9fr);
+  gap: 38px;
+}
+
+.identity-form-grid {
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+}
+
+.parcours-track {
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+}
+
+.dossier-main .page-card,
+.dossier-side .page-card {
+  width: 100%;
+}
+
+/* Blocs repliables page dossier */
+.collapsible-block {
+  overflow: hidden;
+}
+
+.collapsible-block summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: #2f2a25;
+}
+
+.collapsible-block summary::-webkit-details-marker {
+  display: none;
+}
+
+.collapsible-block .collapse-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 999px;
+  background: #f4eee4;
+  border: 1px solid #dccfbe;
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.collapsible-block:not([open]) .collapse-indicator {
+  transform: rotate(-90deg);
+}
+
+.collapsible-content {
+  margin-top: 22px;
+}
+
+.collapsible-block:not([open]) {
+  padding-bottom: 26px;
+}
+
+/* Rééquilibrage titre principal page dossier */
+.dossier-page .page-header {
+  margin-bottom: 26px;
+}
+
+.dossier-page h1 {
+  font-size: clamp(2rem, 2.6vw, 3rem);
+  line-height: 1.08;
+  margin: 0;
+}
+
+.dossier-page .page-intro {
+  margin-top: 12px;
+  font-size: 1rem;
+}
+
+.dossier-page .page-logo {
+  width: 64px;
+  height: 64px;
+}
+
+/* Recalage bloc identité dossier */
+.dossier-page > .collapsible-block:first-of-type {
+  padding: 28px 34px 34px;
+}
+
+.dossier-page > .collapsible-block:first-of-type summary {
+  padding: 0;
+  margin-bottom: 4px;
+  align-items: center;
+}
+
+.dossier-page > .collapsible-block:first-of-type .collapsible-content {
+  margin-top: 24px;
+}
+
+.dossier-page > .collapsible-block:first-of-type .collapse-indicator {
+  position: static;
+  flex-shrink: 0;
+}
+
+.identity-form-grid {
+  align-items: end;
+}
+
+.identity-form-grid label {
+  min-width: 0;
+}
+
+.identity-form-grid input,
+.identity-form-grid select {
+  box-sizing: border-box;
+}
+
+/* Blocs repliés plus compacts */
+.collapsible-block:not([open]) {
+  padding: 16px 24px !important;
+  min-height: auto;
+}
+
+.collapsible-block:not([open]) summary {
+  min-height: 34px;
+}
+
+.collapsible-block summary {
+  width: 100%;
+}
+
+.collapsible-block .collapse-indicator {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.dossier-page > .collapsible-block:first-of-type:not([open]) {
+  padding: 18px 28px !important;
+}
+
+.dossier-layout .collapsible-block:not([open]) {
+  padding: 18px 26px !important;
+}
+
+/* Blocs repliés plus compacts */
+.collapsible-block:not([open]) {
+  padding: 16px 24px !important;
+  min-height: auto;
+}
+
+.collapsible-block:not([open]) summary {
+  min-height: 34px;
+}
+
+.collapsible-block summary {
+  width: 100%;
+}
+
+.collapsible-block .collapse-indicator {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.dossier-page > .collapsible-block:first-of-type:not([open]) {
+  padding: 18px 28px !important;
+}
+
+.dossier-layout .collapsible-block:not([open]) {
+  padding: 18px 26px !important;
+}
+
+/* Correction cadrage interne des blocs repliables */
+.dossier-page details.collapsible-block {
+  box-sizing: border-box;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.dossier-page details.collapsible-block summary {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 68px;
+  padding: 20px 28px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dossier-page details.collapsible-block summary span:first-child {
+  display: block;
+  min-width: 0;
+  padding-left: 0;
+}
+
+.dossier-page details.collapsible-block .collapse-indicator {
+  margin-left: 20px;
+  flex-shrink: 0;
+}
+
+.dossier-page details.collapsible-block .collapsible-content {
+  margin-top: 0 !important;
+  padding: 0 28px 28px;
+}
+
+.dossier-page details.collapsible-block:not([open]) summary {
+  min-height: 58px;
+}
+
+.dossier-page details.collapsible-block:not([open]) {
+  min-height: auto;
+}

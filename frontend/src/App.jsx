@@ -3,6 +3,7 @@ import { RequireRole } from "./auth/RequireRole";
 import { RoleProvider } from "./auth/RoleContext";
 import { ROLE_APPUI_TNS, ROLE_DIRECTION, ROLE_PROFESSIONNELLE } from "./auth/roles";
 import { DirectionPage } from "./pages/DirectionPage";
+import { DossierPage } from "./pages/DossierPage";
 import { HomePage } from "./pages/HomePage";
 import { ParcoursPage } from "./pages/ParcoursPage";
 import { TnsPage } from "./pages/TnsPage";
@@ -12,6 +13,7 @@ export default function App() {
     <RoleProvider>
       <Routes>
         <Route path="/" element={<HomePage />} />
+
         <Route
           path="/parcours-social-socio-professionnel"
           element={
@@ -20,6 +22,16 @@ export default function App() {
             </RequireRole>
           }
         />
+
+        <Route
+          path="/parcours-social-socio-professionnel/dossier"
+          element={
+            <RequireRole allowedRoles={[ROLE_PROFESSIONNELLE]}>
+              <DossierPage />
+            </RequireRole>
+          }
+        />
+
         <Route
           path="/appui-tns"
           element={
@@ -28,6 +40,7 @@ export default function App() {
             </RequireRole>
           }
         />
+
         <Route
           path="/direction"
           element={
@@ -36,6 +49,7 @@ export default function App() {
             </RequireRole>
           }
         />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </RoleProvider>
