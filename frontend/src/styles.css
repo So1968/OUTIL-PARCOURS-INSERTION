@@ -302,3 +302,138 @@ a {
   font-size: 0.68rem;
   line-height: 1.28;
 }
+
+.page-header-simple {
+  justify-content: flex-start;
+  gap: 22px;
+}
+
+.dossier-identity-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+  padding: 24px;
+  border-radius: 28px;
+  background: #efe4d2;
+  border: 1px solid #dccfbe;
+}
+
+.dossier-identity-card h2 {
+  margin: 0 0 14px;
+}
+
+.identity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 28px;
+}
+
+.identity-grid p {
+  margin: 0;
+}
+
+.identity-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.small-action,
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid #dccfbe;
+  background: #faf8f3;
+  color: #3f372f;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.small-action.primary,
+.primary-button {
+  background: #8fa06d;
+  color: #ffffff;
+  border-color: #8fa06d;
+}
+
+.parcours-track {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 22px;
+  overflow-x: auto;
+}
+
+.track-step {
+  flex: 1;
+  min-width: 150px;
+  padding: 12px 14px;
+  border-radius: 999px;
+  background: #faf8f3;
+  border: 1px solid #dccfbe;
+  text-align: center;
+  font-weight: 700;
+}
+
+.dossier-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 22px;
+  align-items: start;
+}
+
+.dossier-main,
+.dossier-side {
+  display: grid;
+  gap: 18px;
+}
+
+.dossier-side {
+  position: sticky;
+  top: 24px;
+}
+
+@media (max-width: 900px) {
+  .dossier-identity-card,
+  .dossier-layout {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .identity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .identity-actions {
+    justify-content: flex-start;
+  }
+
+  .dossier-side {
+    position: static;
+  }
+}
+
+.dossier-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+.dossier-main,
+.dossier-side {
+  display: grid;
+  gap: 18px;
+}
+
+@media (max-width: 900px) {
+  .dossier-layout {
+    grid-template-columns: 1fr;
+  }
+}
