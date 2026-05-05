@@ -130,3 +130,32 @@ Créer l’ossature technique du projet :
 - choix exact du mode d’authentification : session sécurisée côté serveur par défaut
 - forme exacte du stockage de certains modules métier : tables dédiées vs JSON structurés
 - niveau de granularité initial des permissions par bloc
+
+## 2026-05-05 — Ajout contrôlé des Repères d’autonomie
+
+### Décidé
+- Le nom visible dans l’interface est “Repères d’autonomie”.
+- Le nom technique interne reste `SocleAutonomiePage.jsx`.
+- Les 8 questions validées du socle autonomie sont conservées sans reformulation libre.
+- Les repères ne remplacent pas l’approfondissement ; ils le préparent.
+
+### Créé
+- `frontend/src/pages/SocleAutonomiePage.jsx`
+
+### Modifié
+- `frontend/src/App.jsx` : ajout de la route `/parcours-social-socio-professionnel/socle`.
+- `frontend/src/pages/DossierPage.jsx` : libellés visibles ajustés vers “Repères d’autonomie”.
+- `frontend/src/styles.css` : ajout CSS ciblé préfixé `socle-`.
+
+### Laissé inchangé
+- Accueil
+- Parcours principal
+- Appui TNS
+- Direction
+- Logique métier validée
+- Quarantaine non réinjectée
+
+### Points de vigilance
+- Stockage encore provisoire en localStorage.
+- Pas encore de backend, pas de traçabilité serveur, pas d’historique de versions.
+- Les niveaux restent une lecture professionnelle interne, pas un score usager.

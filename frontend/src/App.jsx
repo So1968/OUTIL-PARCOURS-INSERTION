@@ -6,6 +6,7 @@ import { DirectionPage } from "./pages/DirectionPage";
 import { DossierPage } from "./pages/DossierPage";
 import { HomePage } from "./pages/HomePage";
 import { ParcoursPage } from "./pages/ParcoursPage";
+import { SocleAutonomiePage } from "./pages/SocleAutonomiePage";
 import { TnsPage } from "./pages/TnsPage";
 
 export default function App() {
@@ -28,6 +29,15 @@ export default function App() {
           element={
             <RequireRole allowedRoles={[ROLE_PROFESSIONNELLE]}>
               <DossierPage />
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/parcours-social-socio-professionnel/socle"
+          element={
+            <RequireRole allowedRoles={[ROLE_PROFESSIONNELLE]}>
+              <SocleAutonomiePage />
             </RequireRole>
           }
         />

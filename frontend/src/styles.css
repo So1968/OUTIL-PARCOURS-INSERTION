@@ -1257,3 +1257,190 @@ a {
 }
 
 
+
+/* Repères d’autonomie */
+.socle-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 24px 72px;
+}
+
+.socle-status-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 16px 18px;
+  border-radius: 22px;
+  background: #faf8f3;
+  border: 1px solid #dccfbe;
+}
+
+.socle-status-card strong {
+  color: #7a845f;
+  font-size: 1.2rem;
+}
+
+.socle-status-card p {
+  margin: 0;
+  color: #6f6559;
+}
+
+.socle-list {
+  display: grid;
+  gap: 16px;
+}
+
+.socle-question-card {
+  margin-bottom: 0;
+}
+
+.socle-question-card.is-valid {
+  border-color: #a8b08d;
+  box-shadow: 0 0 0 2px rgba(122, 132, 95, 0.12);
+}
+
+.socle-question-top {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.socle-question-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: #7a845f;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.socle-question-top h2 {
+  margin: 0 0 8px;
+  font-size: 1.24rem;
+}
+
+.socle-oral-question {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #fffdf8;
+  border: 1px solid #dccfbe;
+  color: #3f372f;
+  line-height: 1.45;
+}
+
+.socle-didactic {
+  margin-top: 10px;
+}
+
+.socle-didactic summary {
+  cursor: pointer;
+  width: fit-content;
+  color: #7a845f;
+  font-weight: 650;
+}
+
+.socle-didactic-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.socle-didactic-grid div {
+  padding: 12px;
+  border-radius: 14px;
+  background: #faf8f3;
+  border: 1px solid #dccfbe;
+}
+
+.socle-didactic-grid strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #3f372f;
+}
+
+.socle-didactic-grid p {
+  margin: 0;
+  color: #6f6559;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.socle-fields-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) repeat(3, minmax(180px, 0.7fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.socle-field {
+  display: grid;
+  gap: 8px;
+  font-weight: 650;
+}
+
+.socle-field-wide {
+  grid-row: span 2;
+}
+
+.socle-field textarea,
+.socle-field select,
+.socle-final-textarea {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid #dccfbe;
+  background: #fffdf8;
+  color: #3f372f;
+  font: inherit;
+}
+
+.socle-field textarea {
+  min-height: 124px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.socle-field select {
+  min-height: 44px;
+  padding: 0 12px;
+}
+
+.socle-card-button {
+  margin-top: 16px;
+}
+
+.socle-final-card {
+  margin-top: 20px;
+}
+
+.socle-final-textarea {
+  min-height: 130px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.socle-final-button,
+.socle-return-button {
+  margin-top: 16px;
+}
+
+@media (max-width: 980px) {
+  .socle-status-card,
+  .socle-question-top,
+  .socle-fields-grid,
+  .socle-didactic-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .socle-status-card {
+    display: grid;
+  }
+}

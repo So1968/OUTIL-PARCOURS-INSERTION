@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 const STORAGE_KEY = "artag-dossier-parcours-brouillon";
@@ -6,7 +6,7 @@ const STORAGE_KEY = "artag-dossier-parcours-brouillon";
 const statutsParcours = [
   "À créer",
   "Dossier ouvert",
-  "Socle autonomie à compléter",
+  "Repères d’autonomie à compléter",
   "Parcours en cours",
   "Appui TNS à évaluer",
   "Appui TNS en cours",
@@ -202,7 +202,7 @@ export function DossierPage() {
         <div className="parcours-track">
           <span className="track-step active">Accueil</span>
           <span className="track-step active">Dossier ouvert</span>
-          <span className="track-step">Socle autonomie</span>
+          <span className="track-step">Repères d’autonomie</span>
           <span className="track-step">Modules utiles</span>
           <span className="track-step">Synthèse</span>
         </div>
@@ -216,28 +216,28 @@ export function DossierPage() {
             </p>
 
             <div className="pilotage-list">
-              <p><strong>Socle autonomie :</strong> à compléter</p>
+              <p><strong>Repères d’autonomie :</strong> à compléter</p>
               <p><strong>Synthèse courte :</strong> à rédiger</p>
               <p><strong>Note de continuité :</strong> à vérifier</p>
               <p><strong>Modules ouverts :</strong> aucun module ouvert à ce stade</p>
             </div>
 
             <Link className="primary-button" to="/parcours-social-socio-professionnel/socle">
-              Commencer le socle autonomie
+              Commencer les repères d’autonomie
             </Link>
           </BlocRepliable>
 
           <BlocRepliable title="Prochaines étapes utiles">
             <div className="pilotage-list">
               <p><strong>Priorité :</strong> clarifier la demande principale</p>
-              <p><strong>Action suivante :</strong> programmer ou finaliser le socle autonomie</p>
+              <p><strong>Action suivante :</strong> programmer ou finaliser les repères d’autonomie</p>
               <p><strong>Point à ne pas oublier :</strong> reporter les éléments officiels dans Insertis</p>
             </div>
           </BlocRepliable>
 
           <BlocRepliable title="Modules utiles">
             <p className="section-help">
-              Les modules seront ouverts selon les besoins repérés par le socle autonomie.
+              Les modules seront ouverts selon les besoins repérés par les repères d’autonomie.
             </p>
 
             <div className="module-tags">
@@ -270,7 +270,7 @@ export function DossierPage() {
 
           <BlocRepliable title="Chronologie">
             <p><strong>Aujourd’hui :</strong> dossier ouvert</p>
-            <p><strong>À suivre :</strong> socle autonomie</p>
+            <p><strong>À suivre :</strong> repères d’autonomie</p>
           </BlocRepliable>
 
           <Link className="secondary-button dossier-return-button" to="/parcours-social-socio-professionnel">
@@ -281,3 +281,4 @@ export function DossierPage() {
     </main>
   );
 }
+
