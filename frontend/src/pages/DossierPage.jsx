@@ -1,6 +1,8 @@
 ﻿import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
+const STORAGE_KEY = "artag-dossier-parcours-brouillon";
+
 const statutsParcours = [
   "À créer",
   "Dossier ouvert",
@@ -23,6 +25,26 @@ const referentes = [
   "Référente à préciser",
 ];
 
+const initialDossier = {
+  numeroInsertis: "",
+  numeroArtag: "",
+  nom: "",
+  prenom: "",
+  statut: "Dossier ouvert",
+  referente: "Référente à préciser",
+  dateOuverture: "",
+  derniereMiseAJour: "",
+};
+
+function getInitialDossier() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? { ...initialDossier, ...JSON.parse(saved) } : initialDossier;
+  } catch {
+    return initialDossier;
+  }
+}
+
 function BlocRepliable({ title, children, defaultOpen = true }) {
   return (
     <details className="page-card collapsible-block" open={defaultOpen}>
@@ -38,12 +60,31 @@ function BlocRepliable({ title, children, defaultOpen = true }) {
 }
 
 export function DossierPage() {
-  const [statut, setStatut] = useState("Dossier ouvert");
-  const [referente, setReferente] = useState("Référente à préciser");
+  const [dossier, setDossier] = useState(getInitialDossier);
+  const [messageValidation, setMessageValidation] = useState("");
 
-  const derniereMiseAJour = useMemo(() => {
+  const dateDuJour = useMemo(() => {
     return new Date().toLocaleDateString("fr-FR");
   }, []);
+
+  function updateDossier(field, value) {
+    setDossier((current) => ({
+      ...current,
+      [field]: value,
+    }));
+    setMessageValidation("");
+  }
+
+  function validerParcours() {
+    const dossierValide = {
+      ...dossier,
+      derniereMiseAJour: dateDuJour,
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dossierValide));
+    setDossier(dossierValide);
+    setMessageValidation("Parcours validé et conservé dans ce navigateur.");
+  }
 
   return (
     <main className="page-shell dossier-page">
@@ -61,27 +102,50 @@ export function DossierPage() {
         <div className="identity-form-grid">
           <label>
             <span>N° Insertis</span>
-            <input type="text" placeholder="Ex. INS-..." />
+            <input
+              type="text"
+              placeholder="Ex. INS-..."
+              value={dossier.numeroInsertis}
+              onChange={(event) => updateDossier("numeroInsertis", event.target.value)}
+            />
           </label>
 
           <label>
             <span>N° ARTAG</span>
-            <input type="text" placeholder="Ex. ARTAG-..." />
+            <input
+              type="text"
+              placeholder="Ex. ARTAG-..."
+              value={dossier.numeroArtag}
+              onChange={(event) => updateDossier("numeroArtag", event.target.value)}
+            />
           </label>
 
           <label>
             <span>Nom</span>
-            <input type="text" placeholder="Nom de famille" />
+            <input
+              type="text"
+              placeholder="Nom de famille"
+              value={dossier.nom}
+              onChange={(event) => updateDossier("nom", event.target.value)}
+            />
           </label>
 
           <label>
             <span>Prénom</span>
-            <input type="text" placeholder="Prénom" />
+            <input
+              type="text"
+              placeholder="Prénom"
+              value={dossier.prenom}
+              onChange={(event) => updateDossier("prenom", event.target.value)}
+            />
           </label>
 
           <label>
             <span>Statut du parcours</span>
-            <select value={statut} onChange={(event) => setStatut(event.target.value)}>
+            <select
+              value={dossier.statut}
+              onChange={(event) => updateDossier("statut", event.target.value)}
+            >
               {statutsParcours.map((item) => (
                 <option key={item} value={item}>
                   {item}
@@ -92,7 +156,10 @@ export function DossierPage() {
 
           <label>
             <span>Référente</span>
-            <select value={referente} onChange={(event) => setReferente(event.target.value)}>
+            <select
+              value={dossier.referente}
+              onChange={(event) => updateDossier("referente", event.target.value)}
+            >
               {referentes.map((item) => (
                 <option key={item} value={item}>
                   {item}
@@ -103,13 +170,31 @@ export function DossierPage() {
 
           <label>
             <span>Date d’ouverture</span>
-            <input type="date" />
+            <input
+              type="date"
+              value={dossier.dateOuverture}
+              onChange={(event) => updateDossier("dateOuverture", event.target.value)}
+            />
           </label>
 
           <label>
             <span>Dernière mise à jour</span>
-            <input type="text" value={derniereMiseAJour} readOnly />
+            <input
+              type="text"
+              value={dossier.derniereMiseAJour || "Non validé"}
+              readOnly
+            />
           </label>
+        </div>
+
+        <div className="identity-actions">
+          <button className="primary-button" type="button" onClick={validerParcours}>
+            Valider le parcours
+          </button>
+
+          {messageValidation && (
+            <p className="validation-message">{messageValidation}</p>
+          )}
         </div>
       </BlocRepliable>
 
@@ -168,8 +253,8 @@ export function DossierPage() {
         <aside className="dossier-side">
           <BlocRepliable title="Repères rapides">
             <div className="status-stack">
-              <span>Parcours : {statut}</span>
-              <span>Référente : {referente}</span>
+              <span>Parcours : {dossier.statut}</span>
+              <span>Référente : {dossier.referente}</span>
               <span>Socle : à compléter</span>
               <span>Insertis : à vérifier</span>
             </div>
@@ -188,11 +273,9 @@ export function DossierPage() {
             <p><strong>À suivre :</strong> socle autonomie</p>
           </BlocRepliable>
 
-          <BlocRepliable title="Retour">
-            <Link className="secondary-button" to="/parcours-social-socio-professionnel">
-              Retour aux parcours
-            </Link>
-          </BlocRepliable>
+          <Link className="secondary-button dossier-return-button" to="/parcours-social-socio-professionnel">
+            Retour aux parcours
+          </Link>
         </aside>
       </section>
     </main>

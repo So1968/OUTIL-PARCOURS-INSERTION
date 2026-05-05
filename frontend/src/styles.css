@@ -1234,3 +1234,26 @@ a {
 .dossier-page details.collapsible-block:not([open]) {
   min-height: auto;
 }
+
+/* Bouton retour dossier hors bloc repliable */
+.dossier-return-button {
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* Validation identité parcours */
+.identity-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+
+.validation-message {
+  margin: 0;
+  font-weight: 800;
+  color: #5f7d38;
+}
+
+
