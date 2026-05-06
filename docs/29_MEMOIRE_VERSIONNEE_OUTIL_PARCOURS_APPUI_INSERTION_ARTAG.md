@@ -455,3 +455,64 @@ Préserver la reconnaissance de la contribution sans donner l’impression que l
 - Intégration progressive des notices données personnelles dans le parcours.
 - Clarification du statut juridique / propriété / droit d’usage si demandé par contrat ou avenant.
 
+
+---
+
+## Version 0.12 — Vue équipe continuité de service activable
+
+**Date :** 06/05/2026  
+**Statut :** validé, à implémenter
+
+### Décision
+
+La vue équipe — continuité de service n’est pas une vue permanente sur l’ensemble des parcours.
+
+Elle peut être activée uniquement dans certains cas :
+
+- absence d’une professionnelle ;
+- relais organisé ;
+- urgence de service ;
+- besoin temporaire de reprise d’un dossier.
+
+### Règle d’accès
+
+Quand une professionnelle est présente, ses dossiers restent dans son périmètre nominatif.
+
+En cas d’absence, un accès équipe limité peut être ouvert sur les dossiers concernés, uniquement en version continuité de service.
+
+### Informations visibles en accès continuité
+
+- référence dossier ;
+- statut du parcours ;
+- prochaine action ;
+- date prévue ;
+- alerte continuité ;
+- relais en cours ;
+- information utile à l’accueil ;
+- synthèse courte validée.
+
+### Informations non visibles
+
+- notes sensibles ;
+- analyse professionnelle réservée ;
+- réponses détaillées des repères d’autonomie ;
+- synthèse Insertis complète non validée ;
+- éléments intimes ou non nécessaires à la continuité.
+
+### Exigences
+
+Cet accès doit être :
+
+- temporaire ;
+- proportionné ;
+- nominatif ;
+- tracé ;
+- limité aux professionnelles autorisées ;
+- refermé au retour de la professionnelle ou à la fin du relais.
+
+### Phrases validées
+
+> **La continuité de service justifie un accès temporaire au nécessaire, pas un accès général au dossier complet.**
+
+> **L’absence peut ouvrir un relais ; elle ne doit pas ouvrir toute l’intimité du dossier.**
+
