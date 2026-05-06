@@ -1444,3 +1444,566 @@ a {
     display: grid;
   }
 }
+
+/* =========================================================
+   REPERES AUTONOMIE — VERSION SOBRE
+   ========================================================= */
+
+.reperes-page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 34px 24px 76px;
+}
+
+.reperes-header {
+  padding-left: 0;
+  padding-right: 0;
+  margin-bottom: 22px;
+}
+
+.reperes-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding: 14px 18px;
+  border-radius: 20px;
+  background: #faf8f3;
+  border: 1px solid #dccfbe;
+}
+
+.reperes-summary strong {
+  color: #7a845f;
+  font-size: 1.18rem;
+}
+
+.reperes-summary p {
+  margin: 0;
+  color: #6f6559;
+}
+
+.reperes-list {
+  display: grid;
+  gap: 12px;
+}
+
+.reperes-card {
+  border-radius: 22px;
+  background: #efe4d2;
+  border: 1px solid #dccfbe;
+  overflow: hidden;
+}
+
+.reperes-card.is-valid {
+  border-color: #a8b08d;
+  box-shadow: 0 0 0 2px rgba(122, 132, 95, 0.12);
+}
+
+.reperes-card-summary {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 18px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.reperes-card-summary::-webkit-details-marker {
+  display: none;
+}
+
+.reperes-number {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: #7a845f;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.reperes-title-group {
+  display: grid;
+  gap: 3px;
+}
+
+.reperes-title-group strong {
+  font-size: 1.05rem;
+}
+
+.reperes-title-group small {
+  color: #6f6559;
+}
+
+.reperes-current-level {
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #faf8f3;
+  border: 1px solid #dccfbe;
+  color: #6f6559;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.reperes-card-body {
+  padding: 0 18px 18px 72px;
+}
+
+.reperes-question {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #fffdf8;
+  border: 1px solid #dccfbe;
+  line-height: 1.45;
+}
+
+.reperes-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.reperes-controls label,
+.reperes-note {
+  display: grid;
+  gap: 7px;
+  font-weight: 650;
+}
+
+.reperes-controls select,
+.reperes-note textarea,
+.reperes-final-textarea {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid #dccfbe;
+  background: #fffdf8;
+  color: #3f372f;
+  font: inherit;
+}
+
+.reperes-controls select {
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+.reperes-note textarea {
+  min-height: 82px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.reperes-help {
+  margin-top: 12px;
+}
+
+.reperes-help summary {
+  width: fit-content;
+  cursor: pointer;
+  color: #7a845f;
+  font-weight: 650;
+}
+
+.reperes-help-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.reperes-help-grid div {
+  padding: 10px;
+  border-radius: 14px;
+  background: #faf8f3;
+  border: 1px solid #dccfbe;
+}
+
+.reperes-help-grid strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.reperes-help-grid p {
+  margin: 0;
+  color: #6f6559;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.reperes-card-button {
+  margin-top: 14px;
+}
+
+.reperes-final-card {
+  margin-top: 18px;
+}
+
+.reperes-final-textarea {
+  min-height: 120px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.reperes-final-button,
+.reperes-return-button {
+  margin-top: 16px;
+}
+
+@media (max-width: 900px) {
+  .reperes-summary,
+  .reperes-controls,
+  .reperes-help-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reperes-summary {
+    display: grid;
+  }
+
+  .reperes-card-summary {
+    grid-template-columns: 36px minmax(0, 1fr);
+  }
+
+  .reperes-current-level {
+    grid-column: 2;
+    width: fit-content;
+  }
+
+  .reperes-card-body {
+    padding: 0 14px 16px;
+  }
+}
+
+/* Ajustement usager-compatible Repères d’autonomie */
+.reperes-current-level,
+.reperes-controls,
+.reperes-help {
+  display: none !important;
+}
+
+.reperes-card-summary {
+  grid-template-columns: 40px minmax(0, 1fr);
+}
+
+.reperes-card-body {
+  padding: 0 18px 18px 72px;
+}
+
+.reperes-question {
+  font-size: 1.02rem;
+  font-weight: 500;
+}
+
+.reperes-note span {
+  font-weight: 600;
+  color: #3f372f;
+}
+
+.reperes-note textarea {
+  min-height: 72px;
+  border: 1px solid #dccfbe;
+}
+
+.reperes-note textarea::placeholder,
+.reperes-final-textarea::placeholder {
+  color: #8a8177;
+}
+
+@media (max-width: 900px) {
+  .reperes-card-summary {
+    grid-template-columns: 36px minmax(0, 1fr);
+  }
+
+  .reperes-card-body {
+    padding: 0 14px 16px;
+  }
+}
+
+/* Réponse visible en entretien — Repères d’autonomie */
+.reperes-response {
+  display: grid;
+  gap: 7px;
+  max-width: 360px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.reperes-response select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 14px;
+  border: 1px solid #dccfbe;
+  background: #fffdf8;
+  color: #3f372f;
+  font: inherit;
+}
+
+.reperes-response select:focus {
+  border-color: #a8b08d;
+  box-shadow: 0 0 0 2px rgba(122, 132, 95, 0.12);
+  outline: none;
+}
+
+/* Repères d’autonomie — question + réponse simple */
+.reperes-question-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #fffdf8;
+  border: 1px solid #dccfbe;
+}
+
+.reperes-question-row .reperes-question {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.reperes-question-select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid #dccfbe;
+  background: #faf8f3;
+  color: #3f372f;
+  font: inherit;
+}
+
+.reperes-question-select:focus {
+  border-color: #a8b08d;
+  box-shadow: 0 0 0 2px rgba(122, 132, 95, 0.12);
+  outline: none;
+}
+
+/* Ancien bloc de réponse séparé masqué si encore présent */
+.reperes-response {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .reperes-question-row {
+    grid-template-columns: 1fr;
+  }
+
+  .reperes-question-select {
+    border-radius: 14px;
+  }
+}
+
+/* Synthèse générée — Repères d’autonomie */
+.reperes-final-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.reperes-final-actions .secondary-button,
+.reperes-final-actions .primary-button {
+  margin-top: 0;
+}
+
+.reperes-final-textarea {
+  white-space: pre-wrap;
+  line-height: 1.45;
+}
+
+/* Lecture interne autonomie — Repères */
+.reperes-autonomie-card {
+  margin: 16px 0;
+  padding: 16px 18px;
+  border-radius: 22px;
+  border: 1px solid #dccfbe;
+  background: #fffdf8;
+}
+
+.reperes-autonomie-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+.reperes-autonomie-card p {
+  margin: 0 0 12px;
+  color: #6f6559;
+  line-height: 1.5;
+}
+
+.reperes-autonomie-card span {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #efe4d2;
+  color: #3f372f;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+/* Partage usager et synthèse dossier */
+.reperes-share-bar {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto 16px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 20px;
+  border: 1px solid #dccfbe;
+  background: #fffdf8;
+}
+
+.reperes-share-bar p {
+  margin: 0;
+  color: #6f6559;
+  line-height: 1.45;
+}
+
+.reperes-positive-card {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto 18px;
+  padding: 20px 22px;
+  border-radius: 26px;
+  border: 1px solid #dccfbe;
+  background: #efe4d2;
+  box-shadow: 0 12px 26px rgba(63, 55, 47, 0.06);
+}
+
+.reperes-positive-card h2 {
+  margin: 0 0 8px;
+  font-size: 1.16rem;
+}
+
+.reperes-positive-card p {
+  margin: 0;
+  color: #3f372f;
+  line-height: 1.55;
+}
+
+.reperes-end-actions {
+  width: min(1180px, calc(100% - 32px));
+  margin: 18px auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.is-share-mode .page-header {
+  justify-content: center;
+  text-align: center;
+}
+
+.is-share-mode .reperes-share-bar {
+  border-color: #a8b08d;
+  background: #f7f4ea;
+}
+
+.dossier-autonomie-summary {
+  display: grid;
+  gap: 12px;
+}
+
+.dossier-autonomie-summary textarea {
+  width: 100%;
+  min-height: 260px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid #dccfbe;
+  background: #fffdf8;
+  color: #3f372f;
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.dossier-modules-list {
+  display: grid;
+  gap: 10px;
+}
+
+.dossier-module-item {
+  padding: 13px 14px;
+  border-radius: 16px;
+  border: 1px solid #dccfbe;
+  background: #fffdf8;
+}
+
+.dossier-module-item > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.dossier-module-item span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #efe4d2;
+  color: #6f6559;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.dossier-module-item ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #6f6559;
+  line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+  .reperes-share-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+/* Synthèse transférable vers Insertis */
+.insertis-summary-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+.insertis-summary-field span {
+  font-weight: 800;
+  color: #33271f;
+}
+
+.insertis-summary-field textarea {
+  width: 100%;
+  min-height: 210px;
+  resize: vertical;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid #d9c7af;
+  background: #fffaf2;
+  color: #33271f;
+  font-family: inherit;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  box-sizing: border-box;
+}
+
+.insertis-summary-field textarea:focus {
+  outline: 3px solid rgba(105, 143, 61, 0.22);
+  border-color: #6f8f3d;
+}

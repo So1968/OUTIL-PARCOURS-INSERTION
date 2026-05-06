@@ -159,3 +159,42 @@ Créer l’ossature technique du projet :
 - Stockage encore provisoire en localStorage.
 - Pas encore de backend, pas de traçabilité serveur, pas d’historique de versions.
 - Les niveaux restent une lecture professionnelle interne, pas un score usager.
+
+## Ajustement Repères d’autonomie — synthèse professionnelle
+- La synthèse automatique ne doit pas être un simple reporting des réponses.
+- Elle doit produire des phrases sobres, professionnelles et utiles à la continuité du parcours.
+- Elle reste ajustable par la professionnelle avant enregistrement.
+- Elle ne doit pas poser de diagnostic, ni transformer les réponses en score.
+- Les décisions d’ouverture de module restent à traiter dans l’espace professionnel réservé.
+
+## Ajustement Repères d’autonomie — règle de calcul de l’autonomie
+- La définition retenue de l’autonomie est : comprendre / choisir, décider, puis passer à l’action avec ou sans appui.
+- Cette définition s’appuie sur le référentiel parcours socio-professionnel 2026 et sur le cadrage ARTAG autour de l’accès aux droits, de la facilitation et de l’autonomie administrative.
+- Les réponses simples visibles pendant l’échange sont traduites en lecture interne : plutôt stabilisé, à surveiller, fragile, très fragile.
+- Aucun score brut n’est affiché à la personne.
+- La synthèse doit produire une analyse professionnelle claire, pas un reporting des réponses.
+- Les modules recommandés à valider découlent de cette lecture interne, sans ouverture automatique.
+
+## Ajustement Repères d’autonomie — séparation écran usager et analyse professionnelle
+- La page Repères d’autonomie est une page pouvant être partagée avec la personne.
+- La synthèse professionnelle, la lecture interne de l’autonomie et les modules recommandés à valider sont retirés de cette page.
+- La page Repères affiche uniquement les questions, les réponses simples, les éléments recueillis et un retour positif.
+- Un mode partage avec la personne permet de masquer le retour vers le dossier professionnel.
+- La synthèse professionnelle et les modules recommandés à valider sont déplacés dans le dossier parcours.
+- Cette séparation respecte la distinction entre échange avec la personne, analyse professionnelle et décision.
+
+## Ajustement Repères d’autonomie — synthèse transférable vers Insertis
+- La page professionnelle doit comporter une synthèse courte destinée à être copiée dans Insertis.
+- Cette synthèse ne doit pas reprendre toutes les réponses de la personne.
+- Elle doit formuler une lecture professionnelle sobre, utile à la continuité du parcours.
+- Elle doit rester modifiable par la professionnelle avant transfert.
+- Elle ne doit contenir ni score visible, ni diagnostic, ni information inutilement intime.
+- Elle doit permettre de tracer les besoins repérés, les appuis envisagés et les modules éventuellement proposés.
+- La synthèse est une aide à la rédaction et doit être relue avant transfert dans Insertis.
+
+## Ajustement Repères d’autonomie — dignité et écriture professionnelle
+- La synthèse transférable vers Insertis doit préserver la dignité de la personne.
+- Les formulations doivent éviter de qualifier directement la personne comme fragile ou déficiente.
+- L’écriture doit porter sur les besoins repérés, les points à consolider, les conditions d’appui et la sécurisation du parcours.
+- Les éléments produits restent une lecture professionnelle prudente, non diagnostique et ajustable.
+- Les formulations doivent rester compatibles avec les attendus institutionnels, les référentiels de parcours et les bonnes pratiques d’accompagnement.
