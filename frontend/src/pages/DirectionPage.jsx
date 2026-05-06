@@ -1,6 +1,10 @@
 ﻿import { Link } from "react-router-dom";
+import { useRole } from "../auth/RoleContext";
+import { ROLE_DIRECTION, ROLE_GOUVERNANCE_CA } from "../auth/roles";
 
 export function DirectionPage() {
+  const { setCurrentRole } = useRole();
+
   return (
     <main className="page-shell">
       <header className="page-header">
@@ -19,28 +23,34 @@ export function DirectionPage() {
         <article className="page-card">
           <h2>Direction — régulation opérationnelle</h2>
           <p>
-            Cette lecture sert à suivre la charge réelle, les alertes continuité,
-            les actions à venir, les appuis TNS, les délais et les besoins de
-            régulation du service.
+            Suivre la charge réelle, les alertes continuité, les actions à venir,
+            les appuis TNS, les délais et les besoins de régulation du service.
           </p>
-          <p>
-            Elle aide la direction à ajuster l’organisation du travail sans
-            remplacer les échanges d’équipe ni l’analyse professionnelle.
-          </p>
+
+          <Link
+            className="primary-button"
+            to="/direction/regulation"
+            onClick={() => setCurrentRole(ROLE_DIRECTION)}
+          >
+            Accéder à la régulation direction
+          </Link>
         </article>
 
         <article className="page-card">
           <h2>Gouvernance / CA — lecture agrégée</h2>
           <p>
-            Cette lecture permet de voir l’ensemble, pas les personnes. Elle est
-            destinée à suivre la mise en œuvre du cadre associatif et du projet
-            social à partir d’indicateurs globaux, non nominatifs et non
-            intrusifs.
+            Voir l’ensemble, pas les personnes. Cette lecture suit la mise en
+            œuvre du cadre associatif et du projet social à partir d’indicateurs
+            globaux, non nominatifs et non intrusifs.
           </p>
-          <p>
-            Elle ne donne accès ni aux dossiers individuels, ni aux notes
-            professionnelles, ni aux synthèses Insertis.
-          </p>
+
+          <Link
+            className="secondary-button"
+            to="/direction/gouvernance"
+            onClick={() => setCurrentRole(ROLE_GOUVERNANCE_CA)}
+          >
+            Accéder à la lecture gouvernance
+          </Link>
         </article>
       </section>
 
@@ -52,7 +62,7 @@ export function DirectionPage() {
           CA.
         </p>
         <p>
-          Lecture agrégée = on voit l’ensemble, pas les personnes.
+          <strong>Lecture agrégée = on voit l’ensemble, pas les personnes.</strong>
         </p>
       </section>
 

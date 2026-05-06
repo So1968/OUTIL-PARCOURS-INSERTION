@@ -2,9 +2,16 @@
 import { PrototypeProfileBanner } from "./auth/PrototypeProfileBanner";
 import { RequireRole } from "./auth/RequireRole";
 import { RoleProvider } from "./auth/RoleContext";
-import { ROLE_APPUI_TNS, ROLE_DIRECTION, ROLE_PROFESSIONNELLE } from "./auth/roles";
+import {
+  ROLE_APPUI_TNS,
+  ROLE_DIRECTION,
+  ROLE_GOUVERNANCE_CA,
+  ROLE_PROFESSIONNELLE,
+} from "./auth/roles";
 import { DirectionPage } from "./pages/DirectionPage";
+import { DirectionRegulationPage } from "./pages/DirectionRegulationPage";
 import { DossierPage } from "./pages/DossierPage";
+import { GouvernancePage } from "./pages/GouvernancePage";
 import { HomePage } from "./pages/HomePage";
 import { ParcoursPage } from "./pages/ParcoursPage";
 import { SocleAutonomiePage } from "./pages/SocleAutonomiePage";
@@ -57,8 +64,26 @@ export default function App() {
         <Route
           path="/direction"
           element={
-            <RequireRole allowedRoles={[ROLE_DIRECTION]}>
+            <RequireRole allowedRoles={[ROLE_DIRECTION, ROLE_GOUVERNANCE_CA]}>
               <DirectionPage />
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/direction/regulation"
+          element={
+            <RequireRole allowedRoles={[ROLE_DIRECTION]}>
+              <DirectionRegulationPage />
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/direction/gouvernance"
+          element={
+            <RequireRole allowedRoles={[ROLE_GOUVERNANCE_CA]}>
+              <GouvernancePage />
             </RequireRole>
           }
         />
