@@ -558,3 +558,47 @@ La porte Direction devient une porte de pilotage institutionnel, avec deux nivea
 - Ne pas donner au CA l’accès aux dossiers individuels.
 - Ne pas afficher de données nominatives dans la lecture gouvernance / CA.
 - Ne pas confondre régulation opérationnelle direction et lecture gouvernance.
+
+---
+
+## Version 0.14 — Dossier unique de parcours
+
+**Date :** 06/05/2026  
+**Statut :** validé, à construire progressivement
+
+### Décision
+
+L’outil doit évoluer vers un dossier unique de parcours.
+
+Ce dossier unique n’est pas encore entièrement construit à ce stade.
+
+Il doit permettre de regrouper, dans une même logique de parcours :
+
+- l’identité et les références du dossier ;
+- la continuité de service ;
+- l’espace professionnel réservé ;
+- les repères d’autonomie ;
+- les modules utiles ;
+- l’appui TNS si concerné ;
+- les relais internes et externes ;
+- la synthèse transférable vers Insertis ;
+- l’historique et la traçabilité ;
+- les alertes continuité.
+
+### Justification
+
+Le dossier unique évite de créer plusieurs dossiers parallèles ou plusieurs files actives séparées.
+
+L’appui TNS doit s’inscrire dans le parcours global sans créer une file active autonome.
+
+Les droits d’accès doivent permettre d’afficher des espaces différents du dossier selon les profils, sans exposer inutilement les informations sensibles.
+
+### Règle validée
+
+> **Un dossier unique, plusieurs espaces de lecture selon les droits.**
+
+### Point à ne pas modifier sans validation
+
+Ne pas construire l’outil comme une juxtaposition de dossiers séparés.
+
+Les pages actuelles préparent progressivement cette architecture, sans finaliser encore le dossier unique complet.
