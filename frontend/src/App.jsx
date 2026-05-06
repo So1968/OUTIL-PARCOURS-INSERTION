@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+﻿import { Navigate, Route, Routes } from "react-router-dom";
+import { PrototypeProfileBanner } from "./auth/PrototypeProfileBanner";
 import { RequireRole } from "./auth/RequireRole";
 import { RoleProvider } from "./auth/RoleContext";
 import { ROLE_APPUI_TNS, ROLE_DIRECTION, ROLE_PROFESSIONNELLE } from "./auth/roles";
@@ -12,6 +13,8 @@ import { TnsPage } from "./pages/TnsPage";
 export default function App() {
   return (
     <RoleProvider>
+      <PrototypeProfileBanner />
+
       <Routes>
         <Route path="/" element={<HomePage />} />
 
