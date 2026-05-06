@@ -480,6 +480,42 @@ export function DossierPage() {
             )}
           </BlocRepliable>
 
+          <BlocRepliable title="Relais internes / externes">
+            <p className="section-help">
+              Espace de repérage des relais utiles. Un relais ne transfère pas tout le dossier ;
+              il transmet le juste nécessaire pour sécuriser la suite du parcours.
+            </p>
+
+            <div className="dossier-modules-list">
+              <article className="dossier-module-item">
+                <div>
+                  <strong>Relais internes</strong>
+                  <span>À mobiliser si nécessaire</span>
+                </div>
+                <ul>
+                  <li>Accueil : information simple, rendez-vous, document attendu ou passage à signaler.</li>
+                  <li>Relais logement / habitat : situation d’habitat ou de lieu de vie ayant un impact sur le parcours.</li>
+                </ul>
+              </article>
+
+              <article className="dossier-module-item">
+                <div>
+                  <strong>Relais externes</strong>
+                  <span>Selon le besoin repéré</span>
+                </div>
+                <ul>
+                  <li>CAF, CPAM, France Travail, Maison de la Métropole.</li>
+                  <li>URSSAF, impôts, ADL selon conditions d’orientation.</li>
+                  <li>Partenaires santé, mobilité, budget, formation ou logement selon la situation.</li>
+                </ul>
+              </article>
+            </div>
+
+            <p className="section-help">
+              Toute orientation doit être expliquée à la personne, proportionnée au besoin,
+              et suivie dans la continuité du parcours.
+            </p>
+          </BlocRepliable>
           <BlocRepliable title="Synthèse transférable vers Insertis">
             <p className="section-help">
               Synthèse courte destinée à être copiée dans Insertis. Elle ne remplace pas l’analyse professionnelle et doit être ajustée avant transfert.
@@ -554,4 +590,5 @@ export function DossierPage() {
     </main>
   );
 }
+
 
