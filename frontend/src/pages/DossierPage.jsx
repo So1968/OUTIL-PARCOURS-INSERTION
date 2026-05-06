@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+﻿import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 const STORAGE_KEY = "artag-dossier-parcours-brouillon";
@@ -320,7 +320,7 @@ export function DossierPage() {
         </div>
       </header>
 
-      <BlocRepliable title="Identité du dossier">
+      <BlocRepliable title="Identité / références">
         <div className="identity-form-grid">
           <label>
             <span>N° Insertis</span>
@@ -432,7 +432,7 @@ export function DossierPage() {
 
       <section className="dossier-layout">
         <div className="dossier-main">
-          <BlocRepliable title="Dossier partagé">
+          <BlocRepliable title="Continuité de service">
             <p className="section-help">
               Éléments utiles à la continuité du suivi. Les notes sensibles ne sont pas affichées ici.
             </p>
@@ -456,7 +456,7 @@ export function DossierPage() {
             </div>
           </BlocRepliable>
 
-          <BlocRepliable title="Modules recommandés à valider">
+          <BlocRepliable title="Modules utiles à valider">
             {modulesRecommandes.length > 0 ? (
               <div className="dossier-modules-list">
                 {modulesRecommandes.map((module) => (
@@ -514,7 +514,7 @@ export function DossierPage() {
               Cette synthèse est une aide à la rédaction. Elle doit être relue et ajustée par la professionnelle avant transfert dans Insertis.
             </p>
           </BlocRepliable>
-          <BlocRepliable title="Prochaines étapes utiles">
+          <BlocRepliable title="Alertes continuité / prochaines étapes">
             <div className="pilotage-list">
               <p><strong>Priorité :</strong> clarifier la demande principale</p>
               <p><strong>Action suivante :</strong> programmer ou finaliser les repères d’autonomie</p>
@@ -541,7 +541,7 @@ export function DossierPage() {
             </p>
           </BlocRepliable>
 
-          <BlocRepliable title="Chronologie">
+          <BlocRepliable title="Historique / traçabilité">
             <p><strong>Aujourd’hui :</strong> dossier ouvert</p>
             <p><strong>À suivre :</strong> repères d’autonomie</p>
           </BlocRepliable>
@@ -554,3 +554,4 @@ export function DossierPage() {
     </main>
   );
 }
+
