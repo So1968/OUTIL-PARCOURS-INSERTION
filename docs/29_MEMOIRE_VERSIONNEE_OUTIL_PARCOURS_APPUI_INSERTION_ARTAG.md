@@ -516,3 +516,45 @@ Cet accès doit être :
 
 > **L’absence peut ouvrir un relais ; elle ne doit pas ouvrir toute l’intimité du dossier.**
 
+
+---
+
+## Version 0.13 — Porte Direction et lecture Gouvernance / CA
+
+**Date :** 06/05/2026  
+**Statut :** validé, à implémenter
+
+### Décision
+
+La page d’accueil conserve une seule porte visible :
+
+> **Direction**
+
+Dans l’espace Direction, deux lectures sont distinguées :
+
+1. **Direction — régulation opérationnelle**
+2. **Gouvernance / CA — lecture agrégée**
+
+### Justification
+
+Il n’est pas nécessaire de créer une porte CA visible directement sur l’accueil.
+
+La porte Direction devient une porte de pilotage institutionnel, avec deux niveaux de lecture distincts :
+
+- la direction dispose d’une lecture opérationnelle pour réguler la charge, les alertes, les parcours, les délais et les moyens ;
+- la gouvernance / CA dispose d’une lecture agrégée pour vérifier la mise en œuvre du cadre associatif et du projet social, sans accéder aux dossiers individuels.
+
+### Définition validée
+
+> **Lecture agrégée = on voit l’ensemble, pas les personnes.**
+
+### Règle politique validée
+
+> **La porte Direction donne accès aux lectures de pilotage : régulation opérationnelle pour la direction, lecture agrégée pour la gouvernance / CA.**
+
+### Points à ne pas modifier sans validation
+
+- Ne pas créer de porte CA séparée sur l’accueil.
+- Ne pas donner au CA l’accès aux dossiers individuels.
+- Ne pas afficher de données nominatives dans la lecture gouvernance / CA.
+- Ne pas confondre régulation opérationnelle direction et lecture gouvernance.
