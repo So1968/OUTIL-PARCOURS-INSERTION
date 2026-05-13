@@ -42,3 +42,10 @@ Ce projet doit Ãªtre traitÃ© comme une mise en Å“uvre stricte d'un cahier des ch
 - Toujours lancer le projet depuis \rontend\ avec \
 pm run dev\ pour contrôle visuel.
 
+
+## Règle de modification
+- Ne pas faire de grosses modifications structurelles à la main dans Notepad.
+- Les changements métier doivent être faits par blocs contrôlés, vérifiés par diff, testés, puis commités.
+- Toujours vérifier le chemin du projet avant toute commande.
+- Toujours lancer le projet depuis frontend avec npm run dev pour contrôle visuel.
+
