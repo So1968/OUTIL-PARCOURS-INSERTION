@@ -2,7 +2,10 @@
 import { Link } from "react-router-dom";
 import { useRole } from "../auth/RoleContext";
 import { ROLE_PROFESSIONNELLE } from "../auth/roles";
-import { champsSuiviContinuite } from "../data/continuiteModele";
+import {
+  champsSuiviContinuite,
+  niveauxVigilanceContinuite,
+} from "../data/continuiteModele";
 import {
   colleguesContinuiteFictifs,
   elementsProtegesContinuite,
@@ -11,13 +14,17 @@ import {
 const elementsVisibles = champsSuiviContinuite.map((champ) => champ.libelle);
 
 
+
+function getNiveauVigilance(niveauId) {
+  return niveauxVigilanceContinuite.find((niveau) => niveau.id === niveauId);
+}
 function getValeurSuiviContinuite(dossier, champId) {
   const valeurs = {
     "derniere-action": dossier.derniereAction,
     "prochaine-action": dossier.prochaineAction,
     "document-attendu": dossier.documentAttendu,
     "relais-mobilise": dossier.relaisMobilise,
-    "niveau-vigilance": dossier.niveauVigilance,
+    "niveau-vigilance": getNiveauVigilance(dossier.niveauVigilanceId)?.libelle || "À qualifier",
     "date-mise-a-jour": dossier.dateMiseAJour,
   };
 
@@ -139,6 +146,7 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
+
 
 
 

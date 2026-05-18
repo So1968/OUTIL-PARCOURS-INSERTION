@@ -13,7 +13,7 @@
         prochaineAction: "Relancer la personne sur le justificatif manquant.",
         documentAttendu: "Justificatif à préciser selon la situation.",
         relaisMobilise: "Accueil informé du passage possible.",
-        niveauVigilance: "Moyen — échéance proche à surveiller.",
+        niveauVigilanceId: "moyen",
         dateMiseAJour: "À actualiser lors de la reprise.",
       },
       {
@@ -24,7 +24,7 @@
         prochaineAction: "Programmer un temps court pour compléter les repères.",
         documentAttendu: "Aucun document identifié à ce stade.",
         relaisMobilise: "Aucun relais externe engagé.",
-        niveauVigilance: "Faible — suivi à planifier.",
+        niveauVigilanceId: "faible",
         dateMiseAJour: "À actualiser après le prochain contact.",
       },
     ],
@@ -43,7 +43,7 @@
         prochaineAction: "Vérifier l’accord de la personne avant orientation.",
         documentAttendu: "Aucun document attendu avant accord.",
         relaisMobilise: "Partenaire à confirmer.",
-        niveauVigilance: "Moyen — ne pas transmettre sans accord.",
+        niveauVigilanceId: "moyen",
         dateMiseAJour: "À actualiser avant orientation.",
       },
     ],
@@ -62,7 +62,7 @@
         prochaineAction: "Identifier l’action minimale utile pour éviter la rupture.",
         documentAttendu: "À préciser si un justificatif est nécessaire.",
         relaisMobilise: "Relais interne à désigner.",
-        niveauVigilance: "À qualifier — risque de rupture à vérifier.",
+        niveauVigilanceId: "fort",
         dateMiseAJour: "À actualiser dès attribution du relais.",
       },
     ],
@@ -75,3 +75,4 @@ export const elementsProtegesContinuite = [
   "Notes de posture non nécessaires",
   "Éléments non proportionnés à la reprise du suivi",
 ];
+
