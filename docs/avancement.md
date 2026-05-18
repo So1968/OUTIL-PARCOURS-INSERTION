@@ -280,3 +280,25 @@ Point de vigilance :
 - La vue limitée doit rester un outil de continuité, pas un outil de contrôle ou de surveillance.
 - Les éléments visibles doivent rester nécessaires, proportionnés et utiles à la reprise du parcours.
 
+
+## Modèle de suivi partagé — continuité
+
+Décision validée :
+- La page Continuité de service et le dossier partagé doivent utiliser les mêmes repères métier.
+- Les éléments visibles en reprise doivent être structurés autour de champs simples et opérationnels :
+  - dernière action connue ;
+  - prochaine action utile ;
+  - document attendu ;
+  - relais mobilisé ;
+  - niveau de vigilance ;
+  - date de mise à jour.
+
+État actuel :
+- La page Continuité de service affiche désormais ces champs dans les dossiers fictifs.
+- La vue limitée du dossier conserve la logique : accès uniquement aux éléments utiles à la reprise.
+- Les espaces professionnels réservés restent masqués en mode continuité.
+
+Point de vigilance :
+- Ce modèle devra ensuite devenir une source commune, pour éviter de dupliquer les mêmes champs entre plusieurs pages.
+- À terme, ces champs devront être reliés aux vraies données du dossier et non rester saisis en dur dans les composants.
+
