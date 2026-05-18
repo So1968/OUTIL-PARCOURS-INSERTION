@@ -6,7 +6,7 @@ import { ROLE_PROFESSIONNELLE } from "../auth/roles";
 const colleguesFictifs = [
   {
     id: "collegue-a",
-    nom: "Collègue A",
+    nom: "Référente de parcours",
     statut: "Absence temporaire",
     resume: "Relais à assurer sur plusieurs dossiers avec échéances proches.",
     dossiers: [
@@ -32,7 +32,7 @@ const colleguesFictifs = [
   },
   {
     id: "collegue-b",
-    nom: "Collègue B",
+    nom: "Professionnelle en relais",
     statut: "Relais ponctuel",
     resume: "Relais court, principalement pour sécuriser une prochaine étape.",
     dossiers: [
@@ -49,9 +49,9 @@ const colleguesFictifs = [
   },
   {
     id: "collegue-c",
-    nom: "Collègue C",
+    nom: "Dossiers à répartir",
     statut: "Continuité à organiser",
-    resume: "Dossiers sans référente clairement disponible à court terme.",
+    resume: "Dossiers sans relais confirmé à court terme.",
     dossiers: [
       {
         id: "c-1",
@@ -197,6 +197,7 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
+
 
 
 
