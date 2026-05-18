@@ -1,5 +1,7 @@
 ﻿import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useRole } from "../auth/RoleContext";
+import { ROLE_PROFESSIONNELLE } from "../auth/roles";
 
 const colleguesFictifs = [
   {
@@ -81,6 +83,7 @@ const elementsProteges = [
 ];
 
 export function ContinuiteServicePage() {
+  const { setCurrentRole } = useRole();
   const [collegueActiveId, setCollegueActiveId] = useState(colleguesFictifs[0].id);
 
   const collegueActive = useMemo(() => {
@@ -157,7 +160,8 @@ export function ContinuiteServicePage() {
 
                 <Link
                   className="secondary-button"
-                  to="/parcours-social-socio-professionnel/dossier"
+                  to="/parcours-social-socio-professionnel/dossier/continuite"
+                  onClick={() => setCurrentRole(ROLE_PROFESSIONNELLE)}
                 >
                   Reprendre les éléments utiles
                 </Link>
@@ -193,3 +197,10 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
+
+
+
+
+
+
+

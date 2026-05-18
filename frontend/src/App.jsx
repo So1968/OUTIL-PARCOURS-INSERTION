@@ -45,6 +45,15 @@ export default function App() {
         />
 
         <Route
+          path="/parcours-social-socio-professionnel/dossier/continuite"
+          element={
+            <RequireRole allowedRoles={[ROLE_PROFESSIONNELLE, ROLE_APPUI_TNS, ROLE_DIRECTION]}>
+              <DossierPage mode="continuite" />
+            </RequireRole>
+          }
+        />
+
+        <Route
           path="/parcours-social-socio-professionnel/socle"
           element={
             <RequireRole allowedRoles={[ROLE_PROFESSIONNELLE]}>
@@ -103,5 +112,6 @@ export default function App() {
     </RoleProvider>
   );
 }
+
 
 

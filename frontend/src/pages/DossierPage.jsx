@@ -268,10 +268,11 @@ function BlocRepliable({ title, children, defaultOpen = true }) {
   );
 }
 
-export function DossierPage() {
+export function DossierPage({ mode = "complet" }) {
   const [dossier, setDossier] = useState(getInitialDossier);
   const [reperes] = useState(getInitialReperes);
   const [messageValidation, setMessageValidation] = useState("");
+  const isContinuiteMode = mode === "continuite";
 
   const dateDuJour = useMemo(() => {
     return new Date().toLocaleDateString("fr-FR");
@@ -313,9 +314,11 @@ export function DossierPage() {
       <header className="page-header page-header-simple">
         <img className="page-logo" src="/logo-artag.png" alt="ARTAG" />
         <div>
-          <h1>Dossier parcours</h1>
+          <h1>{isContinuiteMode ? "Dossier partagé / continuité" : "Dossier parcours"}</h1>
           <p className="page-intro">
-            Vue de continuité interne — ne remplace pas Insertis.
+            {isContinuiteMode
+              ? "Vue limitée aux éléments utiles à la reprise temporaire du suivi. Les espaces privés professionnels ne sont pas affichés."
+              : "Vue de continuité interne — ne remplace pas Insertis."}
           </p>
         </div>
       </header>
@@ -439,12 +442,38 @@ export function DossierPage() {
               ni les brouillons professionnels.
             </p>
 
+            <div className="dossier-modules-list">
+              <article className="dossier-module-item">
+                <div>
+                  <strong>État de reprise</strong>
+                  <span>À vérifier avant relais</span>
+                </div>
+                <ul>
+                  <li>Repères d’autonomie : {reperes.derniereValidation ? `enregistrés le ${reperes.derniereValidation}` : "à compléter"}</li>
+                  <li>Synthèse courte : à consolider à partir de la lecture professionnelle.</li>
+                  <li>Note de continuité : à vérifier pour permettre une reprise par une collègue si besoin.</li>
+                  <li>Modules ouverts : aucun module ouvert automatiquement.</li>
+                </ul>
+              </article>
+
+              <article className="dossier-module-item">
+                <div>
+                  <strong>Prochaine action utile</strong>
+                  <span>Continuité opérationnelle</span>
+                </div>
+                <ul>
+                  <li>Dernière action connue : dossier ouvert / repères en cours.</li>
+                  <li>Prochaine action : clarifier la demande principale et sécuriser la suite du parcours.</li>
+                  <li>Document attendu : à préciser si un justificatif est nécessaire.</li>
+                  <li>Relais mobilisé : aucun relais confirmé à ce stade.</li>
+                  <li>Niveau de vigilance : à ajuster selon l’échéance et le risque de rupture.</li>
+                </ul>
+              </article>
+            </div>
+
             <div className="pilotage-list">
-              <p><strong>Repères d’autonomie :</strong> {reperes.derniereValidation ? `enregistrés le ${reperes.derniereValidation}` : "à compléter"}</p>
-              <p><strong>Synthèse courte :</strong> à consolider à partir de la lecture professionnelle.</p>
-              <p><strong>Note de continuité :</strong> à vérifier pour permettre une reprise par une collègue si besoin.</p>
-              <p><strong>Modules ouverts :</strong> aucun module ouvert automatiquement.</p>
-              <p><strong>Prochaine action :</strong> clarifier la demande principale et sécuriser la suite du parcours.</p>
+              <p><strong>Ce qui peut être transmis en relais :</strong> synthèse courte, prochaine action, échéance, document attendu, relais mobilisé.</p>
+              <p><strong>Ce qui reste protégé :</strong> brouillons personnels, hypothèses sensibles, notes non nécessaires à la reprise.</p>
             </div>
 
             <div className="identity-actions">
@@ -457,7 +486,7 @@ export function DossierPage() {
               </Link>
             </div>
           </BlocRepliable>
-
+          {!isContinuiteMode && (
           <BlocRepliable title="Espace professionnel réservé" defaultOpen={false}>
             <p className="section-help">
               Espace strictement interne à la professionnelle. Il soutient le raisonnement,
@@ -477,7 +506,9 @@ export function DossierPage() {
               soutient le travail de la professionnelle.
             </p>
           </BlocRepliable>
+          )}
 
+          {!isContinuiteMode && (
           <BlocRepliable title="Modules utiles à valider">
             {modulesRecommandes.length > 0 ? (
               <div className="dossier-modules-list">
@@ -501,7 +532,9 @@ export function DossierPage() {
               </p>
             )}
           </BlocRepliable>
+          )}
 
+          {!isContinuiteMode && (
           <BlocRepliable title="Synthèse transférable vers Insertis">
             <p className="section-help">
               Synthèse courte destinée à être copiée dans Insertis. Elle ne remplace pas
@@ -538,6 +571,7 @@ export function DossierPage() {
               par la professionnelle avant transfert dans Insertis.
             </p>
           </BlocRepliable>
+          )}
 
           <BlocRepliable title="Relais / prochaines étapes">
             <p className="section-help">
@@ -578,37 +612,67 @@ export function DossierPage() {
           </BlocRepliable>
 </div>
 
-        <aside className="dossier-side">
-          <BlocRepliable title="Repères rapides">
-            <div className="status-stack">
-              <span>Parcours : {dossier.statut}</span>
-              <span>Référente : {dossier.referente}</span>
-              <span>Repères : {reperes.derniereValidation ? "enregistrés" : "à compléter"}</span>
-              <span>Insertis : à vérifier</span>
-            </div>
-          </BlocRepliable>
 
-          <BlocRepliable title="Appui TNS">
-            <p><strong>Statut :</strong> non évalué</p>
-            <p><strong>Besoin :</strong> à préciser si concerné</p>
-            <p className="section-help">
-              L’appui TNS complète le parcours. Il ne remplace pas le suivi global.
-            </p>
-          </BlocRepliable>
+        {isContinuiteMode ? (
+          <aside className="dossier-side">
+            <BlocRepliable title="Vue relais limitée">
+              <div className="status-stack">
+                <span>Mode : continuité de service</span>
+                <span>Accès : éléments utiles uniquement</span>
+                <span>Repères : {reperes.derniereValidation ? "enregistrés" : "à compléter"}</span>
+                <span>Insertis : à reporter par la professionnelle référente</span>
+              </div>
+            </BlocRepliable>
 
-          <BlocRepliable title="Historique / traçabilité">
-            <p><strong>Aujourd’hui :</strong> dossier ouvert</p>
-            <p><strong>À suivre :</strong> repères d’autonomie</p>
-          </BlocRepliable>
+            <BlocRepliable title="Non visible dans ce mode">
+              <p className="section-help">
+                Les brouillons personnels, hypothèses sensibles, notes de posture et espaces professionnels réservés ne sont pas affichés en reprise simple.
+              </p>
+            </BlocRepliable>
 
-          <Link className="secondary-button dossier-return-button" to="/parcours-social-socio-professionnel">
-            Retour aux parcours
-          </Link>
-        </aside>
+            <Link className="secondary-button dossier-return-button" to="/continuite-service">
+              Retour continuité de service
+            </Link>
+          </aside>
+        ) : (
+          <aside className="dossier-side">
+            <BlocRepliable title="Repères rapides">
+              <div className="status-stack">
+                <span>Parcours : {dossier.statut}</span>
+                <span>Référente : {dossier.referente}</span>
+                <span>Repères : {reperes.derniereValidation ? "enregistrés" : "à compléter"}</span>
+                <span>Insertis : à vérifier</span>
+              </div>
+            </BlocRepliable>
+
+            <BlocRepliable title="Appui TNS">
+              <p><strong>Statut :</strong> non évalué</p>
+              <p><strong>Besoin :</strong> à préciser si concerné</p>
+              <p className="section-help">
+                L’appui TNS complète le parcours. Il ne remplace pas le suivi global.
+              </p>
+            </BlocRepliable>
+
+            <BlocRepliable title="Historique / traçabilité">
+              <p><strong>Aujourd’hui :</strong> dossier ouvert</p>
+              <p><strong>À suivre :</strong> repères d’autonomie</p>
+            </BlocRepliable>
+
+            <Link className="secondary-button dossier-return-button" to="/parcours-social-socio-professionnel">
+              Retour aux parcours
+            </Link>
+          </aside>
+        )}
       </section>
     </main>
   );
 }
+
+
+
+
+
+
 
 
 
