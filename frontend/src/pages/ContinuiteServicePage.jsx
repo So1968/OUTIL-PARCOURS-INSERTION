@@ -5,7 +5,7 @@ import { ROLE_PROFESSIONNELLE } from "../auth/roles";
 
 const colleguesFictifs = [
   {
-    id: "collegue-a",
+    id: "referente-parcours",
     nom: "Référente de parcours",
     statut: "Absence temporaire",
     resume: "Relais à assurer sur plusieurs dossiers avec échéances proches.",
@@ -14,24 +14,28 @@ const colleguesFictifs = [
         id: "a-1",
         titre: "Dossier test 1",
         etat: "Justificatif attendu",
-        synthese: "La situation est suivie. Un document reste attendu pour poursuivre.",
+        derniereAction: "Dossier ouvert / premier point réalisé.",
         prochaineAction: "Relancer la personne sur le justificatif manquant.",
-        echeance: "Cette semaine",
-        relais: "Accueil informé du passage possible.",
+        documentAttendu: "Justificatif à préciser selon la situation.",
+        relaisMobilise: "Accueil informé du passage possible.",
+        niveauVigilance: "Moyen — échéance proche à surveiller.",
+        dateMiseAJour: "À actualiser lors de la reprise.",
       },
       {
         id: "a-2",
         titre: "Dossier test 2",
         etat: "Repères à compléter",
-        synthese: "Les premiers éléments sont saisis, mais les repères d’autonomie ne sont pas finalisés.",
+        derniereAction: "Repères d’autonomie commencés.",
         prochaineAction: "Programmer un temps court pour compléter les repères.",
-        echeance: "À planifier",
-        relais: "Aucun relais externe engagé.",
+        documentAttendu: "Aucun document identifié à ce stade.",
+        relaisMobilise: "Aucun relais externe engagé.",
+        niveauVigilance: "Faible — suivi à planifier.",
+        dateMiseAJour: "À actualiser après le prochain contact.",
       },
     ],
   },
   {
-    id: "collegue-b",
+    id: "professionnelle-relais",
     nom: "Professionnelle en relais",
     statut: "Relais ponctuel",
     resume: "Relais court, principalement pour sécuriser une prochaine étape.",
@@ -40,15 +44,17 @@ const colleguesFictifs = [
         id: "b-1",
         titre: "Dossier test 3",
         etat: "Orientation partenaire à confirmer",
-        synthese: "Une orientation est envisagée. La personne doit être recontactée avant transmission.",
+        derniereAction: "Orientation envisagée, accord à vérifier.",
         prochaineAction: "Vérifier l’accord de la personne avant orientation.",
-        echeance: "Avant prochain rendez-vous",
-        relais: "Partenaire à confirmer.",
+        documentAttendu: "Aucun document attendu avant accord.",
+        relaisMobilise: "Partenaire à confirmer.",
+        niveauVigilance: "Moyen — ne pas transmettre sans accord.",
+        dateMiseAJour: "À actualiser avant orientation.",
       },
     ],
   },
   {
-    id: "collegue-c",
+    id: "dossiers-a-repartir",
     nom: "Dossiers à répartir",
     statut: "Continuité à organiser",
     resume: "Dossiers sans relais confirmé à court terme.",
@@ -57,22 +63,24 @@ const colleguesFictifs = [
         id: "c-1",
         titre: "Dossier test 4",
         etat: "Prochaine étape à clarifier",
-        synthese: "Le parcours ne doit pas rester sans suite. Une prochaine action doit être définie.",
+        derniereAction: "Situation repérée comme nécessitant une reprise.",
         prochaineAction: "Identifier l’action minimale utile pour éviter la rupture.",
-        echeance: "À préciser",
-        relais: "Relais interne à désigner.",
+        documentAttendu: "À préciser si un justificatif est nécessaire.",
+        relaisMobilise: "Relais interne à désigner.",
+        niveauVigilance: "À qualifier — risque de rupture à vérifier.",
+        dateMiseAJour: "À actualiser dès attribution du relais.",
       },
     ],
   },
 ];
 
 const elementsVisibles = [
-  "Synthèse courte",
-  "Note de continuité",
-  "Prochaine action",
-  "Échéances",
-  "Documents attendus",
-  "Relais mobilisés",
+  "Dernière action connue",
+  "Prochaine action utile",
+  "Document attendu",
+  "Relais mobilisé",
+  "Niveau de vigilance",
+  "Date de mise à jour",
 ];
 
 const elementsProteges = [
@@ -107,8 +115,8 @@ export function ContinuiteServicePage() {
         <h2>Principe métier</h2>
         <p>
           Cette page est une maquette fonctionnelle avec des données fictives.
-          Elle sert à vérifier la logique de reprise lorsqu’une collègue ou un collègue
-          est absent, indisponible ou en relais temporaire.
+          Elle sert à vérifier la logique de reprise lorsqu’une professionnelle
+          est absente, indisponible ou en relais temporaire.
         </p>
         <p>
           <strong>Continuité de service ≠ accès total au bureau privé de la collègue.</strong>
@@ -152,10 +160,12 @@ export function ContinuiteServicePage() {
                 </div>
 
                 <div className="pilotage-list">
-                  <p><strong>Synthèse courte :</strong> {dossier.synthese}</p>
-                  <p><strong>Prochaine action :</strong> {dossier.prochaineAction}</p>
-                  <p><strong>Échéance :</strong> {dossier.echeance}</p>
-                  <p><strong>Relais mobilisé :</strong> {dossier.relais}</p>
+                  <p><strong>Dernière action connue :</strong> {dossier.derniereAction}</p>
+                  <p><strong>Prochaine action utile :</strong> {dossier.prochaineAction}</p>
+                  <p><strong>Document attendu :</strong> {dossier.documentAttendu}</p>
+                  <p><strong>Relais mobilisé :</strong> {dossier.relaisMobilise}</p>
+                  <p><strong>Niveau de vigilance :</strong> {dossier.niveauVigilance}</p>
+                  <p><strong>Date de mise à jour :</strong> {dossier.dateMiseAJour}</p>
                 </div>
 
                 <Link
@@ -197,11 +207,3 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
-
-
-
-
-
-
-
-
