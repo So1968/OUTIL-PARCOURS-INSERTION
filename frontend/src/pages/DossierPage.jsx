@@ -432,28 +432,50 @@ export function DossierPage() {
 
       <section className="dossier-layout">
         <div className="dossier-main">
-          <BlocRepliable title="Continuité de service">
+          <BlocRepliable title="Dossier partagé / continuité">
             <p className="section-help">
-              Éléments utiles à la continuité du suivi. Les notes sensibles ne sont pas affichées ici.
+              Espace commun utile à la reprise du parcours. Il contient les éléments
+              nécessaires à la continuité du suivi, sans afficher les notes sensibles
+              ni les brouillons professionnels.
             </p>
 
             <div className="pilotage-list">
               <p><strong>Repères d’autonomie :</strong> {reperes.derniereValidation ? `enregistrés le ${reperes.derniereValidation}` : "à compléter"}</p>
-              <p><strong>Synthèse courte :</strong> à consolider à partir de la lecture professionnelle</p>
-              <p><strong>Note de continuité :</strong> à vérifier</p>
-              <p><strong>Modules ouverts :</strong> aucun module ouvert automatiquement</p>
+              <p><strong>Synthèse courte :</strong> à consolider à partir de la lecture professionnelle.</p>
+              <p><strong>Note de continuité :</strong> à vérifier pour permettre une reprise par une collègue si besoin.</p>
+              <p><strong>Modules ouverts :</strong> aucun module ouvert automatiquement.</p>
+              <p><strong>Prochaine action :</strong> clarifier la demande principale et sécuriser la suite du parcours.</p>
             </div>
 
-            <Link className="primary-button" to="/parcours-social-socio-professionnel/socle">
-              Commencer les repères d’autonomie
-            </Link>
+            <div className="identity-actions">
+              <Link className="primary-button" to="/parcours-social-socio-professionnel/socle">
+                Commencer les repères d’autonomie
+              </Link>
+
+              <Link className="secondary-button" to="/continuite-service">
+                Voir la continuité de service
+              </Link>
+            </div>
           </BlocRepliable>
 
-          <BlocRepliable title="Synthèse professionnelle des repères d’autonomie">
-            <div className="dossier-autonomie-summary">
-              <p><strong>Lecture interne :</strong> {lectureAutonomie.niveau}</p>
-              <textarea value={syntheseProfessionnelle} readOnly />
+          <BlocRepliable title="Espace professionnel réservé" defaultOpen={false}>
+            <p className="section-help">
+              Espace strictement interne à la professionnelle. Il soutient le raisonnement,
+              la préparation et la posture professionnelle. Ces éléments ne sont pas copiés
+              automatiquement dans Insertis et ne sont pas visibles en relais simple.
+            </p>
+
+            <div className="pilotage-list">
+              <p><strong>Hypothèses de travail :</strong> à formuler prudemment et à réviser au fil du parcours.</p>
+              <p><strong>Posture professionnelle :</strong> points d’attention dans la relation d’aide.</p>
+              <p><strong>Notes sensibles :</strong> uniquement si elles sont utiles, proportionnées et nécessaires.</p>
+              <p><strong>Brouillons :</strong> espace de préparation avant synthèse partageable.</p>
             </div>
+
+            <p className="section-help">
+              Principe : le dossier partagé suit la personne ; l’espace professionnel réservé
+              soutient le travail de la professionnelle.
+            </p>
           </BlocRepliable>
 
           <BlocRepliable title="Modules utiles à valider">
@@ -480,45 +502,10 @@ export function DossierPage() {
             )}
           </BlocRepliable>
 
-          <BlocRepliable title="Relais internes / externes">
-            <p className="section-help">
-              Espace de repérage des relais utiles. Un relais ne transfère pas tout le dossier ;
-              il transmet le juste nécessaire pour sécuriser la suite du parcours.
-            </p>
-
-            <div className="dossier-modules-list">
-              <article className="dossier-module-item">
-                <div>
-                  <strong>Relais internes</strong>
-                  <span>À mobiliser si nécessaire</span>
-                </div>
-                <ul>
-                  <li>Accueil : information simple, rendez-vous, document attendu ou passage à signaler.</li>
-                  <li>Relais logement / habitat : situation d’habitat ou de lieu de vie ayant un impact sur le parcours.</li>
-                </ul>
-              </article>
-
-              <article className="dossier-module-item">
-                <div>
-                  <strong>Relais externes</strong>
-                  <span>Selon le besoin repéré</span>
-                </div>
-                <ul>
-                  <li>CAF, CPAM, France Travail, Maison de la Métropole.</li>
-                  <li>URSSAF, impôts, ADL selon conditions d’orientation.</li>
-                  <li>Partenaires santé, mobilité, budget, formation ou logement selon la situation.</li>
-                </ul>
-              </article>
-            </div>
-
-            <p className="section-help">
-              Toute orientation doit être expliquée à la personne, proportionnée au besoin,
-              et suivie dans la continuité du parcours.
-            </p>
-          </BlocRepliable>
           <BlocRepliable title="Synthèse transférable vers Insertis">
             <p className="section-help">
-              Synthèse courte destinée à être copiée dans Insertis. Elle ne remplace pas l’analyse professionnelle et doit être ajustée avant transfert.
+              Synthèse courte destinée à être copiée dans Insertis. Elle ne remplace pas
+              l’analyse professionnelle et doit être ajustée avant transfert.
             </p>
 
             <label className="insertis-summary-field">
@@ -547,17 +534,49 @@ export function DossierPage() {
             </div>
 
             <p className="section-help">
-              Cette synthèse est une aide à la rédaction. Elle doit être relue et ajustée par la professionnelle avant transfert dans Insertis.
+              Cette synthèse est une aide à la rédaction. Elle doit être relue et ajustée
+              par la professionnelle avant transfert dans Insertis.
             </p>
           </BlocRepliable>
-          <BlocRepliable title="Alertes continuité / prochaines étapes">
+
+          <BlocRepliable title="Relais / prochaines étapes">
+            <p className="section-help">
+              Espace de repérage des relais utiles et des actions à ne pas perdre.
+              Un relais transmet le juste nécessaire pour sécuriser la suite du parcours.
+            </p>
+
+            <div className="dossier-modules-list">
+              <article className="dossier-module-item">
+                <div>
+                  <strong>Relais internes</strong>
+                  <span>À mobiliser si nécessaire</span>
+                </div>
+                <ul>
+                  <li>Accueil : information simple, rendez-vous, document attendu ou passage à signaler.</li>
+                  <li>Relais logement / habitat : situation d’habitat ou de lieu de vie ayant un impact sur le parcours.</li>
+                </ul>
+              </article>
+
+              <article className="dossier-module-item">
+                <div>
+                  <strong>Relais externes</strong>
+                  <span>Selon le besoin repéré</span>
+                </div>
+                <ul>
+                  <li>CAF, CPAM, France Travail, Maison de la Métropole.</li>
+                  <li>URSSAF, impôts, ADL selon conditions d’orientation.</li>
+                  <li>Partenaires santé, mobilité, budget, formation ou logement selon la situation.</li>
+                </ul>
+              </article>
+            </div>
+
             <div className="pilotage-list">
-              <p><strong>Priorité :</strong> clarifier la demande principale</p>
-              <p><strong>Action suivante :</strong> programmer ou finaliser les repères d’autonomie</p>
-              <p><strong>Point à ne pas oublier :</strong> reporter les éléments officiels dans Insertis</p>
+              <p><strong>Priorité :</strong> clarifier la demande principale.</p>
+              <p><strong>Action suivante :</strong> programmer ou finaliser les repères d’autonomie.</p>
+              <p><strong>Point à ne pas oublier :</strong> reporter les éléments officiels dans Insertis.</p>
             </div>
           </BlocRepliable>
-        </div>
+</div>
 
         <aside className="dossier-side">
           <BlocRepliable title="Repères rapides">
@@ -590,5 +609,6 @@ export function DossierPage() {
     </main>
   );
 }
+
 
 
