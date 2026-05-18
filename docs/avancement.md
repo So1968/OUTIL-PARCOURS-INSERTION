@@ -241,3 +241,23 @@ Point de vigilance :
 - Ne pas ouvrir automatiquement les brouillons personnels, hypothèses sensibles ou notes privées.
 - Plus tard, relier cette page aux droits réels, aux rôles et aux dossiers effectivement rattachés aux professionnelles.
 
+
+## Continuité de service
+
+Décision validée :
+- La continuité de service devient une fonction métier centrale de l’outil.
+- Elle permet de reprendre temporairement les dossiers d’une collègue ou d’un collègue sans rupture pour la personne accompagnée.
+- Elle ne donne pas accès automatiquement à tout l’espace professionnel privé de la collègue.
+- Elle doit afficher uniquement les éléments nécessaires à la continuité : synthèse courte, note de continuité, prochaine action, échéances, documents attendus, relais mobilisés.
+
+État actuel :
+- Une page `ContinuiteServicePage.jsx` a été créée.
+- La route `/continuite-service` a été ajoutée.
+- L’accueil contient un bouton vers la continuité de service.
+- Les données affichées sont fictives et servent uniquement à valider le modèle fonctionnel.
+
+Point de vigilance :
+- Ne pas mélanger continuité de service et surveillance.
+- Ne pas ouvrir automatiquement les brouillons personnels, hypothèses sensibles ou notes privées.
+- Plus tard, relier cette page aux droits réels, aux rôles et aux dossiers effectivement rattachés aux professionnelles.
+
