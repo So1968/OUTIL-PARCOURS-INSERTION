@@ -82,6 +82,15 @@ export function HomePage() {
             <li>Prochaine action</li>
             <li>Échéances et documents attendus</li>
           </ul>
+
+          <div className="home-access-buttons">
+            <Link
+              to="/continuite-service"
+              onClick={() => setCurrentRole(ROLE_PROFESSIONNELLE)}
+            >
+              Ouvrir la continuité de service
+            </Link>
+          </div>
         </article>
       </section>
 
@@ -95,3 +104,4 @@ export function HomePage() {
     </main>
   );
 }
+

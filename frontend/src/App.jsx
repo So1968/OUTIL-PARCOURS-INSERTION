@@ -8,6 +8,7 @@ import {
   ROLE_GOUVERNANCE_CA,
   ROLE_PROFESSIONNELLE,
 } from "./auth/roles";
+import { ContinuiteServicePage } from "./pages/ContinuiteServicePage";
 import { DirectionPage } from "./pages/DirectionPage";
 import { DirectionRegulationPage } from "./pages/DirectionRegulationPage";
 import { DossierPage } from "./pages/DossierPage";
@@ -53,6 +54,15 @@ export default function App() {
         />
 
         <Route
+          path="/continuite-service"
+          element={
+            <RequireRole allowedRoles={[ROLE_PROFESSIONNELLE, ROLE_APPUI_TNS, ROLE_DIRECTION]}>
+              <ContinuiteServicePage />
+            </RequireRole>
+          }
+        />
+
+        <Route
           path="/appui-tns"
           element={
             <RequireRole allowedRoles={[ROLE_APPUI_TNS]}>
@@ -93,3 +103,5 @@ export default function App() {
     </RoleProvider>
   );
 }
+
+
