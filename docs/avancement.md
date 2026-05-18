@@ -326,3 +326,31 @@ Point de vigilance :
 - Les données restent fictives pour le moment.
 - L’objectif suivant sera de transformer ces champs en vrai modèle de suivi exploitable, puis de préparer leur future connexion à des données réelles.
 
+
+## Niveaux de vigilance — continuité
+
+Décision validée :
+- Le niveau de vigilance ne doit plus être un texte libre isolé.
+- Il est structuré dans le modèle commun de continuité.
+- Chaque niveau possède :
+  - un identifiant technique ;
+  - un libellé lisible ;
+  - une description ;
+  - une conséquence métier.
+
+Niveaux retenus :
+- Faible : suivi à planifier, sans risque immédiat repéré.
+- Moyen : échéance proche, document attendu ou action à ne pas laisser tomber.
+- Fort : risque de rupture du parcours, situation sensible ou absence de relais clair.
+- Urgent : risque immédiat, échéance critique ou situation nécessitant une action rapide.
+
+Règle d’usage :
+- Le niveau de vigilance sert à aider la reprise du suivi.
+- Il ne doit pas servir à étiqueter la personne.
+- Il indique le degré d’attention nécessaire pour éviter une rupture de parcours.
+
+État actuel :
+- Les niveaux sont définis dans `frontend/src/data/continuiteModele.js`.
+- Les dossiers fictifs utilisent maintenant des identifiants structurés : `faible`, `moyen`, `fort`, `urgent`.
+- La page Continuité de service affiche le niveau et sa conséquence métier.
+
