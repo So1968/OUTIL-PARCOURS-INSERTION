@@ -1,5 +1,6 @@
 ﻿import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { champsSuiviContinuite } from "../data/continuiteModele";
 
 const STORAGE_KEY = "artag-dossier-parcours-brouillon";
 const REPERES_STORAGE_KEY = "artag-reperes-autonomie-brouillon";
@@ -274,6 +275,15 @@ export function DossierPage({ mode = "complet" }) {
   const [messageValidation, setMessageValidation] = useState("");
   const isContinuiteMode = mode === "continuite";
 
+  const valeursSuiviContinuite = {
+    "derniere-action": "Dossier ouvert / repères d’autonomie en cours.",
+    "prochaine-action": "Clarifier la demande principale et sécuriser la suite du parcours.",
+    "document-attendu": "À préciser si un justificatif est nécessaire.",
+    "relais-mobilise": "Aucun relais confirmé à ce stade.",
+    "niveau-vigilance": "À ajuster selon l’échéance, le risque de rupture ou l’urgence sociale.",
+    "date-mise-a-jour": "À actualiser lors de chaque reprise ou transmission.",
+  };
+
   const dateDuJour = useMemo(() => {
     return new Date().toLocaleDateString("fr-FR");
   }, []);
@@ -442,36 +452,18 @@ export function DossierPage({ mode = "complet" }) {
               ni les brouillons professionnels.
             </p>
 
-            <div className="dossier-modules-list">
-              <article className="dossier-module-item">
-                <div>
-                  <strong>État de reprise</strong>
-                  <span>À vérifier avant relais</span>
-                </div>
-                <ul>
-                  <li>Repères d’autonomie : {reperes.derniereValidation ? `enregistrés le ${reperes.derniereValidation}` : "à compléter"}</li>
-                  <li>Synthèse courte : à consolider à partir de la lecture professionnelle.</li>
-                  <li>Note de continuité : à vérifier pour permettre une reprise par une collègue si besoin.</li>
-                  <li>Modules ouverts : aucun module ouvert automatiquement.</li>
-                </ul>
-              </article>
-
-              <article className="dossier-module-item">
-                <div>
-                  <strong>Prochaine action utile</strong>
-                  <span>Continuité opérationnelle</span>
-                </div>
-                <ul>
-                  <li>Dernière action connue : dossier ouvert / repères en cours.</li>
-                  <li>Prochaine action : clarifier la demande principale et sécuriser la suite du parcours.</li>
-                  <li>Document attendu : à préciser si un justificatif est nécessaire.</li>
-                  <li>Relais mobilisé : aucun relais confirmé à ce stade.</li>
-                  <li>Niveau de vigilance : à ajuster selon l’échéance et le risque de rupture.</li>
-                </ul>
-              </article>
+                        <div className="dossier-modules-list">
+              {champsSuiviContinuite.map((champ) => (
+                <article className="dossier-module-item" key={champ.id}>
+                  <div>
+                    <strong>{champ.libelle}</strong>
+                    <span>{champ.statut}</span>
+                  </div>
+                  <p>{valeursSuiviContinuite[champ.id]}</p>
+                </article>
+              ))}
             </div>
-
-            <div className="pilotage-list">
+<div className="pilotage-list">
               <p><strong>Ce qui peut être transmis en relais :</strong> synthèse courte, prochaine action, échéance, document attendu, relais mobilisé.</p>
               <p><strong>Ce qui reste protégé :</strong> brouillons personnels, hypothèses sensibles, notes non nécessaires à la reprise.</p>
             </div>
@@ -667,6 +659,7 @@ export function DossierPage({ mode = "complet" }) {
     </main>
   );
 }
+
 
 
 
