@@ -261,3 +261,22 @@ Point de vigilance :
 - Ne pas ouvrir automatiquement les brouillons personnels, hypothèses sensibles ou notes privées.
 - Plus tard, relier cette page aux droits réels, aux rôles et aux dossiers effectivement rattachés aux professionnelles.
 
+
+## Vue limitée — continuité de service
+
+Décision validée :
+- La continuité de service ne doit pas ouvrir le dossier complet.
+- Une route spécifique permet d’ouvrir une vue limitée du dossier : `/parcours-social-socio-professionnel/dossier/continuite`.
+- Cette vue masque les espaces professionnels réservés, les brouillons, les hypothèses sensibles, les modules internes à valider et la synthèse transférable Insertis.
+- Elle affiche uniquement les éléments nécessaires à la reprise temporaire du suivi.
+
+État actuel :
+- Rôle prototype rendu persistant via le navigateur.
+- Bouton “Reprendre les éléments utiles” relié à la vue limitée.
+- Dossier complet conservé pour la professionnelle référente.
+- Vue relais limitée ajoutée dans la colonne latérale du dossier en mode continuité.
+
+Point de vigilance :
+- La vue limitée doit rester un outil de continuité, pas un outil de contrôle ou de surveillance.
+- Les éléments visibles doivent rester nécessaires, proportionnés et utiles à la reprise du parcours.
+
