@@ -2044,3 +2044,82 @@ a {
 .prototype-profile-note {
   color: #64748b;
 }
+
+/* ===== ACCUEIL V2 ===== */
+
+.home-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:24px 40px;
+}
+
+.home-hero{
+max-width:800px;
+margin:40px auto;
+text-align:center;
+padding:0 20px;
+}
+
+.home-kicker{
+font-size:.9rem;
+letter-spacing:1px;
+text-transform:uppercase;
+color:#8b7355;
+}
+
+.home-hero h1{
+font-size:3rem;
+margin:12px 0;
+}
+
+.home-actions{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+gap:24px;
+max-width:1000px;
+margin:40px auto;
+padding:0 20px;
+}
+
+.home-card{
+padding:28px;
+border-radius:18px;
+background:white;
+text-decoration:none;
+color:inherit;
+box-shadow:0 8px 20px rgba(0,0,0,.05);
+}
+
+.home-card-label{
+font-size:.8rem;
+opacity:.6;
+}
+
+.home-process{
+max-width:1000px;
+margin:50px auto;
+padding:20px;
+}
+
+.home-process-grid{
+display:flex;
+gap:12px;
+flex-wrap:wrap;
+}
+
+.home-process-step{
+padding:12px 18px;
+background:#f2ede5;
+border-radius:999px;
+font-size:.9rem;
+}
+
+.parcours-road,
+.road-step,
+.road-card,
+.road-icon,
+.road-curve{
+display:none!important;
+}
+
