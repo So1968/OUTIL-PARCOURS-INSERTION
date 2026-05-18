@@ -57,3 +57,49 @@ export const niveauxVigilanceContinuite = [
     consequence: "À traiter en priorité et à transmettre clairement.",
   },
 ];
+
+export const statutsRelanceContinuite = [
+  {
+    id: "a-planifier",
+    libelle: "À planifier",
+    description: "La reprise est identifiée, mais aucune relance n’est encore programmée.",
+  },
+  {
+    id: "programmee",
+    libelle: "Programmée",
+    description: "Une prochaine relance ou action de reprise est prévue.",
+  },
+  {
+    id: "en-retard",
+    libelle: "En retard",
+    description: "La relance prévue n’a pas été réalisée dans le délai attendu.",
+  },
+  {
+    id: "traitee",
+    libelle: "Traitée",
+    description: "La relance ou l’action de reprise a été réalisée.",
+  },
+];
+
+export const frequencesRelanceContinuite = [
+  {
+    id: "aucune",
+    libelle: "Aucune relance automatique",
+    description: "Aucune relance n’est nécessaire à ce stade.",
+  },
+  {
+    id: "quotidienne",
+    libelle: "Quotidienne",
+    description: "À utiliser pour les situations urgentes ou très sensibles.",
+  },
+  {
+    id: "tous-les-2-jours",
+    libelle: "Tous les 2 jours",
+    description: "À utiliser lorsqu’une échéance approche ou qu’un document est attendu.",
+  },
+  {
+    id: "hebdomadaire",
+    libelle: "Hebdomadaire",
+    description: "À utiliser pour un suivi régulier sans urgence immédiate.",
+  },
+];
