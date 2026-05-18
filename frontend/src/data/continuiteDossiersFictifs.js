@@ -1,0 +1,77 @@
+﻿export const colleguesContinuiteFictifs = [
+  {
+    id: "referente-parcours",
+    nom: "Référente de parcours",
+    statut: "Absence temporaire",
+    resume: "Relais à assurer sur plusieurs dossiers avec échéances proches.",
+    dossiers: [
+      {
+        id: "a-1",
+        titre: "Dossier test 1",
+        etat: "Justificatif attendu",
+        derniereAction: "Dossier ouvert / premier point réalisé.",
+        prochaineAction: "Relancer la personne sur le justificatif manquant.",
+        documentAttendu: "Justificatif à préciser selon la situation.",
+        relaisMobilise: "Accueil informé du passage possible.",
+        niveauVigilance: "Moyen — échéance proche à surveiller.",
+        dateMiseAJour: "À actualiser lors de la reprise.",
+      },
+      {
+        id: "a-2",
+        titre: "Dossier test 2",
+        etat: "Repères à compléter",
+        derniereAction: "Repères d’autonomie commencés.",
+        prochaineAction: "Programmer un temps court pour compléter les repères.",
+        documentAttendu: "Aucun document identifié à ce stade.",
+        relaisMobilise: "Aucun relais externe engagé.",
+        niveauVigilance: "Faible — suivi à planifier.",
+        dateMiseAJour: "À actualiser après le prochain contact.",
+      },
+    ],
+  },
+  {
+    id: "professionnelle-relais",
+    nom: "Professionnelle en relais",
+    statut: "Relais ponctuel",
+    resume: "Relais court, principalement pour sécuriser une prochaine étape.",
+    dossiers: [
+      {
+        id: "b-1",
+        titre: "Dossier test 3",
+        etat: "Orientation partenaire à confirmer",
+        derniereAction: "Orientation envisagée, accord à vérifier.",
+        prochaineAction: "Vérifier l’accord de la personne avant orientation.",
+        documentAttendu: "Aucun document attendu avant accord.",
+        relaisMobilise: "Partenaire à confirmer.",
+        niveauVigilance: "Moyen — ne pas transmettre sans accord.",
+        dateMiseAJour: "À actualiser avant orientation.",
+      },
+    ],
+  },
+  {
+    id: "dossiers-a-repartir",
+    nom: "Dossiers à répartir",
+    statut: "Continuité à organiser",
+    resume: "Dossiers sans relais confirmé à court terme.",
+    dossiers: [
+      {
+        id: "c-1",
+        titre: "Dossier test 4",
+        etat: "Prochaine étape à clarifier",
+        derniereAction: "Situation repérée comme nécessitant une reprise.",
+        prochaineAction: "Identifier l’action minimale utile pour éviter la rupture.",
+        documentAttendu: "À préciser si un justificatif est nécessaire.",
+        relaisMobilise: "Relais interne à désigner.",
+        niveauVigilance: "À qualifier — risque de rupture à vérifier.",
+        dateMiseAJour: "À actualiser dès attribution du relais.",
+      },
+    ],
+  },
+];
+
+export const elementsProtegesContinuite = [
+  "Brouillons personnels",
+  "Hypothèses sensibles",
+  "Notes de posture non nécessaires",
+  "Éléments non proportionnés à la reprise du suivi",
+];
