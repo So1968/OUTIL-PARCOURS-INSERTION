@@ -198,3 +198,26 @@ CrÃ©er lâ€™ossature technique du projet :
 - Lâ€™Ã©criture doit porter sur les besoins repÃ©rÃ©s, les points Ã  consolider, les conditions dâ€™appui et la sÃ©curisation du parcours.
 - Les Ã©lÃ©ments produits restent une lecture professionnelle prudente, non diagnostique et ajustable.
 - Les formulations doivent rester compatibles avec les attendus institutionnels, les rÃ©fÃ©rentiels de parcours et les bonnes pratiques dâ€™accompagnement.
+
+## Accueil — bureau quotidien
+
+Décision validée :
+- L’accueil devient un bureau quotidien professionnel, et non une page vitrine.
+- Chaque professionnelle doit retrouver son espace de travail : dossiers à reprendre, alertes, actions, brouillons.
+- La continuité de service devient une fonction métier centrale.
+- La Direction / CA reste un accès séparé.
+- Le logo ARTAG doit rester visible et lisible.
+- L’interface doit être adaptée au confort visuel de l’utilisatrice.
+
+État actuel :
+- HomePage refondue en bureau quotidien.
+- Trois blocs principaux posés : Mon bureau, Mes accès métier, Continuité de service.
+- Bouton central : Reprendre un dossier.
+- Direction / CA déplacée en bas à droite.
+- Lisibilité augmentée sur l’accueil.
+
+Point de vigilance :
+- Ne pas transformer l’accueil en tableau administratif froid.
+- Garder une logique de travail quotidien : quoi reprendre, quoi suivre, quoi sécuriser.
+- Adapter plus tard le contenu selon le profil connecté et les droits réels.
+
