@@ -18,13 +18,23 @@ const elementsVisibles = champsSuiviContinuite.map((champ) => champ.libelle);
 function getNiveauVigilance(niveauId) {
   return niveauxVigilanceContinuite.find((niveau) => niveau.id === niveauId);
 }
+function getTexteNiveauVigilance(niveauId) {
+  const niveau = getNiveauVigilance(niveauId);
+
+  if (!niveau) {
+    return "À qualifier";
+  }
+
+  return `${niveau.libelle} — ${niveau.consequence}`;
+}
+
 function getValeurSuiviContinuite(dossier, champId) {
   const valeurs = {
     "derniere-action": dossier.derniereAction,
     "prochaine-action": dossier.prochaineAction,
     "document-attendu": dossier.documentAttendu,
     "relais-mobilise": dossier.relaisMobilise,
-    "niveau-vigilance": getNiveauVigilance(dossier.niveauVigilanceId)?.libelle || "À qualifier",
+    "niveau-vigilance": getTexteNiveauVigilance(dossier.niveauVigilanceId),
     "date-mise-a-jour": dossier.dateMiseAJour,
   };
 
@@ -146,6 +156,7 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
+
 
 
 
