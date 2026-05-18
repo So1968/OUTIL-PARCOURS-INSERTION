@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { useRole } from "../auth/RoleContext";
 import { ROLE_PROFESSIONNELLE } from "../auth/roles";
+import { champsSuiviContinuite } from "../data/continuiteModele";
 
 const colleguesFictifs = [
   {
@@ -74,15 +75,21 @@ const colleguesFictifs = [
   },
 ];
 
-const elementsVisibles = [
-  "Dernière action connue",
-  "Prochaine action utile",
-  "Document attendu",
-  "Relais mobilisé",
-  "Niveau de vigilance",
-  "Date de mise à jour",
-];
+const elementsVisibles = champsSuiviContinuite.map((champ) => champ.libelle);
 
+
+function getValeurSuiviContinuite(dossier, champId) {
+  const valeurs = {
+    "derniere-action": dossier.derniereAction,
+    "prochaine-action": dossier.prochaineAction,
+    "document-attendu": dossier.documentAttendu,
+    "relais-mobilise": dossier.relaisMobilise,
+    "niveau-vigilance": dossier.niveauVigilance,
+    "date-mise-a-jour": dossier.dateMiseAJour,
+  };
+
+  return valeurs[champId] || "À compléter";
+}
 const elementsProteges = [
   "Brouillons personnels",
   "Hypothèses sensibles",
@@ -160,12 +167,11 @@ export function ContinuiteServicePage() {
                 </div>
 
                 <div className="pilotage-list">
-                  <p><strong>Dernière action connue :</strong> {dossier.derniereAction}</p>
-                  <p><strong>Prochaine action utile :</strong> {dossier.prochaineAction}</p>
-                  <p><strong>Document attendu :</strong> {dossier.documentAttendu}</p>
-                  <p><strong>Relais mobilisé :</strong> {dossier.relaisMobilise}</p>
-                  <p><strong>Niveau de vigilance :</strong> {dossier.niveauVigilance}</p>
-                  <p><strong>Date de mise à jour :</strong> {dossier.dateMiseAJour}</p>
+                  {champsSuiviContinuite.map((champ) => (
+                    <p key={champ.id}>
+                      <strong>{champ.libelle} :</strong> {getValeurSuiviContinuite(dossier, champ.id)}
+                    </p>
+                  ))}
                 </div>
 
                 <Link
@@ -207,3 +213,4 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
+
