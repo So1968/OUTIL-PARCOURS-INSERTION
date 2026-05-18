@@ -302,3 +302,27 @@ Point de vigilance :
 - Ce modèle devra ensuite devenir une source commune, pour éviter de dupliquer les mêmes champs entre plusieurs pages.
 - À terme, ces champs devront être reliés aux vraies données du dossier et non rester saisis en dur dans les composants.
 
+
+## Mise au propre des sources communes — continuité
+
+Décision validée :
+- Les champs métier de continuité ne doivent pas être dupliqués dans plusieurs composants.
+- Les dossiers fictifs de continuité ne doivent pas rester enfermés directement dans la page Continuité de service.
+- Le dossier parcours et la page Continuité de service doivent s’appuyer progressivement sur des sources communes.
+
+État actuel :
+- Le fichier `frontend/src/data/continuiteModele.js` contient la liste commune des champs de suivi :
+  - dernière action connue ;
+  - prochaine action utile ;
+  - document attendu ;
+  - relais mobilisé ;
+  - niveau de vigilance ;
+  - date de mise à jour.
+- Le fichier `frontend/src/data/continuiteDossiersFictifs.js` contient les données fictives de continuité.
+- `DossierPage.jsx` utilise le modèle commun de continuité.
+- `ContinuiteServicePage.jsx` utilise le modèle commun et les données fictives communes.
+
+Point de vigilance :
+- Les données restent fictives pour le moment.
+- L’objectif suivant sera de transformer ces champs en vrai modèle de suivi exploitable, puis de préparer leur future connexion à des données réelles.
+
