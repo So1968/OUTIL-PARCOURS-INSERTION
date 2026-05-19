@@ -50,6 +50,27 @@ function getValeurSuiviContinuite(dossier, champId) {
 
   return valeurs[champId] || "À compléter";
 }
+function calculerScorePriorite(dossier) {
+  const scoreVigilance = {
+    urgent: 4,
+    fort: 3,
+    moyen: 2,
+    faible: 1,
+  };
+
+  const scoreRelance = {
+    "en-retard": 4,
+    "a-planifier": 3,
+    programmee: 2,
+    traitee: 1,
+  };
+
+  return (
+    (scoreVigilance[dossier.niveauVigilanceId] || 0) +
+    (scoreRelance[dossier.statutRelanceId] || 0)
+  );
+}
+
 export function ContinuiteServicePage() {
   const { setCurrentRole } = useRole();
   const [collegueActiveId, setCollegueActiveId] = useState(colleguesContinuiteFictifs[0].id);
@@ -74,32 +95,22 @@ export function ContinuiteServicePage() {
   }, []);
 
 
+  const dossiersAReprendreEnPremier = useMemo(() => {
+    return colleguesContinuiteFictifs
+      .flatMap((collegue) =>
+        collegue.dossiers.map((dossier) => ({
+          ...dossier,
+          collegueNom: collegue.nom,
+        })),
+      )
+      .sort((dossierA, dossierB) => calculerScorePriorite(dossierB) - calculerScorePriorite(dossierA))
+      .slice(0, 3);
+  }, []);
+
   const dossiersActifsTries = useMemo(() => {
-    const scoreVigilance = {
-      urgent: 4,
-      fort: 3,
-      moyen: 2,
-      faible: 1,
-    };
-
-    const scoreRelance = {
-      "en-retard": 4,
-      "a-planifier": 3,
-      programmee: 2,
-      traitee: 1,
-    };
-
-    return [...(collegueActive?.dossiers || [])].sort((dossierA, dossierB) => {
-      const scoreA =
-        (scoreVigilance[dossierA.niveauVigilanceId] || 0) +
-        (scoreRelance[dossierA.statutRelanceId] || 0);
-
-      const scoreB =
-        (scoreVigilance[dossierB.niveauVigilanceId] || 0) +
-        (scoreRelance[dossierB.statutRelanceId] || 0);
-
-      return scoreB - scoreA;
-    });
+    return [...(collegueActive?.dossiers || [])].sort(
+      (dossierA, dossierB) => calculerScorePriorite(dossierB) - calculerScorePriorite(dossierA),
+    );
   }, [collegueActive]);
 
   return (
@@ -234,6 +245,7 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
+
 
 
 
