@@ -22,24 +22,6 @@ export function HomePage() {
           </div>
         </div>
 
-        <nav className="home-mini-nav" aria-label="Accès rapides">
-          <Link
-            to="/parcours-social-socio-professionnel/dossier"
-            onClick={() => setCurrentRole(ROLE_PROFESSIONNELLE)}
-          >
-            Dossier
-          </Link>
-          <Link
-            to="/continuite-service"
-            onClick={() => setCurrentRole(ROLE_PROFESSIONNELLE)}
-          >
-            Continuité
-          </Link>
-          <Link to="/direction" onClick={() => setCurrentRole(ROLE_DIRECTION)}>
-            Direction
-          </Link>
-        </nav>
-
         <div className="profile-box">
           Bonjour Sofia
           <br />
@@ -57,7 +39,7 @@ export function HomePage() {
           </p>
         </div>
 
-        <div className="home-hero-actions" aria-label="Actions principales">
+        <div className="home-hero-actions" aria-label="Action principale">
           <Link
             to="/parcours-social-socio-professionnel/dossier"
             className="open-dossier-btn"
@@ -65,25 +47,18 @@ export function HomePage() {
           >
             Ouvrir le dossier de suivi
           </Link>
-          <Link
-            to="/continuite-service"
-            className="home-secondary-action"
-            onClick={() => setCurrentRole(ROLE_PROFESSIONNELLE)}
-          >
-            Voir la continuité de service
-          </Link>
         </div>
       </section>
 
       <section className="home-workspace" aria-label="Bureau quotidien">
         <article className="bureau-card home-focus-card">
-          <p className="home-card-label">À traiter aujourd’hui</p>
+          <p className="home-card-label">Repères rapides</p>
           <h2>Mon bureau</h2>
           <ul>
-            <li>Mes dossiers à reprendre</li>
-            <li>Mes alertes et échéances</li>
-            <li>Mes actions du jour</li>
-            <li>Mes brouillons professionnels</li>
+            <li>Dossiers à reprendre</li>
+            <li>Alertes et échéances</li>
+            <li>Actions du jour</li>
+            <li>Brouillons professionnels</li>
           </ul>
         </article>
 
@@ -114,12 +89,6 @@ export function HomePage() {
             Reprendre temporairement les dossiers d’une collègue ou d’un collègue,
             avec uniquement les éléments nécessaires à la continuité.
           </p>
-          <ul>
-            <li>Synthèse courte</li>
-            <li>Prochaine action utile</li>
-            <li>Échéances et documents attendus</li>
-          </ul>
-
           <div className="home-access-buttons">
             <Link
               to="/continuite-service"
