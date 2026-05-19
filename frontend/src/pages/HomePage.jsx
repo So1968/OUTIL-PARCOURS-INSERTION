@@ -70,7 +70,7 @@ export function HomePage() {
               to="/parcours-social-socio-professionnel"
               onClick={() => setCurrentRole(ROLE_PROFESSIONNELLE)}
             >
-              Parcours social et socio-professionnel
+              Parcours social / socio-professionnel
             </Link>
 
             <Link
