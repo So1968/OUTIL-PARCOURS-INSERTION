@@ -3120,3 +3120,212 @@ background:#efe5d7;
   }
 }
 
+
+/* ===== UI POLISH — CONTINUITÉ DE SERVICE V2 ===== */
+/* Surcouche ciblée : ne modifie pas la logique métier */
+
+main.continuite-page {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 40px 0 64px;
+}
+
+main.continuite-page .page-header {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 22px;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+main.continuite-page .page-logo {
+  position: static;
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  box-shadow: 0 10px 22px rgba(63, 55, 47, 0.10);
+}
+
+main.continuite-page h1 {
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 1.05;
+  color: #322b25;
+}
+
+main.continuite-page h2 {
+  margin: 0 0 14px;
+  font-size: clamp(1.25rem, 1.8vw, 1.65rem);
+  line-height: 1.15;
+  color: #322b25;
+}
+
+main.continuite-page .page-intro,
+main.continuite-page .section-help {
+  max-width: 760px;
+  color: #62584d;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+main.continuite-page .page-card {
+  background: rgba(255, 253, 248, 0.96);
+  border: 1px solid #dfd0bd;
+  border-radius: 24px;
+  padding: 26px 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 16px 34px rgba(63, 55, 47, 0.07);
+}
+
+main.continuite-page .pilotage-list {
+  display: grid;
+  gap: 12px;
+}
+
+main.continuite-page .pilotage-list p {
+  margin: 0;
+  padding: 14px 16px;
+  background: #fffaf2;
+  border: 1px solid #eadfce;
+  border-radius: 16px;
+  line-height: 1.45;
+}
+
+main.continuite-page .continuite-layout {
+  display: grid;
+  grid-template-columns: 310px minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+
+main.continuite-page .continuite-collegue-list {
+  display: grid;
+  gap: 12px;
+}
+
+main.continuite-page .continuite-collegue {
+  display: grid;
+  gap: 7px;
+  width: 100%;
+  min-height: 72px;
+  padding: 16px 18px;
+  border: 1px solid #dfd0bd;
+  border-radius: 18px;
+  background: #fffaf2;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+main.continuite-page .continuite-collegue:hover {
+  transform: translateY(-1px);
+  border-color: #9aa875;
+  box-shadow: 0 10px 22px rgba(63, 55, 47, 0.08);
+}
+
+main.continuite-page .continuite-collegue:focus-visible {
+  outline: 3px solid rgba(111, 143, 67, 0.35);
+  outline-offset: 3px;
+}
+
+main.continuite-page .continuite-collegue strong {
+  font-size: 1.02rem;
+  color: #2f2a25;
+}
+
+main.continuite-page .continuite-collegue span {
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #efe6d8;
+  color: #645949;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+main.continuite-page .continuite-collegue.is-active {
+  border-color: #70874c;
+  background: #eef2e6;
+  box-shadow: inset 4px 0 0 #70874c;
+}
+
+main.continuite-page .continuite-main,
+main.continuite-page .continuite-dossiers-grid {
+  display: grid;
+  gap: 20px;
+}
+
+main.continuite-page .continuite-dossier-card {
+  display: grid;
+  gap: 16px;
+}
+
+main.continuite-page .continuite-dossier-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+main.continuite-page .continuite-dossier-header span {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #eef2e6;
+  color: #52603f;
+  font-weight: 800;
+  font-size: 0.92rem;
+}
+
+main.continuite-page .secondary-button {
+  width: fit-content;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: #6f8f43;
+  color: #ffffff;
+  border: 1px solid #6f8f43;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+main.continuite-page .secondary-button:hover {
+  background: #5f7d38;
+  border-color: #5f7d38;
+}
+
+main.continuite-page .continuite-regles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+main.continuite-page .back-link {
+  display: inline-flex;
+  margin-top: 10px;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  main.continuite-page {
+    width: min(100% - 28px, 720px);
+    padding-top: 24px;
+  }
+
+  main.continuite-page .page-header,
+  main.continuite-page .continuite-layout,
+  main.continuite-page .continuite-regles {
+    grid-template-columns: 1fr;
+  }
+
+  main.continuite-page .page-logo {
+    width: 64px;
+    height: 64px;
+  }
+
+  main.continuite-page .continuite-dossier-header {
+    display: grid;
+  }
+}
+
