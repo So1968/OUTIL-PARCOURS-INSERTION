@@ -17,6 +17,8 @@ import { HomePage } from "./pages/HomePage";
 import { ModuleDomainePage } from "./pages/ModuleDomainePage";
 import { ParcoursPage } from "./pages/ParcoursPage";
 import { SocleAutonomiePage } from "./pages/SocleAutonomiePage";
+import { TnsAnalysePage } from "./pages/TnsAnalysePage";
+import { TnsCoordinationPage } from "./pages/TnsCoordinationPage";
 import { TnsPage } from "./pages/TnsPage";
 
 export default function App() {
@@ -86,6 +88,24 @@ export default function App() {
           element={
             <RequireRole allowedRoles={[ROLE_APPUI_TNS]}>
               <TnsPage />
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/appui-tns/analyse"
+          element={
+            <RequireRole allowedRoles={[ROLE_APPUI_TNS]}>
+              <TnsAnalysePage />
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/appui-tns/coordination"
+          element={
+            <RequireRole allowedRoles={[ROLE_APPUI_TNS]}>
+              <TnsCoordinationPage />
             </RequireRole>
           }
         />
