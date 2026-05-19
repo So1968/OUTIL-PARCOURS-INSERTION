@@ -405,3 +405,28 @@ Objectif métier :
 - Les données restent fictives.
 - Cette logique devra ensuite être reliée aux vraies données de suivi.
 
+
+## Dossiers à reprendre en premier
+
+Décision validée :
+- La page Continuité de service ne doit pas seulement afficher une liste de dossiers.
+- Elle doit aider à repérer immédiatement les dossiers à reprendre en priorité.
+- Un bloc “À reprendre en premier” remonte les dossiers les plus sensibles.
+
+Logique actuelle :
+- Le score de priorité combine :
+  - le niveau de vigilance ;
+  - le statut de relance.
+- Les dossiers avec vigilance forte ou urgente remontent en priorité.
+- Les dossiers avec relance en retard ou à planifier remontent également.
+
+Objectif métier :
+- Aider la professionnelle à commencer par les situations les plus importantes.
+- Éviter qu’un dossier à risque soit noyé dans la liste complète.
+- Soutenir la continuité de service sans remplacer l’analyse professionnelle.
+
+État actuel :
+- La page Continuité de service calcule les dossiers à reprendre en premier.
+- Les données restent fictives.
+- La logique pourra ensuite être reliée à de vraies données de suivi.
+
