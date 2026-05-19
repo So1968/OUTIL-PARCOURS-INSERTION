@@ -73,6 +73,35 @@ export function ContinuiteServicePage() {
     };
   }, []);
 
+
+  const dossiersActifsTries = useMemo(() => {
+    const scoreVigilance = {
+      urgent: 4,
+      fort: 3,
+      moyen: 2,
+      faible: 1,
+    };
+
+    const scoreRelance = {
+      "en-retard": 4,
+      "a-planifier": 3,
+      programmee: 2,
+      traitee: 1,
+    };
+
+    return [...(collegueActive?.dossiers || [])].sort((dossierA, dossierB) => {
+      const scoreA =
+        (scoreVigilance[dossierA.niveauVigilanceId] || 0) +
+        (scoreRelance[dossierA.statutRelanceId] || 0);
+
+      const scoreB =
+        (scoreVigilance[dossierB.niveauVigilanceId] || 0) +
+        (scoreRelance[dossierB.statutRelanceId] || 0);
+
+      return scoreB - scoreA;
+    });
+  }, [collegueActive]);
+
   return (
     <main className="page-shell continuite-page">
       <header className="page-header page-header-simple">
@@ -144,7 +173,7 @@ export function ContinuiteServicePage() {
           </article>
 
           <div className="continuite-dossiers-grid">
-            {collegueActive.dossiers.map((dossier) => (
+            {dossiersActifsTries.map((dossier) => (
               <article className="page-card continuite-dossier-card" key={dossier.id}>
                 <div className="continuite-dossier-header">
                   <h2>{dossier.titre}</h2>
@@ -205,6 +234,7 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
+
 
 
 
