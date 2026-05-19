@@ -58,6 +58,21 @@ export function ContinuiteServicePage() {
     return colleguesContinuiteFictifs.find((collegue) => collegue.id === collegueActiveId);
   }, [collegueActiveId]);
 
+  const synthesePriorites = useMemo(() => {
+    const dossiers = colleguesContinuiteFictifs.flatMap((collegue) => collegue.dossiers);
+    const compter = (condition) => dossiers.filter(condition).length;
+
+    return {
+      total: dossiers.length,
+      urgent: compter((dossier) => dossier.niveauVigilanceId === "urgent"),
+      fort: compter((dossier) => dossier.niveauVigilanceId === "fort"),
+      moyen: compter((dossier) => dossier.niveauVigilanceId === "moyen"),
+      faible: compter((dossier) => dossier.niveauVigilanceId === "faible"),
+      enRetard: compter((dossier) => dossier.statutRelanceId === "en-retard"),
+      aPlanifier: compter((dossier) => dossier.statutRelanceId === "a-planifier"),
+    };
+  }, []);
+
   return (
     <main className="page-shell continuite-page">
       <header className="page-header page-header-simple">
@@ -80,6 +95,23 @@ export function ContinuiteServicePage() {
         </p>
         <p>
           <strong>Continuité de service ≠ accès total au bureau privé de la collègue.</strong>
+        </p>
+      </section>
+
+      <section className="page-card">
+        <h2>Synthèse de reprise</h2>
+        <div className="pilotage-list">
+          <p><strong>Total dossiers à reprendre :</strong> {synthesePriorites.total}</p>
+          <p><strong>Urgents :</strong> {synthesePriorites.urgent}</p>
+          <p><strong>Forts :</strong> {synthesePriorites.fort}</p>
+          <p><strong>Moyens :</strong> {synthesePriorites.moyen}</p>
+          <p><strong>Faibles :</strong> {synthesePriorites.faible}</p>
+          <p><strong>Relances en retard :</strong> {synthesePriorites.enRetard}</p>
+          <p><strong>Relances à planifier :</strong> {synthesePriorites.aPlanifier}</p>
+        </div>
+        <p className="section-help">
+          Cette synthèse aide à repérer les dossiers à reprendre en premier.
+          Elle ne remplace pas la lecture professionnelle du dossier.
         </p>
       </section>
 
@@ -173,6 +205,7 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
+
 
 
 
