@@ -292,8 +292,8 @@ export function DossierPage({ mode = "complet" }) {
   const isContinuiteMode = mode === "continuite";
 
   const valeursSuiviContinuite = {
-    "derniere-action": "Dossier ouvert / diagnostic commun en cours.",
-    "prochaine-action": "Clarifier la demande principale, le registre de parcours et les étapes adaptées.",
+    "derniere-action": "Dossier ouvert / repères d’autonomie en cours.",
+    "prochaine-action": "Clarifier la demande principale, les repères d’autonomie et les modules de travail utiles.",
     "document-attendu": "À préciser si un justificatif est nécessaire.",
     "relais-mobilise": "Aucun relais confirmé à ce stade.",
     "niveau-vigilance": "À ajuster selon l’échéance, le risque de rupture ou l’urgence sociale.",
@@ -344,17 +344,18 @@ export function DossierPage({ mode = "complet" }) {
           <p className="page-intro">
             {isContinuiteMode
               ? "Vue limitée aux éléments utiles à la reprise temporaire du suivi. Les espaces privés professionnels ne sont pas affichés."
-              : "Vue de travail alignée sur les repères Métropole : diagnostic commun, contrat, étapes, actualisation et Insertis."}
+              : "Vue de travail ARTAG : repères d’autonomie, modules de travail, continuité, synthèse utile et formalisation Insertis lorsque nécessaire."}
           </p>
         </div>
       </header>
 
       <section className="page-card dossier-referentiel-banner">
-        <p className="referentiel-label">Cadre Métropole de Lyon</p>
-        <h2>Diagnostic, contrat, étapes et actualisation</h2>
+        <p className="referentiel-label">Cadre de travail ARTAG</p>
+        <h2>Repérer, organiser, objectiver et transmettre le juste nécessaire</h2>
         <p>
-          Le dossier aide à structurer le suivi, mais Insertis reste l’outil officiel de diagnostic,
-          de contrat, de suivi et de partage du parcours.
+          Le dossier soutient le travail réel de l’équipe : accompagnement global,
+          continuité, modules par domaine, synthèse courte et articulation avec Insertis
+          lorsque le parcours institutionnel l’exige.
         </p>
       </section>
 
@@ -502,18 +503,18 @@ export function DossierPage({ mode = "complet" }) {
       <BlocRepliable title="Chemin de parcours">
         <div className="parcours-track">
           <span className="track-step active">Orientation</span>
-          <span className="track-step active">Diagnostic</span>
-          <span className="track-step">Contrat</span>
-          <span className="track-step">Étapes</span>
+          <span className="track-step active">Repères d’autonomie</span>
+          <span className="track-step">Modules de travail</span>
+          <span className="track-step">Contrat / étapes</span>
           <span className="track-step">Actualisation</span>
           <span className="track-step">Réorientation si besoin</span>
         </div>
       </BlocRepliable>
 
-      <BlocRepliable title="Diagnostic commun — 9 domaines Métropole" defaultOpen={!isContinuiteMode}>
+      <BlocRepliable title="Grille complémentaire Métropole / Insertis" defaultOpen={!isContinuiteMode}>
         <p className="section-help">
-          Ces domaines structurent l’évaluation globale de la situation. Ils permettent de repérer les besoins,
-          les freins, les points d’appui et les objectifs à formaliser dans Insertis.
+          Ces domaines servent de repère institutionnel pour relire la situation et préparer la formalisation dans Insertis.
+          Ils complètent les repères d’autonomie et les modules de travail, sans les remplacer.
         </p>
         <div className="referentiel-domaines-grid dossier-domaines-grid">
           {referentielMetropoleLyon.domainesDiagnostic.map((domaine) => (
@@ -550,7 +551,7 @@ export function DossierPage({ mode = "complet" }) {
 
             <div className="identity-actions">
               <Link className="primary-button" to="/parcours-social-socio-professionnel/socle">
-                Compléter le diagnostic
+                Compléter les repères d’autonomie
               </Link>
 
               <Link className="secondary-button" to="/continuite-service">
@@ -613,6 +614,13 @@ export function DossierPage({ mode = "complet" }) {
                         <strong>Sortie attendue :</strong> {module.sortieModule}
                       </p>
                     </div>
+
+                    <Link
+                      className="secondary-button"
+                      to={`/parcours-social-socio-professionnel/dossier/modules/${module.id}`}
+                    >
+                      Ouvrir le module
+                    </Link>
                   </details>
                 ))}
               </div>
@@ -717,8 +725,8 @@ export function DossierPage({ mode = "complet" }) {
 
             <div className="pilotage-list">
               <p><strong>Priorité :</strong> clarifier la demande principale.</p>
-              <p><strong>Action suivante :</strong> compléter ou actualiser le diagnostic commun.</p>
-              <p><strong>Point à ne pas oublier :</strong> reporter les éléments officiels dans Insertis.</p>
+              <p><strong>Action suivante :</strong> compléter ou actualiser les repères d’autonomie.</p>
+              <p><strong>Point à ne pas oublier :</strong> reporter les éléments institutionnels dans Insertis lorsque nécessaire.</p>
             </div>
           </BlocRepliable>
         </div>
@@ -730,7 +738,7 @@ export function DossierPage({ mode = "complet" }) {
                 <span>Mode : continuité de service</span>
                 <span>Accès : éléments utiles uniquement</span>
                 <span>Registre : {dossier.registreParcours}</span>
-                <span>Diagnostic : {dossier.dateDiagnostic || "à compléter"}</span>
+                <span>Repères : à compléter si besoin</span>
                 <span>Insertis : à reporter par la professionnelle référente</span>
               </div>
             </BlocRepliable>
@@ -752,10 +760,10 @@ export function DossierPage({ mode = "complet" }) {
                 <span>Registre : {dossier.registreParcours}</span>
                 <span>Parcours : {dossier.statut}</span>
                 <span>Référente : {dossier.referente}</span>
-                <span>Diagnostic : {dossier.dateDiagnostic || "à compléter"}</span>
+                <span>Repères : {lectureAutonomie.niveau}</span>
                 <span>Contrat : {dossier.dateContrat || "à formaliser"}</span>
                 <span>Actualisation : {dossier.prochaineActualisation || "à planifier"}</span>
-                <span>Insertis : à vérifier</span>
+                <span>Insertis : à vérifier si parcours concerné</span>
               </div>
             </BlocRepliable>
 
@@ -779,7 +787,7 @@ export function DossierPage({ mode = "complet" }) {
 
             <BlocRepliable title="Historique / traçabilité">
               <p><strong>Aujourd’hui :</strong> dossier ouvert</p>
-              <p><strong>À suivre :</strong> diagnostic commun</p>
+              <p><strong>À suivre :</strong> repères d’autonomie et modules utiles</p>
             </BlocRepliable>
 
             <Link className="secondary-button dossier-return-button" to="/parcours-social-socio-professionnel">
