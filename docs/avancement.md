@@ -383,3 +383,25 @@ Règle métier :
 - Les champs sont encore fictifs.
 - Prochaine étape possible : préparer une lecture plus synthétique des dossiers à reprendre, par priorité.
 
+
+## Tri des dossiers de continuité par priorité
+
+Décision validée :
+- Les dossiers à reprendre ne doivent pas seulement être affichés dans l’ordre des données.
+- Ils doivent être triés selon une priorité métier pour aider la professionnelle à savoir quoi reprendre en premier.
+
+Logique actuelle :
+- Le tri combine le niveau de vigilance et le statut de relance.
+- Les niveaux de vigilance les plus élevés remontent en priorité.
+- Les relances en retard ou à planifier remontent également.
+
+Objectif métier :
+- Repérer rapidement les dossiers à reprendre en premier.
+- Éviter qu’un dossier sensible reste noyé dans une liste.
+- Aider à organiser la continuité de service sans remplacer l’analyse professionnelle.
+
+État actuel :
+- La page Continuité de service calcule un ordre de priorité pour les dossiers affichés.
+- Les données restent fictives.
+- Cette logique devra ensuite être reliée aux vraies données de suivi.
+
