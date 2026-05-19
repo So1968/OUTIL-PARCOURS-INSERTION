@@ -155,6 +155,19 @@ export function ContinuiteServicePage() {
         </p>
       </section>
 
+      <section className="page-card">
+        <h2>À reprendre en premier</h2>
+        <div className="pilotage-list">
+          {dossiersAReprendreEnPremier.map((dossier) => (
+            <p key={dossier.id}>
+              <strong>{dossier.titre}</strong> — {dossier.collegueNom} — {getTexteNiveauVigilance(dossier.niveauVigilanceId)}
+            </p>
+          ))}
+        </div>
+        <p className="section-help">
+          Cette liste remonte les dossiers dont le niveau de vigilance ou la relance demandent une attention prioritaire.
+        </p>
+      </section>
       <section className="continuite-layout">
         <aside className="page-card continuite-collegues">
           <h2>Choisir un relais</h2>
@@ -245,6 +258,7 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
+
 
 
 
