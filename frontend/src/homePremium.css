@@ -69,33 +69,6 @@
   font-size: 0.92rem !important;
 }
 
-.home-v4.home-premium .home-mini-nav {
-  justify-self: center !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: center !important;
-  gap: 10px !important;
-}
-
-.home-v4.home-premium .home-mini-nav a {
-  min-height: 40px !important;
-  padding: 0 14px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  border-radius: 999px !important;
-  background: #f7f0e6 !important;
-  border: 1px solid #e1d2be !important;
-  color: #4d443b !important;
-  font-weight: 800 !important;
-  font-size: 0.94rem !important;
-  text-decoration: none !important;
-}
-
-.home-v4.home-premium .home-mini-nav a:hover {
-  background: #eef4e7 !important;
-  border-color: #8fa06d !important;
-}
-
 .home-v4.home-premium .profile-box {
   justify-self: end !important;
   margin-left: 0 !important;
@@ -294,6 +267,16 @@
   box-shadow: 0 8px 18px rgba(63, 55, 47, 0.05) !important;
 }
 
+.home-v4.home-premium .home-access-card .home-access-buttons a:first-child {
+  font-size: 0 !important;
+}
+
+.home-v4.home-premium .home-access-card .home-access-buttons a:first-child::before {
+  content: "Parcours";
+  font-size: 1rem !important;
+  font-weight: 850 !important;
+}
+
 .home-v4.home-premium .home-access-buttons a:hover {
   border-color: #8fa06d !important;
   background: #f4f7ee !important;
@@ -339,10 +322,6 @@
   .home-v4.home-premium .home-top {
     grid-template-columns: 1fr !important;
     justify-items: start !important;
-  }
-
-  .home-v4.home-premium .home-mini-nav {
-    justify-content: flex-start !important;
   }
 
   .home-v4.home-premium .profile-box {
