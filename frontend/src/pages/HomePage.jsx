@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useRole } from "../auth/RoleContext";
 import {
@@ -6,12 +6,13 @@ import {
   ROLE_DIRECTION,
   ROLE_PROFESSIONNELLE,
 } from "../auth/roles";
+import "../homePremium.css";
 
 export function HomePage() {
   const { setCurrentRole } = useRole();
 
   return (
-    <main className="home-v4">
+    <main className="home-v4 home-premium">
       <header className="home-top">
         <div className="home-left">
           <img src="/logo-artag.png" alt="ARTAG" className="artag-logo" />
@@ -104,4 +105,3 @@ export function HomePage() {
     </main>
   );
 }
-
