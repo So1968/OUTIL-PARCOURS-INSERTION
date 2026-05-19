@@ -5,6 +5,8 @@ import { ROLE_PROFESSIONNELLE } from "../auth/roles";
 import {
   champsSuiviContinuite,
   niveauxVigilanceContinuite,
+  statutsRelanceContinuite,
+  frequencesRelanceContinuite,
 } from "../data/continuiteModele";
 import {
   colleguesContinuiteFictifs,
@@ -15,6 +17,14 @@ const elementsVisibles = champsSuiviContinuite.map((champ) => champ.libelle);
 
 
 
+
+function getStatutRelance(statutId) {
+  return statutsRelanceContinuite.find((statut) => statut.id === statutId);
+}
+
+function getFrequenceRelance(frequenceId) {
+  return frequencesRelanceContinuite.find((frequence) => frequence.id === frequenceId);
+}
 function getNiveauVigilance(niveauId) {
   return niveauxVigilanceContinuite.find((niveau) => niveau.id === niveauId);
 }
@@ -117,6 +127,13 @@ export function ContinuiteServicePage() {
                   ))}
                 </div>
 
+                <div className="pilotage-list">
+                  <p><strong>Échéance de reprise :</strong> {dossier.echeanceReprise}</p>
+                  <p><strong>Fréquence de relance :</strong> {getFrequenceRelance(dossier.frequenceRelanceId)?.libelle || "À préciser"}</p>
+                  <p><strong>Statut de relance :</strong> {getStatutRelance(dossier.statutRelanceId)?.libelle || "À préciser"}</p>
+                  <p><strong>Prochaine relance :</strong> {dossier.prochaineRelance}</p>
+                </div>
+
                 <Link
                   className="secondary-button"
                   to="/parcours-social-socio-professionnel/dossier/continuite"
@@ -156,6 +173,7 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
+
 
 
 
