@@ -4,28 +4,50 @@ import { referentielMetropoleLyon } from "../data/referentielMetropoleLyon";
 
 const STORAGE_KEY = "artag-reperes-autonomie-brouillon";
 
-const questionsParDomaine = {
-  Logement: "Pour votre logement ou votre lieu de vie, qu’est-ce qui facilite ou bloque les démarches aujourd’hui ?",
-  "Santé / handicap": "Pour votre santé, vos soins ou une situation de handicap, de quoi faut-il tenir compte dans le parcours ?",
-  "Organisation familiale": "Avec l’organisation familiale, les enfants ou les proches, qu’est-ce qui peut faciliter ou limiter vos démarches ?",
-  Mobilité: "Pour vous déplacer vers les rendez-vous, les démarches, la formation ou l’emploi, ça se passe comment ?",
-  "Budget et finances": "Pour le budget, les factures ou les droits, quels sont les points à sécuriser ?",
-  Linguistique: "Pour comprendre, parler, lire ou écrire en français, qu’est-ce qui est facile ou difficile ?",
-  "Numérique et accès aux droits": "Pour les démarches en ligne, les comptes CAF / France Travail / administratifs, vous vous y retrouvez comment ?",
-  "Rapport à soi et à autrui": "Dans la confiance, la relation aux autres ou la mise en mouvement, qu’est-ce qui aide ou freine aujourd’hui ?",
-  "Projet professionnel": "Pour l’activité, la formation ou l’emploi, où en est votre projet aujourd’hui ?",
-};
+const questionsSocle = [
+  {
+    id: "demarches",
+    axe: "Démarches / accès aux droits",
+    question: "Pour vos papiers et vos démarches, vous vous y retrouvez comment en ce moment ?",
+  },
+  {
+    id: "organisation",
+    axe: "Organisation du quotidien",
+    question: "Pour vous organiser dans ce que vous avez à faire, vous vous en sortez comment ?",
+  },
+  {
+    id: "budget",
+    axe: "Budget / argent",
+    question: "Pour gérer l’argent au quotidien, vous vous en sortez comment ?",
+  },
+  {
+    id: "sante",
+    axe: "Santé / accès aux soins",
+    question: "Pour votre santé, les rendez-vous ou les soins, vous vous en sortez comment ?",
+  },
+  {
+    id: "mobilite",
+    axe: "Mobilité / déplacements",
+    question: "Pour vous déplacer là où vous avez besoin d’aller, ça se passe comment pour vous ?",
+  },
+  {
+    id: "ecritNumerique",
+    axe: "Écrit / numérique",
+    question: "Pour les courriers, les papiers ou les démarches sur téléphone, vous vous en sortez comment ?",
+  },
+  {
+    id: "vieFamiliale",
+    axe: "Vie familiale / disponibilité",
+    question: "Avec tout ce que vous avez à gérer dans la famille, pour vos démarches, vous vous en sortez comment ?",
+  },
+  {
+    id: "projet",
+    axe: "Projet / mise en mouvement",
+    question: "Quand vous voulez faire avancer quelque chose pour vous, vous y arrivez comment ?",
+  },
+];
 
-const questionsSocle = referentielMetropoleLyon.domainesDiagnostic.map((domaine) => ({
-  id: domaine
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, ""),
-  axe: domaine,
-  question: questionsParDomaine[domaine] || "Qu’est-ce qui est important à prendre en compte sur ce point ?",
-}));
+const domainesMetropole = referentielMetropoleLyon.domainesDiagnostic;
 
 const reponsesEntretien = [
   "À choisir",
@@ -54,7 +76,7 @@ function getMessagePositif(reponses) {
   const renseignees = valeurs.filter((item) => item?.reponse && item.reponse !== "À choisir");
 
   if (renseignees.length === 0) {
-    return "Le diagnostic peut se faire progressivement. L’objectif est de comprendre la situation sans tout régler aujourd’hui.";
+    return "On peut prendre le temps de regarder les différents points ensemble, sans obligation de tout régler aujourd’hui.";
   }
 
   const pointsAccessibles = renseignees.filter((item) => item.reponse === "Ça va").length;
@@ -66,18 +88,18 @@ function getMessagePositif(reponses) {
   ).length;
 
   if (pointsAccessibles >= 4 && pointsDifficiles === 0) {
-    return "Plusieurs domaines semblent déjà tenus. Cela donne une base solide pour organiser les étapes du parcours.";
+    return "Plusieurs points semblent déjà bien tenus. Cela donne une bonne base pour organiser la suite tranquillement.";
   }
 
   if (pointsDifficiles >= 2) {
-    return "L’échange fait ressortir des points à sécuriser. La suite doit être priorisée par étapes, avec un appui adapté.";
+    return "L’échange permet de repérer les points sur lesquels il ne faut pas rester seul. L’objectif est maintenant de voir ce qui peut aider concrètement, étape par étape.";
   }
 
   if (pointsAvecAppui > 0 || pointsDifficiles > 0) {
-    return "Le diagnostic montre des points d’appui et des points à soutenir. La prochaine étape consiste à choisir les actions utiles.";
+    return "L’échange montre qu’il existe des choses qui avancent déjà, et d’autres qui peuvent être reprises avec un appui adapté.";
   }
 
-  return "Les éléments recueillis donnent une base utile pour préparer le contrat, les étapes et l’actualisation du parcours.";
+  return "Les repères recueillis donnent une base utile pour préparer la suite du parcours, à votre rythme.";
 }
 
 export function SocleAutonomiePage() {
@@ -137,7 +159,7 @@ export function SocleAutonomiePage() {
       return updated;
     });
 
-    setMessage(`Domaine noté : ${item.axe}`);
+    setMessage(`Repère noté : ${item.axe}`);
   }
 
   function enregistrerEchange() {
@@ -148,20 +170,18 @@ export function SocleAutonomiePage() {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     setReperes(updated);
-    setMessage("Le diagnostic commun a été enregistré.");
+    setMessage("Les repères ont été enregistrés.");
   }
 
   return (
-    <main className={`page-shell reperes-page diagnostic-page ${modePartage ? "is-share-mode" : ""}`}>
+    <main className={`page-shell reperes-page ${modePartage ? "is-share-mode" : ""}`}>
       <header className="page-header page-header-simple reperes-header">
         <img className="page-logo" src="/logo-artag.png" alt="ARTAG" />
 
         <div>
-          <p className="referentiel-label">Référentiel Métropole de Lyon</p>
-          <h1>Diagnostic commun</h1>
+          <h1>Repères d’autonomie</h1>
           <p className="page-intro">
-            Explorer les 9 domaines du référentiel pour comprendre les besoins, les freins,
-            les points d’appui et préparer les étapes du parcours.
+            Quelques questions pour mieux comprendre la situation actuelle et préparer la suite du parcours.
           </p>
         </div>
       </header>
@@ -172,37 +192,37 @@ export function SocleAutonomiePage() {
           type="button"
           onClick={() => setModePartage((current) => !current)}
         >
-          {modePartage ? "Quitter le mode partage" : "Mode échange avec la personne"}
+          {modePartage ? "Quitter le mode partage" : "Mode partage avec la personne"}
         </button>
 
         <p>
-          En mode échange, l’écran reste centré sur les questions utiles avec la personne.
-          Les analyses professionnelles et hypothèses sensibles restent dans le dossier réservé.
+          En mode partage, cet écran reste centré sur l’échange avec la personne. Les analyses professionnelles sont dans le dossier.
         </p>
       </section>
 
       <section className="reperes-summary">
         <div>
           <strong>{questionsNotees.length} / {questionsSocle.length}</strong>
-          <span> domaines notés</span>
+          <span> repères notés</span>
         </div>
 
         <p>Dernier enregistrement : {reperes.derniereValidation || "Non enregistré"}</p>
       </section>
 
       <section className="reperes-positive-card">
-        <p className="referentiel-label">Objectif ergonomique</p>
-        <h2>Du diagnostic vers le contrat et les étapes</h2>
+        <h2>Ce que cet échange permet</h2>
         <p>{messagePositif}</p>
       </section>
 
-      <section className="reperes-positive-card">
-        <p className="referentiel-label">Points à formaliser</p>
-        <h2>Ce qui devra être reporté dans Insertis</h2>
-        <div className="pilotage-list">
-          <p><strong>Diagnostic :</strong> besoins, difficultés, points d’appui et objectifs.</p>
-          <p><strong>Contrat :</strong> actions attendues, calendrier, étapes et engagements.</p>
-          <p><strong>Actualisation :</strong> évolution du parcours, progression, besoin de réorientation.</p>
+      <section className="reperes-positive-card referentiel-complement-card">
+        <h2>Grille complémentaire Métropole / Insertis</h2>
+        <p>
+          Ces domaines servent de repère institutionnel pour relire la situation et préparer la formalisation dans Insertis. Ils complètent les repères d’autonomie, sans les remplacer.
+        </p>
+        <div className="referentiel-domaines-grid dossier-domaines-grid">
+          {domainesMetropole.map((domaine) => (
+            <span key={domaine}>{domaine}</span>
+          ))}
         </div>
       </section>
 
@@ -223,7 +243,7 @@ export function SocleAutonomiePage() {
 
                 <span className="reperes-title-group">
                   <strong>{item.axe}</strong>
-                  <small>{reponse.valide ? "Noté" : "À explorer"}</small>
+                  <small>{reponse.valide ? "Noté" : "À aborder"}</small>
                 </span>
               </summary>
 
@@ -246,16 +266,16 @@ export function SocleAutonomiePage() {
                 </div>
 
                 <label className="reperes-note">
-                  <span>Éléments utiles à la suite du parcours</span>
+                  <span>Éléments recueillis pendant l’échange</span>
                   <textarea
                     value={reponse.note}
                     onChange={(event) => updateReponse(item.id, "note", event.target.value)}
-                    placeholder="Noter uniquement les éléments utiles, proportionnés et nécessaires au suivi."
+                    placeholder="Noter uniquement les éléments utiles à la suite du parcours."
                   />
                 </label>
 
                 <button className="primary-button reperes-card-button" type="button" onClick={() => noterRepere(item)}>
-                  Noter ce domaine
+                  Noter ce repère
                 </button>
               </div>
             </details>
@@ -265,7 +285,7 @@ export function SocleAutonomiePage() {
 
       <section className="reperes-end-actions">
         <button className="primary-button" type="button" onClick={enregistrerEchange}>
-          Enregistrer le diagnostic
+          Enregistrer l’échange
         </button>
 
         {!modePartage && (
