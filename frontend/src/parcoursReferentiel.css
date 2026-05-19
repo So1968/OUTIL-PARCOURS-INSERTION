@@ -1,0 +1,117 @@
+/* ===== PARCOURS — alignement référentiel Métropole de Lyon ===== */
+
+.parcours-referentiel {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 40px 0 72px;
+}
+
+.parcours-referentiel .page-header {
+  margin-bottom: 24px;
+  padding: 22px 26px;
+  background: rgba(255, 253, 248, 0.96);
+  border: 1px solid #dfd0bd;
+  border-radius: 28px;
+  box-shadow: 0 16px 36px rgba(63, 55, 47, 0.08);
+}
+
+.parcours-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.parcours-referentiel .parcours-card {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+.referentiel-label {
+  width: fit-content;
+  margin: 0 0 4px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f0e7d8;
+  color: #6f6559;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.referentiel-orientation-card {
+  margin-top: 24px;
+  border-left: 8px solid #6f8f43;
+  background: #f4f7ee;
+}
+
+.referentiel-parcours-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.referentiel-parcours-grid article {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid #d4dfc4;
+  border-radius: 20px;
+  background: #ffffff;
+}
+
+.referentiel-parcours-grid h3 {
+  margin: 0;
+  color: #302923;
+  font-size: 1.2rem;
+}
+
+.referentiel-parcours-grid p {
+  margin: 0;
+  color: #62584d;
+  line-height: 1.5;
+}
+
+.referentiel-parcours-grid strong {
+  display: block;
+  padding-top: 8px;
+  color: #4f5f38;
+  line-height: 1.45;
+}
+
+.referentiel-diagnostic-card {
+  margin-top: 24px;
+  border-left: 8px solid #c08a2d;
+  background: #fff8ea;
+}
+
+.referentiel-domaines-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.referentiel-domaines-grid span {
+  padding: 12px 14px;
+  border: 1px solid #ead7ad;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #302923;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .parcours-referentiel {
+    width: min(100% - 28px, 760px);
+    padding-top: 24px;
+  }
+
+  .parcours-actions-grid,
+  .referentiel-parcours-grid,
+  .referentiel-domaines-grid {
+    grid-template-columns: 1fr;
+  }
+}
