@@ -1,4 +1,4 @@
-﻿import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { PrototypeProfileBanner } from "./auth/PrototypeProfileBanner";
 import { RequireRole } from "./auth/RequireRole";
 import { RoleProvider } from "./auth/RoleContext";
@@ -14,6 +14,7 @@ import { DirectionRegulationPage } from "./pages/DirectionRegulationPage";
 import { DossierPage } from "./pages/DossierPage";
 import { GouvernancePage } from "./pages/GouvernancePage";
 import { HomePage } from "./pages/HomePage";
+import { ModuleDomainePage } from "./pages/ModuleDomainePage";
 import { ParcoursPage } from "./pages/ParcoursPage";
 import { SocleAutonomiePage } from "./pages/SocleAutonomiePage";
 import { TnsPage } from "./pages/TnsPage";
@@ -40,6 +41,15 @@ export default function App() {
           element={
             <RequireRole allowedRoles={[ROLE_PROFESSIONNELLE]}>
               <DossierPage />
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/parcours-social-socio-professionnel/dossier/modules/:moduleId"
+          element={
+            <RequireRole allowedRoles={[ROLE_PROFESSIONNELLE]}>
+              <ModuleDomainePage />
             </RequireRole>
           }
         />
@@ -112,6 +122,3 @@ export default function App() {
     </RoleProvider>
   );
 }
-
-
-
