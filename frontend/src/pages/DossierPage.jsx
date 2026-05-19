@@ -2,6 +2,10 @@ import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { champsSuiviContinuite } from "../data/continuiteModele";
 import { referentielMetropoleLyon } from "../data/referentielMetropoleLyon";
+import {
+  logiqueModulesDomainesTravail,
+  modulesDomainesTravail,
+} from "../data/modulesDomainesTravail";
 
 const STORAGE_KEY = "artag-dossier-parcours-brouillon";
 const REPERES_STORAGE_KEY = "artag-reperes-autonomie-brouillon";
@@ -574,6 +578,44 @@ export function DossierPage({ mode = "complet" }) {
                 Principe : le dossier partagé suit la personne ; l’espace professionnel réservé
                 soutient le travail de la professionnelle.
               </p>
+            </BlocRepliable>
+          )}
+
+          {!isContinuiteMode && (
+            <BlocRepliable title="Modules de travail par domaine" defaultOpen={false}>
+              <p className="section-help">
+                {logiqueModulesDomainesTravail.principe}
+              </p>
+
+              <div className="dossier-modules-list modules-domaines-list">
+                {modulesDomainesTravail.map((module) => (
+                  <details className="dossier-module-item module-domaine-card" key={module.id}>
+                    <summary>
+                      <div>
+                        <strong>{module.titre}</strong>
+                        <span>{module.domaineRepere}</span>
+                      </div>
+                    </summary>
+
+                    <p>{module.finalite}</p>
+
+                    <div className="pilotage-list">
+                      <p>
+                        <strong>À objectiver :</strong> {module.elementsObjectivables.slice(0, 3).join(" · ")}
+                      </p>
+                      <p>
+                        <strong>Indicateurs simples :</strong> {module.indicateursSimples.slice(0, 3).join(" · ")}
+                      </p>
+                      <p>
+                        <strong>Relais possibles :</strong> {module.relaisPossibles.slice(0, 4).join(" · ")}
+                      </p>
+                      <p>
+                        <strong>Sortie attendue :</strong> {module.sortieModule}
+                      </p>
+                    </div>
+                  </details>
+                ))}
+              </div>
             </BlocRepliable>
           )}
 
