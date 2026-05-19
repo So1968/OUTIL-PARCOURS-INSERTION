@@ -1,0 +1,263 @@
+/* ===== CONTINUITÉ DE SERVICE — couche ergonomique ciblée =====
+   Objectif : rendre la reprise plus lisible sans changer la logique métier. */
+
+.continuite-page.continuite-ergo,
+.continuite-page {
+  width: min(1220px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 40px 0 72px;
+}
+
+.continuite-page .page-header {
+  align-items: center;
+  margin-bottom: 26px;
+  padding: 22px 26px;
+  background: rgba(255, 253, 248, 0.95);
+  border: 1px solid #dfd0bd;
+  border-radius: 28px;
+  box-shadow: 0 16px 36px rgba(63, 55, 47, 0.08);
+}
+
+.continuite-page .page-header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 3.2vw, 3.4rem);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+}
+
+.continuite-page .page-intro {
+  max-width: 760px;
+  margin: 0;
+  color: #665c51;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.continuite-page .page-card {
+  background: rgba(255, 253, 248, 0.97);
+  border: 1px solid #dfd0bd;
+  border-radius: 24px;
+  box-shadow: 0 14px 32px rgba(63, 55, 47, 0.07);
+}
+
+.continuite-page .continuite-principe {
+  display: grid;
+  gap: 10px;
+  border-left: 8px solid #8fa06d;
+}
+
+.continuite-page .continuite-principe h2,
+.continuite-page .continuite-summary-card h2,
+.continuite-page .continuite-priority-card h2,
+.continuite-page .continuite-collegues h2 {
+  margin-top: 0;
+}
+
+.continuite-page .continuite-summary-card {
+  border-left: 8px solid #6f8f43;
+  background: #f4f7ee;
+}
+
+.continuite-page .continuite-summary-card .pilotage-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.continuite-page .continuite-summary-card .pilotage-list p {
+  min-height: 84px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  padding: 16px;
+  background: #ffffff;
+  border-color: #d6dfc7;
+}
+
+.continuite-page .continuite-summary-card .pilotage-list strong {
+  display: block;
+  color: #4f5f38;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.continuite-page .continuite-priority-card {
+  border-left: 8px solid #c08a2d;
+  background: #fff8ea;
+}
+
+.continuite-page .continuite-priority-card h2::before {
+  content: "Priorité · ";
+  color: #9a6a1f;
+  font-size: 0.92rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.continuite-page .continuite-priority-card .pilotage-list {
+  display: grid;
+  gap: 12px;
+}
+
+.continuite-page .continuite-priority-card .pilotage-list p {
+  padding: 16px 18px;
+  background: #ffffff;
+  border-color: #efd9ad;
+}
+
+.continuite-page .continuite-layout {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  margin-top: 24px;
+}
+
+.continuite-page .continuite-collegues {
+  position: sticky;
+  top: 20px;
+}
+
+.continuite-page .continuite-collegue-list {
+  display: grid;
+  gap: 12px;
+}
+
+.continuite-page .continuite-collegue {
+  width: 100%;
+  display: grid;
+  gap: 6px;
+  padding: 15px 16px;
+  border: 2px solid #ded1bf;
+  border-radius: 18px;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.continuite-page .continuite-collegue.is-active {
+  border-color: #6f8f43;
+  background: #eef4e7;
+  box-shadow: inset 5px 0 0 #6f8f43;
+}
+
+.continuite-page .continuite-collegue strong {
+  color: #302923;
+  font-size: 1rem;
+}
+
+.continuite-page .continuite-collegue span {
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #f0e7d8;
+  color: #665c51;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.continuite-page .continuite-main {
+  display: grid;
+  gap: 20px;
+}
+
+.continuite-page .continuite-dossiers-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.continuite-page .continuite-dossier-card {
+  border-left: 8px solid #cfc0ad;
+}
+
+.continuite-page .continuite-dossier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.continuite-page .continuite-dossier-header h2 {
+  margin: 0;
+}
+
+.continuite-page .continuite-dossier-header span {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #eef4e7;
+  color: #4f5f38;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.continuite-page .continuite-dossier-card .pilotage-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.continuite-page .continuite-dossier-card .pilotage-list p {
+  margin: 0;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: #fffaf2;
+  border: 1px solid #eadfce;
+  line-height: 1.45;
+}
+
+.continuite-page .continuite-dossier-card .pilotage-list strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #302923;
+}
+
+.continuite-page .continuite-dossier-card .secondary-button {
+  margin-top: 4px;
+  background: #6f8f43;
+  border-color: #6f8f43;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(95, 125, 56, 0.18);
+}
+
+.continuite-page .continuite-regles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 24px;
+}
+
+.continuite-page .continuite-regles ul {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+.continuite-page a:focus-visible,
+.continuite-page button:focus-visible {
+  outline: 3px solid rgba(111, 143, 67, 0.35);
+  outline-offset: 4px;
+}
+
+@media (max-width: 980px) {
+  .continuite-page {
+    width: min(100% - 28px, 760px);
+    padding-top: 24px;
+  }
+
+  .continuite-page .continuite-summary-card .pilotage-list,
+  .continuite-page .continuite-layout,
+  .continuite-page .continuite-dossier-card .pilotage-list,
+  .continuite-page .continuite-regles {
+    grid-template-columns: 1fr;
+  }
+
+  .continuite-page .continuite-collegues {
+    position: static;
+  }
+
+  .continuite-page .continuite-dossier-header {
+    display: grid;
+  }
+}
