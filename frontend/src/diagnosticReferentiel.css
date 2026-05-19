@@ -1,0 +1,264 @@
+/* ===== DIAGNOSTIC COMMUN — ergonomie entretien =====
+   Objectif : transformer la page en guide d'échange, pas en formulaire lourd. */
+
+.diagnostic-page {
+  width: min(1180px, calc(100% - 48px));
+  max-width: none;
+  margin: 0 auto;
+  padding: 38px 0 78px;
+}
+
+.diagnostic-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 10% 8%, rgba(111, 143, 67, 0.15), transparent 30%),
+    radial-gradient(circle at 88% 16%, rgba(192, 138, 45, 0.13), transparent 28%),
+    linear-gradient(180deg, #fbf7ef 0%, #f1e7d8 100%);
+}
+
+.diagnostic-page .reperes-header {
+  width: 100%;
+  margin: 0 0 22px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  background: rgba(255, 253, 248, 0.97);
+  border: 1px solid #dfd0bd;
+  border-radius: 30px;
+  box-shadow: 0 18px 42px rgba(63, 55, 47, 0.09);
+}
+
+.diagnostic-page .reperes-header h1 {
+  margin: 4px 0 8px;
+  font-size: clamp(2.2rem, 3.5vw, 3.8rem);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+
+.diagnostic-page .page-intro {
+  max-width: 780px;
+  margin: 0;
+  color: #62584d;
+  font-size: 1.08rem;
+  line-height: 1.55;
+}
+
+.diagnostic-page .reperes-share-bar,
+.diagnostic-page .reperes-summary,
+.diagnostic-page .reperes-positive-card,
+.diagnostic-page .reperes-end-actions {
+  width: 100%;
+  max-width: none;
+}
+
+.diagnostic-page .reperes-share-bar {
+  margin: 0 0 18px;
+  padding: 18px 20px;
+  border-radius: 24px;
+  background: rgba(255, 253, 248, 0.97);
+  border: 1px solid #dfd0bd;
+  box-shadow: 0 12px 28px rgba(63, 55, 47, 0.06);
+}
+
+.diagnostic-page .reperes-share-bar p {
+  max-width: 760px;
+}
+
+.diagnostic-page .reperes-summary {
+  margin: 0 0 18px;
+  padding: 18px 22px;
+  border-radius: 24px;
+  background: #edf4e8;
+  border: 1px solid #d3dfc4;
+}
+
+.diagnostic-page .reperes-summary strong {
+  color: #4f5f38;
+  font-size: 1.45rem;
+}
+
+.diagnostic-page .reperes-positive-card {
+  margin: 0 0 18px;
+  padding: 22px 24px;
+  background: rgba(255, 253, 248, 0.98);
+  border: 1px solid #dfd0bd;
+  border-left: 8px solid #8fa06d;
+  border-radius: 26px;
+  box-shadow: 0 14px 32px rgba(63, 55, 47, 0.07);
+}
+
+.diagnostic-page .reperes-positive-card + .reperes-positive-card {
+  border-left-color: #c08a2d;
+  background: #fff8ea;
+}
+
+.diagnostic-page .reperes-positive-card h2 {
+  margin: 4px 0 10px;
+  color: #302923;
+  font-size: 1.35rem;
+}
+
+.diagnostic-page .reperes-positive-card .pilotage-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 0;
+}
+
+.diagnostic-page .reperes-list {
+  gap: 16px;
+}
+
+.diagnostic-page .reperes-card {
+  background: rgba(255, 253, 248, 0.98);
+  border: 1px solid #dfd0bd;
+  border-radius: 26px;
+  box-shadow: 0 14px 30px rgba(63, 55, 47, 0.06);
+}
+
+.diagnostic-page .reperes-card.is-valid {
+  border-color: #8fa06d;
+  box-shadow: 0 0 0 3px rgba(143, 160, 109, 0.16), 0 14px 30px rgba(63, 55, 47, 0.06);
+}
+
+.diagnostic-page .reperes-card-summary {
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 20px 22px;
+}
+
+.diagnostic-page .reperes-card-summary::after {
+  content: "Ouvrir";
+  justify-self: end;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #f0e7d8;
+  color: #6f6559;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.diagnostic-page .reperes-card[open] .reperes-card-summary::after {
+  content: "En cours";
+  background: #eef4e7;
+  color: #4f5f38;
+}
+
+.diagnostic-page .reperes-card.is-valid .reperes-card-summary::after {
+  content: "Noté";
+  background: #dfead4;
+  color: #4f5f38;
+}
+
+.diagnostic-page .reperes-number {
+  width: 40px;
+  height: 40px;
+  background: #6f8f43;
+  font-weight: 900;
+}
+
+.diagnostic-page .reperes-title-group strong {
+  color: #302923;
+  font-size: 1.12rem;
+}
+
+.diagnostic-page .reperes-title-group small {
+  color: #74685c;
+  font-weight: 750;
+}
+
+.diagnostic-page .reperes-card-body {
+  padding: 0 22px 22px 86px;
+}
+
+.diagnostic-page .reperes-question-row {
+  grid-template-columns: minmax(0, 1fr) 260px;
+  margin-bottom: 14px;
+  padding: 16px;
+  border-radius: 20px;
+  background: #fffaf2;
+  border: 1px solid #eadfce;
+}
+
+.diagnostic-page .reperes-question {
+  color: #3d352e;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.diagnostic-page .reperes-question-select {
+  min-height: 46px;
+  background: #ffffff;
+  border-color: #d8cbb8;
+  font-weight: 750;
+}
+
+.diagnostic-page .reperes-note {
+  margin-top: 10px;
+}
+
+.diagnostic-page .reperes-note span {
+  font-weight: 850;
+}
+
+.diagnostic-page .reperes-note textarea {
+  min-height: 106px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #ffffff;
+  border-color: #d8cbb8;
+  line-height: 1.5;
+}
+
+.diagnostic-page .reperes-card-button {
+  margin-top: 16px;
+}
+
+.diagnostic-page .reperes-end-actions {
+  margin-top: 22px;
+  padding: 18px 20px;
+  border-radius: 24px;
+  background: rgba(255, 253, 248, 0.97);
+  border: 1px solid #dfd0bd;
+}
+
+.diagnostic-page a:focus-visible,
+.diagnostic-page button:focus-visible,
+.diagnostic-page textarea:focus,
+.diagnostic-page select:focus {
+  outline: 3px solid rgba(111, 143, 67, 0.28);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .diagnostic-page {
+    width: min(100% - 28px, 760px);
+    padding-top: 24px;
+  }
+
+  .diagnostic-page .reperes-header,
+  .diagnostic-page .reperes-share-bar,
+  .diagnostic-page .reperes-end-actions {
+    display: grid;
+  }
+
+  .diagnostic-page .reperes-positive-card .pilotage-list,
+  .diagnostic-page .reperes-question-row {
+    grid-template-columns: 1fr;
+  }
+
+  .diagnostic-page .reperes-card-summary {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .diagnostic-page .reperes-card-summary::after {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .diagnostic-page .reperes-card-body {
+    padding: 0 16px 18px;
+  }
+}
