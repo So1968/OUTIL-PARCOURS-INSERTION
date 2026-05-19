@@ -100,6 +100,13 @@ const valeurInitiale = champsDiagnostic.reduce((acc, champ) => {
   return acc;
 }, {});
 
+const rdvInitial = {
+  prenom: "",
+  date: "",
+  heure: "",
+  lieu: "ARTAG",
+};
+
 function trouverScenario(reponses) {
   const valeurs = Object.values(reponses);
   const scenarios = demarchesCreationEntreprise.scenarios;
@@ -140,20 +147,67 @@ function genererTexto(scenario) {
   ].join("\n");
 }
 
+function formaterDateRdv(date) {
+  if (!date) {
+    return "la date prévue";
+  }
+
+  try {
+    return new Date(`${date}T12:00:00`).toLocaleDateString("fr-FR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    });
+  } catch {
+    return date;
+  }
+}
+
+function genererRappelRdv(rdv, scenario) {
+  const civilite = rdv.prenom.trim() ? `Bonjour ${rdv.prenom.trim()},` : "Bonjour,";
+  const date = formaterDateRdv(rdv.date);
+  const heure = rdv.heure ? ` à ${rdv.heure}` : "";
+  const lieu = rdv.lieu.trim() || "ARTAG";
+  const documents = documentsPourTexto(scenario).slice(0, 5);
+
+  return [
+    civilite,
+    `Petit rappel : nous avons rendez-vous ${date}${heure} à ${lieu} pour faire le point sur votre projet / activité indépendante.`,
+    "Merci de venir avec les documents que vous avez, même si le dossier n’est pas complet :",
+    ...documents.map((document) => `- ${document}`),
+    "Si vous ne pouvez pas venir, merci de prévenir afin qu’on puisse reproposer un créneau.",
+    "ARTAG",
+  ].join("\n");
+}
+
 export function TnsAnalysePage() {
   const [reponses, setReponses] = useState(valeurInitiale);
+  const [rdv, setRdv] = useState(rdvInitial);
   const [textoCopie, setTextoCopie] = useState(false);
+  const [rappelCopie, setRappelCopie] = useState(false);
   const scenario = useMemo(() => trouverScenario(reponses), [reponses]);
   const texto = useMemo(() => genererTexto(scenario), [scenario]);
+  const rappelRdv = useMemo(() => genererRappelRdv(rdv, scenario), [rdv, scenario]);
 
   function updateReponse(id, value) {
     setReponses((current) => ({ ...current, [id]: value }));
     setTextoCopie(false);
+    setRappelCopie(false);
+  }
+
+  function updateRdv(field, value) {
+    setRdv((current) => ({ ...current, [field]: value }));
+    setRappelCopie(false);
   }
 
   function copierTexto() {
     navigator.clipboard.writeText(texto);
     setTextoCopie(true);
+  }
+
+  function copierRappel() {
+    navigator.clipboard.writeText(rappelRdv);
+    setRappelCopie(true);
   }
 
   return (
@@ -164,7 +218,7 @@ export function TnsAnalysePage() {
           <h1>Diagnostic TNS — où en est la boîte ?</h1>
           <p className="page-intro">
             Une grille courte pour le premier rendez-vous : tu coches la situation,
-            l’outil fait apparaître les démarches, documents, liens utiles et un texto prêt à envoyer.
+            l’outil fait apparaître les démarches, documents, liens utiles, un texto documents et un rappel de rendez-vous.
           </p>
         </div>
       </header>
@@ -251,6 +305,65 @@ export function TnsAnalysePage() {
       )}
 
       <section className="page-card">
+        <h2>Rappel de rendez-vous</h2>
+        <p className="section-help">
+          Comme les rendez-vous manqués sont un vrai point de fragilité, cette zone prépare un message de rappel court à envoyer par SMS ou WhatsApp.
+        </p>
+
+        <div className="identity-form-grid">
+          <label>
+            <span>Prénom</span>
+            <input
+              type="text"
+              value={rdv.prenom}
+              onChange={(event) => updateRdv("prenom", event.target.value)}
+              placeholder="Prénom si utile"
+            />
+          </label>
+
+          <label>
+            <span>Date du rendez-vous</span>
+            <input
+              type="date"
+              value={rdv.date}
+              onChange={(event) => updateRdv("date", event.target.value)}
+            />
+          </label>
+
+          <label>
+            <span>Heure</span>
+            <input
+              type="time"
+              value={rdv.heure}
+              onChange={(event) => updateRdv("heure", event.target.value)}
+            />
+          </label>
+
+          <label>
+            <span>Lieu</span>
+            <input
+              type="text"
+              value={rdv.lieu}
+              onChange={(event) => updateRdv("lieu", event.target.value)}
+              placeholder="ARTAG, téléphone, domicile, autre..."
+            />
+          </label>
+        </div>
+
+        <label className="insertis-summary-field">
+          <span>Message de rappel prêt à copier</span>
+          <textarea rows="8" value={rappelRdv} readOnly />
+        </label>
+
+        <div className="identity-actions">
+          <button className="primary-button" type="button" onClick={copierRappel}>
+            Copier le rappel RDV
+          </button>
+          {rappelCopie && <p className="validation-message">Rappel copié.</p>}
+        </div>
+      </section>
+
+      <section className="page-card">
         <h2>Texto documents à envoyer</h2>
         <p className="section-help">
           Le message ci-dessous s’adapte à la situation cochée. Tu peux le copier puis l’envoyer par SMS, WhatsApp ou mail.
@@ -261,7 +374,7 @@ export function TnsAnalysePage() {
         </label>
         <div className="identity-actions">
           <button className="primary-button" type="button" onClick={copierTexto}>
-            Copier le texto
+            Copier le texto documents
           </button>
           {textoCopie && <p className="validation-message">Texto copié.</p>}
         </div>
