@@ -1,79 +1,71 @@
 import { Link } from "react-router-dom";
 
+const pointsAnalyse = [
+  {
+    titre: "Activité",
+    aide: "Déclarée, en projet, suspendue, informelle ?",
+    placeholder: "Ex. micro-entreprise déclarée, activité irrégulière, chantier ponctuel...",
+  },
+  {
+    titre: "Documents / preuves",
+    aide: "Ce qu’on peut vérifier concrètement.",
+    placeholder: "SIRET, courrier URSSAF, déclaration, facture, échéance, montant...",
+  },
+  {
+    titre: "Impact parcours",
+    aide: "Ce que ça change pour le RSA, les droits ou la suite.",
+    placeholder: "Impact CAF/RSA, France Travail, dette, régularisation, besoin d’explication...",
+  },
+  {
+    titre: "Prochaine action",
+    aide: "Une seule action claire pour éviter la dispersion.",
+    placeholder: "Qui fait quoi, pour quand, avec quel document ?",
+  },
+];
+
 export function TnsAnalysePage() {
   return (
-    <main className="page-shell">
+    <main className="page-shell tns-page">
       <header className="page-header">
         <img className="page-logo" src="/logo-artag.png" alt="ARTAG" />
         <div>
           <h1>Analyse TNS</h1>
           <p className="page-intro">
-            Clarifier une situation liée à l’activité indépendante sans sortir la
-            personne de son parcours global. L’appui TNS éclaire, organise et
-            oriente ; il ne remplace pas la référente de parcours.
+            Une grille courte pour comprendre la situation, objectiver les faits et décider de la suite.
           </p>
         </div>
       </header>
 
+      <section className="page-card tns-focus-card">
+        <p className="referentiel-label">Mode rapide</p>
+        <h2>4 points, pas plus</h2>
+        <p>
+          L’objectif n’est pas de tout régler : on cherche le blocage principal,
+          la preuve utile et la prochaine action.
+        </p>
+      </section>
+
       <section className="page-grid">
-        <article className="page-card">
-          <h2>1. Situation d’activité</h2>
-          <p>
-            Repérer le type d’activité, le statut, le niveau d’activité réel,
-            les revenus connus et les obligations principales.
-          </p>
-          <ul>
-            <li>Activité déclarée, en projet, suspendue ou informelle.</li>
-            <li>Micro-entreprise, indépendant, commerce, prestation, chantier.</li>
-            <li>Revenus déclarés, irréguliers, absents ou à clarifier.</li>
-          </ul>
-        </article>
-
-        <article className="page-card">
-          <h2>2. Points à objectiver</h2>
-          <p>
-            Rassembler des éléments concrets avant d’orienter ou de conclure.
-          </p>
-          <ul>
-            <li>Numéro SIRET, URSSAF, impôts, déclarations.</li>
-            <li>Chiffre d’affaires, factures, charges, dettes éventuelles.</li>
-            <li>Courriers reçus, échéances, blocages administratifs.</li>
-          </ul>
-        </article>
-
-        <article className="page-card">
-          <h2>3. Impact sur le parcours</h2>
-          <p>
-            Lire l’activité indépendante dans le parcours social ou
-            socio-professionnel, sans en faire une file autonome.
-          </p>
-          <ul>
-            <li>Impact sur RSA / CAF / France Travail.</li>
-            <li>Besoin d’explication, de régularisation ou d’orientation.</li>
-            <li>Étape réaliste à proposer avec la personne.</li>
-          </ul>
-        </article>
-
-        <article className="page-card">
-          <h2>4. Suite utile</h2>
-          <p>
-            Préparer une action claire et une synthèse courte pour le dossier.
-          </p>
-          <ul>
-            <li>Action à faire.</li>
-            <li>Document attendu.</li>
-            <li>Relais ou partenaire à mobiliser.</li>
-          </ul>
-        </article>
+        {pointsAnalyse.map((point, index) => (
+          <article className="page-card" key={point.titre}>
+            <p className="referentiel-label">Point {index + 1}</p>
+            <h2>{point.titre}</h2>
+            <p>{point.aide}</p>
+            <label className="insertis-summary-field">
+              <span>Note courte</span>
+              <textarea rows="4" placeholder={point.placeholder} />
+            </label>
+          </article>
+        ))}
       </section>
 
       <section className="page-card">
         <h2>Synthèse courte TNS</h2>
         <label className="insertis-summary-field">
-          <span>Éléments à retenir</span>
+          <span>À conserver dans le dossier</span>
           <textarea
-            rows="7"
-            placeholder="Synthèse factuelle : situation d’activité, point à vérifier, action prévue, relais éventuel."
+            rows="6"
+            placeholder="Situation d’activité + point à vérifier + action prévue + relais éventuel."
           />
         </label>
       </section>
@@ -82,8 +74,8 @@ export function TnsAnalysePage() {
         <Link className="secondary-button" to="/appui-tns">
           Retour Appui TNS
         </Link>
-        <Link className="secondary-button" to="/parcours-social-socio-professionnel/dossier">
-          Retour dossier parcours
+        <Link className="secondary-button" to="/appui-tns/coordination">
+          Passer à la coordination
         </Link>
       </div>
     </main>
