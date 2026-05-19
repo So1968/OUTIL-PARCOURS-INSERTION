@@ -3329,3 +3329,102 @@ main.continuite-page .back-link {
   }
 }
 
+
+/* ===== UI POLISH — CONTINUITÉ DE SERVICE V3 VISIBLE ===== */
+
+main.continuite-page {
+  background:
+    radial-gradient(circle at top left, rgba(143, 160, 109, 0.16), transparent 34%),
+    linear-gradient(180deg, #fbf7ef 0%, #f4ecdf 100%);
+  border-radius: 32px;
+}
+
+main.continuite-page .page-header {
+  background: #fffdf8;
+  border: 1px solid #dfd0bd;
+  border-radius: 28px;
+  padding: 24px 28px;
+  box-shadow: 0 18px 42px rgba(63, 55, 47, 0.08);
+}
+
+main.continuite-page .continuite-principe {
+  border-left: 8px solid #8fa06d;
+}
+
+main.continuite-page .continuite-summary-card {
+  background: #f4f7ee;
+  border-color: #cfd9be;
+  border-left: 8px solid #70874c;
+}
+
+main.continuite-page .continuite-summary-card .pilotage-list {
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+}
+
+main.continuite-page .continuite-summary-card .pilotage-list p {
+  background: #ffffff;
+  border-color: #d7e0c8;
+}
+
+main.continuite-page .continuite-priority-card {
+  background: #fff8ea;
+  border-color: #e8d4a7;
+  border-left: 8px solid #c08a2d;
+}
+
+main.continuite-page .continuite-priority-card h2::before {
+  content: "★ ";
+  color: #c08a2d;
+}
+
+main.continuite-page .continuite-priority-card .pilotage-list p {
+  background: #ffffff;
+  border-color: #efd9ad;
+  font-size: 1.05rem;
+}
+
+main.continuite-page .continuite-collegues {
+  position: sticky;
+  top: 20px;
+}
+
+main.continuite-page .continuite-collegue {
+  background: #ffffff;
+  border: 2px solid #ded1bf;
+}
+
+main.continuite-page .continuite-collegue.is-active {
+  background: #eef4e7;
+  border-color: #6f8f43;
+}
+
+main.continuite-page .continuite-dossier-card {
+  border-left: 8px solid #cfc0ad;
+}
+
+main.continuite-page .continuite-dossier-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 44px rgba(63, 55, 47, 0.10);
+}
+
+main.continuite-page .pilotage-list p strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #342c25;
+}
+
+main.continuite-page .secondary-button {
+  margin-top: 4px;
+  box-shadow: 0 10px 20px rgba(95, 125, 56, 0.18);
+}
+
+@media (max-width: 900px) {
+  main.continuite-page .continuite-summary-card .pilotage-list {
+    grid-template-columns: 1fr;
+  }
+
+  main.continuite-page .continuite-collegues {
+    position: static;
+  }
+}
+

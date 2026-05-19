@@ -138,7 +138,7 @@ export function ContinuiteServicePage() {
         </p>
       </section>
 
-      <section className="page-card">
+      <section className="page-card continuite-summary-card">
         <h2>Synthèse de reprise</h2>
         <div className="pilotage-list">
           <p><strong>Total dossiers à reprendre :</strong> {synthesePriorites.total}</p>
@@ -155,7 +155,7 @@ export function ContinuiteServicePage() {
         </p>
       </section>
 
-      <section className="page-card">
+      <section className="page-card continuite-priority-card">
         <h2>À reprendre en premier</h2>
         <div className="pilotage-list">
           {dossiersAReprendreEnPremier.map((dossier) => (
@@ -258,6 +258,7 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
+
 
 
 
