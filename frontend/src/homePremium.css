@@ -183,7 +183,7 @@
 .home-v4.home-premium .home-workspace {
   width: 100% !important;
   display: grid !important;
-  grid-template-columns: 1.1fr 0.95fr 1.05fr !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: 22px !important;
   align-items: stretch !important;
 }
@@ -209,6 +209,8 @@
 .home-v4.home-premium .home-continuity-card {
   border-left: 8px solid #c08a2d !important;
   background: #fff8ea !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .home-v4.home-premium .home-card-label {
@@ -243,6 +245,14 @@
   gap: 10px !important;
   margin: 18px 0 0 !important;
   padding-left: 1.1em !important;
+}
+
+.home-v4.home-premium .home-continuity-card p:not(.home-card-label) {
+  margin-bottom: 0 !important;
+}
+
+.home-v4.home-premium .home-continuity-card .home-access-buttons {
+  margin-top: auto !important;
 }
 
 .home-v4.home-premium .home-access-buttons {
