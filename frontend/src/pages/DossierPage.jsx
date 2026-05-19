@@ -1,6 +1,7 @@
-﻿import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { champsSuiviContinuite } from "../data/continuiteModele";
+import { referentielMetropoleLyon } from "../data/referentielMetropoleLyon";
 
 const STORAGE_KEY = "artag-dossier-parcours-brouillon";
 const REPERES_STORAGE_KEY = "artag-reperes-autonomie-brouillon";
@@ -8,7 +9,8 @@ const REPERES_STORAGE_KEY = "artag-reperes-autonomie-brouillon";
 const statutsParcours = [
   "À créer",
   "Dossier ouvert",
-  "Repères d’autonomie à compléter",
+  "Diagnostic à compléter",
+  "Contrat à formaliser",
   "Parcours en cours",
   "Appui TNS à évaluer",
   "Appui TNS en cours",
@@ -16,6 +18,14 @@ const statutsParcours = [
   "En veille",
   "À réorienter",
   "Clôturé",
+];
+
+const registresParcours = [
+  "À qualifier",
+  "Parcours social",
+  "Parcours socio-professionnel",
+  "Parcours professionnel / France Travail",
+  "Réorientation à étudier",
 ];
 
 const referentes = [
@@ -27,16 +37,28 @@ const referentes = [
   "Référente à préciser",
 ];
 
-const questionsSocle = [
-  { id: "demarches", axe: "Démarches / accès aux droits", modulePrincipal: "Droits / démarches" },
-  { id: "organisation", axe: "Organisation du quotidien", modulePrincipal: "" },
-  { id: "budget", axe: "Budget / argent", modulePrincipal: "Budget" },
-  { id: "sante", axe: "Santé / accès aux soins", modulePrincipal: "Santé" },
-  { id: "mobilite", axe: "Mobilité / déplacements", modulePrincipal: "Mobilité" },
-  { id: "ecritNumerique", axe: "Écrit / numérique", modulePrincipal: "Écrit / illettrisme" },
-  { id: "vieFamiliale", axe: "Vie familiale / disponibilité", modulePrincipal: "Vie familiale" },
-  { id: "projet", axe: "Projet / mise en mouvement", modulePrincipal: "Projet professionnel détaillé" },
-];
+const moduleParDomaine = {
+  Logement: "Habitat / parcours résidentiel",
+  "Santé / handicap": "Santé",
+  "Organisation familiale": "Vie familiale",
+  Mobilité: "Mobilité",
+  "Budget et finances": "Budget",
+  Linguistique: "Linguistique / FLE",
+  "Numérique et accès aux droits": "Numérique / droits / démarches",
+  "Rapport à soi et à autrui": "Remobilisation / confiance",
+  "Projet professionnel": "Projet professionnel détaillé",
+};
+
+const questionsSocle = referentielMetropoleLyon.domainesDiagnostic.map((domaine) => ({
+  id: domaine
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, ""),
+  axe: domaine,
+  modulePrincipal: moduleParDomaine[domaine] || "",
+}));
 
 const scoreParReponse = {
   "Ça va": 3,
@@ -51,9 +73,13 @@ const initialDossier = {
   nom: "",
   prenom: "",
   statut: "Dossier ouvert",
+  registreParcours: "À qualifier",
   referente: "Référente à préciser",
   dateOuverture: "",
   derniereMiseAJour: "",
+  dateDiagnostic: "",
+  dateContrat: "",
+  prochaineActualisation: "",
 };
 
 function getInitialDossier() {
@@ -191,22 +217,8 @@ function deduireModulesRecommandes(reperes) {
       ajouter(item.modulePrincipal, `${item.axe} appelle un appui prioritaire pour sécuriser la continuité du parcours.`, "À valider en priorité");
     }
 
-    if (
-      (item.id === "demarches" || item.id === "ecritNumerique") &&
-      /(numerique|internet|telephone|mail|compte|en ligne|ordinateur|smartphone|application|caf|msa|impot|urssaf)/.test(note)
-    ) {
-      ajouter("Numérique", "Les éléments recueillis font apparaître un besoin lié aux démarches numériques.", item.score <= 1 ? "À valider en priorité" : "À valider");
-    }
-
-    if (
-      item.id === "projet" &&
-      /(tns|independant|independante|micro|auto|entreprise|chantier|facture|commerce|activite|devis|urssaf)/.test(note)
-    ) {
+    if (/(tns|independant|independante|micro|auto|entreprise|chantier|facture|commerce|activite|devis|urssaf)/.test(note)) {
       ajouter("TNS", "Les éléments recueillis évoquent une activité indépendante ou un projet nécessitant un appui spécialisé.", "À valider");
-    }
-
-    if (/(logement|habitat|aire|stationnement|terrain|caravane|domicile|bail|loyer|impaye)/.test(note)) {
-      ajouter("Habitat / parcours résidentiel", "Les éléments recueillis font apparaître une question liée à l’habitat ou au lieu de vie.", item.score <= 1 ? "À valider en priorité" : "À valider");
     }
   });
 
@@ -224,7 +236,7 @@ function genererSyntheseProfessionnelle(reperes) {
     .map((item) => `Concernant ${item.axe.toLowerCase()}, ${item.note.trim()}`);
 
   const lignes = [
-    "Repères d’autonomie — lecture professionnelle prudente :",
+    "Diagnostic commun — lecture professionnelle prudente :",
     lecture.phrase,
   ];
 
@@ -250,7 +262,7 @@ function genererSyntheseProfessionnelle(reperes) {
   }
 
   lignes.push("");
-  lignes.push("Suite utile : prioriser les démarches à partir des points d’appui, sécuriser les points de vigilance et choisir les modules à valider selon ce qui peut réellement aider la personne à comprendre, décider et agir.");
+  lignes.push("Suite utile : prioriser les démarches à partir des points d’appui, sécuriser les points de vigilance, choisir les étapes adaptées et reporter les éléments utiles dans Insertis.");
 
   return lignes.join("\n");
 }
@@ -276,8 +288,8 @@ export function DossierPage({ mode = "complet" }) {
   const isContinuiteMode = mode === "continuite";
 
   const valeursSuiviContinuite = {
-    "derniere-action": "Dossier ouvert / repères d’autonomie en cours.",
-    "prochaine-action": "Clarifier la demande principale et sécuriser la suite du parcours.",
+    "derniere-action": "Dossier ouvert / diagnostic commun en cours.",
+    "prochaine-action": "Clarifier la demande principale, le registre de parcours et les étapes adaptées.",
     "document-attendu": "À préciser si un justificatif est nécessaire.",
     "relais-mobilise": "Aucun relais confirmé à ce stade.",
     "niveau-vigilance": "À ajuster selon l’échéance, le risque de rupture ou l’urgence sociale.",
@@ -320,7 +332,7 @@ export function DossierPage({ mode = "complet" }) {
   }
 
   return (
-    <main className="page-shell dossier-page">
+    <main className="page-shell dossier-page dossier-referentiel">
       <header className="page-header page-header-simple">
         <img className="page-logo" src="/logo-artag.png" alt="ARTAG" />
         <div>
@@ -328,10 +340,19 @@ export function DossierPage({ mode = "complet" }) {
           <p className="page-intro">
             {isContinuiteMode
               ? "Vue limitée aux éléments utiles à la reprise temporaire du suivi. Les espaces privés professionnels ne sont pas affichés."
-              : "Vue de continuité interne — ne remplace pas Insertis."}
+              : "Vue de travail alignée sur les repères Métropole : diagnostic commun, contrat, étapes, actualisation et Insertis."}
           </p>
         </div>
       </header>
+
+      <section className="page-card dossier-referentiel-banner">
+        <p className="referentiel-label">Cadre Métropole de Lyon</p>
+        <h2>Diagnostic, contrat, étapes et actualisation</h2>
+        <p>
+          Le dossier aide à structurer le suivi, mais Insertis reste l’outil officiel de diagnostic,
+          de contrat, de suivi et de partage du parcours.
+        </p>
+      </section>
 
       <BlocRepliable title="Identité / références">
         <div className="identity-form-grid">
@@ -376,6 +397,20 @@ export function DossierPage({ mode = "complet" }) {
           </label>
 
           <label>
+            <span>Registre de parcours</span>
+            <select
+              value={dossier.registreParcours}
+              onChange={(event) => updateDossier("registreParcours", event.target.value)}
+            >
+              {registresParcours.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
             <span>Statut du parcours</span>
             <select
               value={dossier.statut}
@@ -413,6 +448,33 @@ export function DossierPage({ mode = "complet" }) {
           </label>
 
           <label>
+            <span>Date du diagnostic</span>
+            <input
+              type="date"
+              value={dossier.dateDiagnostic}
+              onChange={(event) => updateDossier("dateDiagnostic", event.target.value)}
+            />
+          </label>
+
+          <label>
+            <span>Date du contrat</span>
+            <input
+              type="date"
+              value={dossier.dateContrat}
+              onChange={(event) => updateDossier("dateContrat", event.target.value)}
+            />
+          </label>
+
+          <label>
+            <span>Prochaine actualisation</span>
+            <input
+              type="date"
+              value={dossier.prochaineActualisation}
+              onChange={(event) => updateDossier("prochaineActualisation", event.target.value)}
+            />
+          </label>
+
+          <label>
             <span>Dernière mise à jour</span>
             <input
               type="text"
@@ -435,11 +497,24 @@ export function DossierPage({ mode = "complet" }) {
 
       <BlocRepliable title="Chemin de parcours">
         <div className="parcours-track">
-          <span className="track-step active">Accueil</span>
-          <span className="track-step active">Dossier ouvert</span>
-          <span className="track-step">Repères d’autonomie</span>
-          <span className="track-step">Modules utiles</span>
-          <span className="track-step">Synthèse</span>
+          <span className="track-step active">Orientation</span>
+          <span className="track-step active">Diagnostic</span>
+          <span className="track-step">Contrat</span>
+          <span className="track-step">Étapes</span>
+          <span className="track-step">Actualisation</span>
+          <span className="track-step">Réorientation si besoin</span>
+        </div>
+      </BlocRepliable>
+
+      <BlocRepliable title="Diagnostic commun — 9 domaines Métropole" defaultOpen={!isContinuiteMode}>
+        <p className="section-help">
+          Ces domaines structurent l’évaluation globale de la situation. Ils permettent de repérer les besoins,
+          les freins, les points d’appui et les objectifs à formaliser dans Insertis.
+        </p>
+        <div className="referentiel-domaines-grid dossier-domaines-grid">
+          {referentielMetropoleLyon.domainesDiagnostic.map((domaine) => (
+            <span key={domaine}>{domaine}</span>
+          ))}
         </div>
       </BlocRepliable>
 
@@ -452,7 +527,7 @@ export function DossierPage({ mode = "complet" }) {
               ni les brouillons professionnels.
             </p>
 
-                        <div className="dossier-modules-list">
+            <div className="dossier-modules-list">
               {champsSuiviContinuite.map((champ) => (
                 <article className="dossier-module-item" key={champ.id}>
                   <div>
@@ -463,14 +538,15 @@ export function DossierPage({ mode = "complet" }) {
                 </article>
               ))}
             </div>
-<div className="pilotage-list">
+
+            <div className="pilotage-list">
               <p><strong>Ce qui peut être transmis en relais :</strong> synthèse courte, prochaine action, échéance, document attendu, relais mobilisé.</p>
               <p><strong>Ce qui reste protégé :</strong> brouillons personnels, hypothèses sensibles, notes non nécessaires à la reprise.</p>
             </div>
 
             <div className="identity-actions">
               <Link className="primary-button" to="/parcours-social-socio-professionnel/socle">
-                Commencer les repères d’autonomie
+                Compléter le diagnostic
               </Link>
 
               <Link className="secondary-button" to="/continuite-service">
@@ -478,91 +554,92 @@ export function DossierPage({ mode = "complet" }) {
               </Link>
             </div>
           </BlocRepliable>
-          {!isContinuiteMode && (
-          <BlocRepliable title="Espace professionnel réservé" defaultOpen={false}>
-            <p className="section-help">
-              Espace strictement interne à la professionnelle. Il soutient le raisonnement,
-              la préparation et la posture professionnelle. Ces éléments ne sont pas copiés
-              automatiquement dans Insertis et ne sont pas visibles en relais simple.
-            </p>
-
-            <div className="pilotage-list">
-              <p><strong>Hypothèses de travail :</strong> à formuler prudemment et à réviser au fil du parcours.</p>
-              <p><strong>Posture professionnelle :</strong> points d’attention dans la relation d’aide.</p>
-              <p><strong>Notes sensibles :</strong> uniquement si elles sont utiles, proportionnées et nécessaires.</p>
-              <p><strong>Brouillons :</strong> espace de préparation avant synthèse partageable.</p>
-            </div>
-
-            <p className="section-help">
-              Principe : le dossier partagé suit la personne ; l’espace professionnel réservé
-              soutient le travail de la professionnelle.
-            </p>
-          </BlocRepliable>
-          )}
 
           {!isContinuiteMode && (
-          <BlocRepliable title="Modules utiles à valider">
-            {modulesRecommandes.length > 0 ? (
-              <div className="dossier-modules-list">
-                {modulesRecommandes.map((module) => (
-                  <article className="dossier-module-item" key={module.nom}>
-                    <div>
-                      <strong>{module.nom}</strong>
-                      <span>{module.niveau}</span>
-                    </div>
-                    <ul>
-                      {module.motifs.map((motif) => (
-                        <li key={motif}>{motif}</li>
-                      ))}
-                    </ul>
-                  </article>
-                ))}
-              </div>
-            ) : (
+            <BlocRepliable title="Espace professionnel réservé" defaultOpen={false}>
               <p className="section-help">
-                Aucun module recommandé à valider à ce stade. La professionnelle garde la décision finale.
+                Espace strictement interne à la professionnelle. Il soutient le raisonnement,
+                la préparation et la posture professionnelle. Ces éléments ne sont pas copiés
+                automatiquement dans Insertis et ne sont pas visibles en relais simple.
               </p>
-            )}
-          </BlocRepliable>
+
+              <div className="pilotage-list">
+                <p><strong>Hypothèses de travail :</strong> à formuler prudemment et à réviser au fil du parcours.</p>
+                <p><strong>Posture professionnelle :</strong> points d’attention dans la relation d’aide.</p>
+                <p><strong>Notes sensibles :</strong> uniquement si elles sont utiles, proportionnées et nécessaires.</p>
+                <p><strong>Brouillons :</strong> espace de préparation avant synthèse partageable.</p>
+              </div>
+
+              <p className="section-help">
+                Principe : le dossier partagé suit la personne ; l’espace professionnel réservé
+                soutient le travail de la professionnelle.
+              </p>
+            </BlocRepliable>
           )}
 
           {!isContinuiteMode && (
-          <BlocRepliable title="Synthèse transférable vers Insertis">
-            <p className="section-help">
-              Synthèse courte destinée à être copiée dans Insertis. Elle ne remplace pas
-              l’analyse professionnelle et doit être ajustée avant transfert.
-            </p>
+            <BlocRepliable title="Modules utiles à valider">
+              {modulesRecommandes.length > 0 ? (
+                <div className="dossier-modules-list">
+                  {modulesRecommandes.map((module) => (
+                    <article className="dossier-module-item" key={module.nom}>
+                      <div>
+                        <strong>{module.nom}</strong>
+                        <span>{module.niveau}</span>
+                      </div>
+                      <ul>
+                        {module.motifs.map((motif) => (
+                          <li key={motif}>{motif}</li>
+                        ))}
+                      </ul>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="section-help">
+                  Aucun module recommandé à valider à ce stade. La professionnelle garde la décision finale.
+                </p>
+              )}
+            </BlocRepliable>
+          )}
 
-            <label className="insertis-summary-field">
-              <span>Synthèse courte</span>
-              <textarea
-                id="synthese-insertis"
-                rows="8"
-                defaultValue={genererSyntheseProfessionnelle(reperes)}
-                aria-label="Synthèse transférable vers Insertis"
-              />
-            </label>
+          {!isContinuiteMode && (
+            <BlocRepliable title="Synthèse transférable vers Insertis">
+              <p className="section-help">
+                Synthèse courte destinée à être copiée dans Insertis. Elle ne remplace pas
+                l’analyse professionnelle et doit être ajustée avant transfert.
+              </p>
 
-            <div className="identity-actions">
-              <button
-                className="secondary-button"
-                type="button"
-                onClick={() => {
-                  const zone = document.getElementById("synthese-insertis");
-                  if (zone) {
-                    navigator.clipboard.writeText(zone.value);
-                  }
-                }}
-              >
-                Copier la synthèse
-              </button>
-            </div>
+              <label className="insertis-summary-field">
+                <span>Synthèse courte</span>
+                <textarea
+                  id="synthese-insertis"
+                  rows="8"
+                  defaultValue={syntheseProfessionnelle}
+                  aria-label="Synthèse transférable vers Insertis"
+                />
+              </label>
 
-            <p className="section-help">
-              Cette synthèse est une aide à la rédaction. Elle doit être relue et ajustée
-              par la professionnelle avant transfert dans Insertis.
-            </p>
-          </BlocRepliable>
+              <div className="identity-actions">
+                <button
+                  className="secondary-button"
+                  type="button"
+                  onClick={() => {
+                    const zone = document.getElementById("synthese-insertis");
+                    if (zone) {
+                      navigator.clipboard.writeText(zone.value);
+                    }
+                  }}
+                >
+                  Copier la synthèse
+                </button>
+              </div>
+
+              <p className="section-help">
+                Cette synthèse est une aide à la rédaction. Elle doit être relue et ajustée
+                par la professionnelle avant transfert dans Insertis.
+              </p>
+            </BlocRepliable>
           )}
 
           <BlocRepliable title="Relais / prochaines étapes">
@@ -598,12 +675,11 @@ export function DossierPage({ mode = "complet" }) {
 
             <div className="pilotage-list">
               <p><strong>Priorité :</strong> clarifier la demande principale.</p>
-              <p><strong>Action suivante :</strong> programmer ou finaliser les repères d’autonomie.</p>
+              <p><strong>Action suivante :</strong> compléter ou actualiser le diagnostic commun.</p>
               <p><strong>Point à ne pas oublier :</strong> reporter les éléments officiels dans Insertis.</p>
             </div>
           </BlocRepliable>
-</div>
-
+        </div>
 
         {isContinuiteMode ? (
           <aside className="dossier-side">
@@ -611,7 +687,8 @@ export function DossierPage({ mode = "complet" }) {
               <div className="status-stack">
                 <span>Mode : continuité de service</span>
                 <span>Accès : éléments utiles uniquement</span>
-                <span>Repères : {reperes.derniereValidation ? "enregistrés" : "à compléter"}</span>
+                <span>Registre : {dossier.registreParcours}</span>
+                <span>Diagnostic : {dossier.dateDiagnostic || "à compléter"}</span>
                 <span>Insertis : à reporter par la professionnelle référente</span>
               </div>
             </BlocRepliable>
@@ -630,10 +707,23 @@ export function DossierPage({ mode = "complet" }) {
           <aside className="dossier-side">
             <BlocRepliable title="Repères rapides">
               <div className="status-stack">
+                <span>Registre : {dossier.registreParcours}</span>
                 <span>Parcours : {dossier.statut}</span>
                 <span>Référente : {dossier.referente}</span>
-                <span>Repères : {reperes.derniereValidation ? "enregistrés" : "à compléter"}</span>
+                <span>Diagnostic : {dossier.dateDiagnostic || "à compléter"}</span>
+                <span>Contrat : {dossier.dateContrat || "à formaliser"}</span>
+                <span>Actualisation : {dossier.prochaineActualisation || "à planifier"}</span>
                 <span>Insertis : à vérifier</span>
+              </div>
+            </BlocRepliable>
+
+            <BlocRepliable title="Rappels référentiel">
+              <div className="status-stack">
+                <span>Social : minimum 5 RDV présentiels/an</span>
+                <span>Socio-pro : 12 contacts/an</span>
+                <span>Socio-pro : 7 RDV physiques/an</span>
+                <span>Socio-pro : 7 temps collectifs + 4 étapes</span>
+                <span>Bilan : 18 à 24 mois si socio-pro</span>
               </div>
             </BlocRepliable>
 
@@ -647,7 +737,7 @@ export function DossierPage({ mode = "complet" }) {
 
             <BlocRepliable title="Historique / traçabilité">
               <p><strong>Aujourd’hui :</strong> dossier ouvert</p>
-              <p><strong>À suivre :</strong> repères d’autonomie</p>
+              <p><strong>À suivre :</strong> diagnostic commun</p>
             </BlocRepliable>
 
             <Link className="secondary-button dossier-return-button" to="/parcours-social-socio-professionnel">
@@ -659,14 +749,3 @@ export function DossierPage({ mode = "complet" }) {
     </main>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
