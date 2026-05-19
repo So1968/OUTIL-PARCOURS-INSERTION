@@ -102,6 +102,9 @@ const valeurInitiale = champsDiagnostic.reduce((acc, champ) => {
 
 const rdvInitial = {
   prenom: "",
+  telephone: "",
+  canal: "SMS",
+  accordRappel: "Oui",
   date: "",
   heure: "",
   lieu: "ARTAG",
@@ -180,6 +183,42 @@ function genererRappelRdv(rdv, scenario) {
   ].join("\n");
 }
 
+function normaliserNumeroSms(numero) {
+  return numero.replace(/[^\d+]/g, "");
+}
+
+function normaliserNumeroWhatsapp(numero) {
+  const chiffres = numero.replace(/\D/g, "");
+
+  if (chiffres.startsWith("0")) {
+    return `33${chiffres.slice(1)}`;
+  }
+
+  return chiffres;
+}
+
+function creerLienSms(numero, message) {
+  const telephone = normaliserNumeroSms(numero);
+  const body = encodeURIComponent(message);
+
+  return telephone ? `sms:${telephone}?&body=${body}` : `sms:?&body=${body}`;
+}
+
+function creerLienWhatsapp(numero, message) {
+  const telephone = normaliserNumeroWhatsapp(numero);
+  const texte = encodeURIComponent(message);
+
+  return telephone ? `https://wa.me/${telephone}?text=${texte}` : `https://wa.me/?text=${texte}`;
+}
+
+function creerLienEnvoi(canal, numero, message) {
+  if (canal === "WhatsApp") {
+    return creerLienWhatsapp(numero, message);
+  }
+
+  return creerLienSms(numero, message);
+}
+
 export function TnsAnalysePage() {
   const [reponses, setReponses] = useState(valeurInitiale);
   const [rdv, setRdv] = useState(rdvInitial);
@@ -188,6 +227,15 @@ export function TnsAnalysePage() {
   const scenario = useMemo(() => trouverScenario(reponses), [reponses]);
   const texto = useMemo(() => genererTexto(scenario), [scenario]);
   const rappelRdv = useMemo(() => genererRappelRdv(rdv, scenario), [rdv, scenario]);
+  const lienRappel = useMemo(
+    () => creerLienEnvoi(rdv.canal, rdv.telephone, rappelRdv),
+    [rdv.canal, rdv.telephone, rappelRdv],
+  );
+  const lienDocuments = useMemo(
+    () => creerLienEnvoi(rdv.canal, rdv.telephone, texto),
+    [rdv.canal, rdv.telephone, texto],
+  );
+  const accordOk = rdv.accordRappel === "Oui";
 
   function updateReponse(id, value) {
     setReponses((current) => ({ ...current, [id]: value }));
@@ -305,6 +353,51 @@ export function TnsAnalysePage() {
       )}
 
       <section className="page-card">
+        <h2>Coordonnées et accord d’envoi</h2>
+        <p className="section-help">
+          Pour V1, l’outil ouvre le SMS ou WhatsApp sur le téléphone pro avec le message prérempli. L’envoi reste volontaire : tu relis et tu appuies sur envoyer.
+        </p>
+
+        <div className="identity-form-grid">
+          <label>
+            <span>Téléphone</span>
+            <input
+              type="tel"
+              value={rdv.telephone}
+              onChange={(event) => updateRdv("telephone", event.target.value)}
+              placeholder="06 00 00 00 00"
+            />
+          </label>
+
+          <label>
+            <span>Canal préféré</span>
+            <select value={rdv.canal} onChange={(event) => updateRdv("canal", event.target.value)}>
+              <option>SMS</option>
+              <option>WhatsApp</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Accord pour rappel</span>
+            <select
+              value={rdv.accordRappel}
+              onChange={(event) => updateRdv("accordRappel", event.target.value)}
+            >
+              <option>Oui</option>
+              <option>Non</option>
+              <option>À demander</option>
+            </select>
+          </label>
+        </div>
+
+        {!accordOk && (
+          <p className="validation-message">
+            Accord à vérifier avant envoi. Tu peux préparer le message, mais il ne doit pas être envoyé sans accord.
+          </p>
+        )}
+      </section>
+
+      <section className="page-card">
         <h2>Rappel de rendez-vous</h2>
         <p className="section-help">
           Comme les rendez-vous manqués sont un vrai point de fragilité, cette zone prépare un message de rappel court à envoyer par SMS ou WhatsApp.
@@ -359,6 +452,9 @@ export function TnsAnalysePage() {
           <button className="primary-button" type="button" onClick={copierRappel}>
             Copier le rappel RDV
           </button>
+          <a className="secondary-button" href={lienRappel}>
+            Ouvrir {rdv.canal} rappel RDV
+          </a>
           {rappelCopie && <p className="validation-message">Rappel copié.</p>}
         </div>
       </section>
@@ -376,6 +472,9 @@ export function TnsAnalysePage() {
           <button className="primary-button" type="button" onClick={copierTexto}>
             Copier le texto documents
           </button>
+          <a className="secondary-button" href={lienDocuments}>
+            Ouvrir {rdv.canal} documents
+          </a>
           {textoCopie && <p className="validation-message">Texto copié.</p>}
         </div>
       </section>
