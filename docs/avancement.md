@@ -354,3 +354,32 @@ Règle d’usage :
 - Les dossiers fictifs utilisent maintenant des identifiants structurés : `faible`, `moyen`, `fort`, `urgent`.
 - La page Continuité de service affiche le niveau et sa conséquence métier.
 
+
+## Relances de continuité
+
+Décision validée :
+- La continuité de service doit permettre de voir rapidement ce qui doit être repris, quand, et avec quel niveau de priorité.
+- Les relances ne doivent pas remplacer le jugement professionnel.
+- Elles servent à éviter qu’un dossier reste sans suite pendant une absence, un relais ponctuel ou une période de flou.
+
+Champs ajoutés aux dossiers fictifs :
+- échéance de reprise ;
+- fréquence de relance ;
+- statut de relance ;
+- prochaine relance.
+
+Référentiels communs :
+- Les statuts de relance sont définis dans `frontend/src/data/continuiteModele.js`.
+- Les fréquences de relance sont définies dans `frontend/src/data/continuiteModele.js`.
+- Les dossiers fictifs utilisent maintenant ces identifiants dans `frontend/src/data/continuiteDossiersFictifs.js`.
+
+Règle métier :
+- Une relance indique une action à ne pas perdre.
+- Elle ne doit pas devenir un outil de pression sur la personne accompagnée.
+- Elle sert à organiser la continuité entre professionnelles, avec une transmission proportionnée et utile.
+
+État actuel :
+- La page Continuité de service affiche les informations de relance dans chaque carte dossier.
+- Les champs sont encore fictifs.
+- Prochaine étape possible : préparer une lecture plus synthétique des dossiers à reprendre, par priorité.
+
