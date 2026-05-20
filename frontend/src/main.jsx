@@ -7,6 +7,7 @@ import "./continuiteErgo.css";
 import "./parcoursReferentiel.css";
 import "./diagnosticReferentiel.css";
 import "./tnsErgo.css";
+import "./darkMode.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
