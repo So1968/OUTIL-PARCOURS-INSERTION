@@ -11,6 +11,7 @@ import {
 import { ContinuiteServicePage } from "./pages/ContinuiteServicePage";
 import { DirectionPage } from "./pages/DirectionPage";
 import { DirectionRegulationPage } from "./pages/DirectionRegulationPage";
+import { DossierAvecRdvPage } from "./pages/DossierAvecRdvPage";
 import { DossierPage } from "./pages/DossierPage";
 import { GouvernancePage } from "./pages/GouvernancePage";
 import { HomePage } from "./pages/HomePage";
@@ -43,7 +44,7 @@ export default function App() {
           path="/parcours-social-socio-professionnel/dossier"
           element={
             <RequireRole allowedRoles={[ROLE_PROFESSIONNELLE]}>
-              <DossierPage />
+              <DossierAvecRdvPage />
             </RequireRole>
           }
         />
