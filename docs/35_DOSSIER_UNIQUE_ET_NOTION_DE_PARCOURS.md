@@ -1,12 +1,14 @@
-# Dossier unique et notion de parcours
+# Dossier unique cible et notion de parcours
 
-Ce document clarifie une règle importante : l’outil peut être organisé autour d’un dossier unique en interne, mais il doit conserver une notion de parcours lisible, abordable et utile pour les professionnelles.
+Ce document clarifie une règle importante : **le dossier unique est une cible à terme**, mais ce n’est pas encore la réalité actuelle de travail. L’outil doit donc rester lisible par parcours aujourd’hui, tout en préparant une architecture compatible avec un futur dossier unique.
 
-## 1. Principe
+## 1. Point de vigilance immédiat
 
-L’outil ne doit pas demander aux utilisatrices de comprendre l’architecture technique.
+Il ne faut pas faire croire que l’organisation fonctionne déjà avec un dossier unique.
 
-En interne, il peut y avoir :
+Aujourd’hui, les professionnelles travaillent encore avec des cadres, parcours, outils et attendus distincts. L’application doit respecter cette réalité.
+
+La cible à terme peut être :
 
 ```text
 un dossier unique
@@ -15,13 +17,27 @@ un dossier unique
 + des registres d’accompagnement
 ```
 
-Mais côté usage, l’entrée doit rester simple :
+Mais en V1, l’usage doit rester simple et métier :
 
 ```text
-Quel parcours suis-je en train d’accompagner ?
+Quel parcours ou cadre de suivi suis-je en train d’accompagner ?
 ```
 
-## 2. Pourquoi garder la notion de parcours ?
+## 2. Règle de conception
+
+```text
+V1 : parcours visibles et séparés pour rester compréhensible.
+Cible future : architecture compatible avec un dossier unique.
+```
+
+Autrement dit :
+
+- on ne fusionne pas artificiellement tous les parcours maintenant ;
+- on évite les doublons techniques quand c’est possible ;
+- on garde des portes d’entrée claires pour les utilisatrices ;
+- on prépare progressivement les briques communes utiles à tous.
+
+## 3. Pourquoi garder la notion de parcours ?
 
 La notion de parcours est nécessaire parce qu’elle parle au métier.
 
@@ -37,7 +53,7 @@ Elle permet de comprendre rapidement :
 
 Sans la notion de parcours, l’outil risque d’être perçu comme un gros dossier généraliste difficile à lire.
 
-## 3. Ce qui doit rester visible pour l’utilisatrice
+## 4. Ce qui doit rester visible pour l’utilisatrice
 
 L’utilisatrice doit voir des portes d’entrée simples :
 
@@ -49,10 +65,9 @@ Continuité de service
 Pilotage / direction
 ```
 
-Ces portes d’entrée ne sont pas forcément des applications séparées.
-Elles sont des façons d’entrer dans le même dossier selon le besoin du moment.
+Ces portes d’entrée doivent rester compréhensibles même si, en arrière-plan, certaines briques sont partagées.
 
-## 4. Différence entre parcours, tronc commun et module
+## 5. Différence entre parcours, tronc commun et module
 
 ### Parcours
 
@@ -71,9 +86,9 @@ Exemples :
 
 Le tronc commun répond à la question :
 
-> Qu’est-ce qui sert à tous les accompagnements ?
+> Qu’est-ce qui sert à plusieurs accompagnements ?
 
-Il contient :
+Il contient des fonctions transversales :
 
 - rendez-vous ;
 - rappels ;
@@ -83,6 +98,8 @@ Il contient :
 - relances ;
 - synthèse courte ;
 - historique.
+
+Important : le tronc commun ne doit pas effacer les parcours. Il doit seulement éviter de refaire trois fois les mêmes outils.
 
 ### Module spécialisé
 
@@ -100,7 +117,7 @@ Exemples :
 - projet professionnel ;
 - activité indépendante / TNS.
 
-## 5. Formulation simple pour l’interface
+## 6. Formulation simple pour l’interface
 
 Éviter les mots trop techniques dans l’interface.
 
@@ -125,7 +142,7 @@ Appui TNS
 Continuité / reprise
 ```
 
-## 6. Lecture métier des parcours
+## 7. Lecture métier des parcours
 
 ### Parcours social
 
@@ -189,12 +206,12 @@ L’outil doit montrer uniquement :
 - relais mobilisé ;
 - niveau de vigilance.
 
-## 7. Structure d’accueil abordable
+## 8. Structure d’accueil abordable
 
 La page d’accueil doit présenter les entrées comme des choix simples :
 
 ```text
-1. Ouvrir un dossier
+1. Ouvrir un dossier ou un suivi existant
 2. Préparer / suivre un rendez-vous
 3. Choisir le cadre du suivi
    - social
@@ -207,14 +224,14 @@ La page d’accueil doit présenter les entrées comme des choix simples :
 
 L’utilisatrice doit pouvoir comprendre sans connaître les mots “tronc commun” ou “architecture interne”.
 
-## 8. Règle finale
+## 9. Règle finale
 
 ```text
-Dossier unique pour éviter les doublons.
-Parcours visibles pour rester métier et abordable.
+Aujourd’hui : parcours visibles, abordables et respectueux de l’organisation réelle.
+Demain : architecture prête pour un dossier unique si l’organisation évolue vers ce modèle.
 ```
 
-Le dossier unique est la colonne vertébrale.
-Le parcours est la façon simple d’entrer dans le travail.
+Le dossier unique est une cible possible.
+Le parcours reste la façon simple d’entrer dans le travail aujourd’hui.
 Le tronc commun évite de refaire plusieurs fois les mêmes outils.
 Les modules spécialisés approfondissent seulement ce qui est nécessaire.
