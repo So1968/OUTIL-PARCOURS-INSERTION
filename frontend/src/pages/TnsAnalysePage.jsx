@@ -166,18 +166,27 @@ function formaterDateRdv(date) {
   }
 }
 
-function genererRappelRdv(rdv, scenario) {
+function genererRappelRdv(rdv, scenario, moment) {
   const civilite = rdv.prenom.trim() ? `Bonjour ${rdv.prenom.trim()},` : "Bonjour,";
   const date = formaterDateRdv(rdv.date);
   const heure = rdv.heure ? ` à ${rdv.heure}` : "";
   const lieu = rdv.lieu.trim() || "ARTAG";
-  const documents = documentsPourTexto(scenario).slice(0, 5);
+  const documents = documentsPourTexto(scenario).slice(0, moment === "J-7" ? 6 : 4);
+  const intro =
+    moment === "J-7"
+      ? `Rappel : nous avons rendez-vous dans environ une semaine, ${date}${heure} à ${lieu}, pour faire le point sur votre projet / activité indépendante.`
+      : `Petit rappel : notre rendez-vous est prévu dans deux jours, ${date}${heure} à ${lieu}.`;
+  const consigne =
+    moment === "J-7"
+      ? "Cela vous laisse le temps de préparer tranquillement les documents utiles :"
+      : "Merci de venir avec les documents que vous avez déjà sous la main :";
 
   return [
     civilite,
-    `Petit rappel : nous avons rendez-vous ${date}${heure} à ${lieu} pour faire le point sur votre projet / activité indépendante.`,
-    "Merci de venir avec les documents que vous avez, même si le dossier n’est pas complet :",
+    intro,
+    consigne,
     ...documents.map((document) => `- ${document}`),
+    "Si vous ne les avez pas tous, ce n’est pas grave : venez avec ce que vous avez.",
     "Si vous ne pouvez pas venir, merci de prévenir afin qu’on puisse reproposer un créneau.",
     "ARTAG",
   ].join("\n");
@@ -222,14 +231,18 @@ function creerLienEnvoi(canal, numero, message) {
 export function TnsAnalysePage() {
   const [reponses, setReponses] = useState(valeurInitiale);
   const [rdv, setRdv] = useState(rdvInitial);
-  const [textoCopie, setTextoCopie] = useState(false);
-  const [rappelCopie, setRappelCopie] = useState(false);
+  const [copie, setCopie] = useState("");
   const scenario = useMemo(() => trouverScenario(reponses), [reponses]);
   const texto = useMemo(() => genererTexto(scenario), [scenario]);
-  const rappelRdv = useMemo(() => genererRappelRdv(rdv, scenario), [rdv, scenario]);
-  const lienRappel = useMemo(
-    () => creerLienEnvoi(rdv.canal, rdv.telephone, rappelRdv),
-    [rdv.canal, rdv.telephone, rappelRdv],
+  const rappelSemaine = useMemo(() => genererRappelRdv(rdv, scenario, "J-7"), [rdv, scenario]);
+  const rappelDeuxJours = useMemo(() => genererRappelRdv(rdv, scenario, "J-2"), [rdv, scenario]);
+  const lienRappelSemaine = useMemo(
+    () => creerLienEnvoi(rdv.canal, rdv.telephone, rappelSemaine),
+    [rdv.canal, rdv.telephone, rappelSemaine],
+  );
+  const lienRappelDeuxJours = useMemo(
+    () => creerLienEnvoi(rdv.canal, rdv.telephone, rappelDeuxJours),
+    [rdv.canal, rdv.telephone, rappelDeuxJours],
   );
   const lienDocuments = useMemo(
     () => creerLienEnvoi(rdv.canal, rdv.telephone, texto),
@@ -239,23 +252,17 @@ export function TnsAnalysePage() {
 
   function updateReponse(id, value) {
     setReponses((current) => ({ ...current, [id]: value }));
-    setTextoCopie(false);
-    setRappelCopie(false);
+    setCopie("");
   }
 
   function updateRdv(field, value) {
     setRdv((current) => ({ ...current, [field]: value }));
-    setRappelCopie(false);
+    setCopie("");
   }
 
-  function copierTexto() {
-    navigator.clipboard.writeText(texto);
-    setTextoCopie(true);
-  }
-
-  function copierRappel() {
-    navigator.clipboard.writeText(rappelRdv);
-    setRappelCopie(true);
+  function copierMessage(message, label) {
+    navigator.clipboard.writeText(message);
+    setCopie(label);
   }
 
   return (
@@ -266,7 +273,7 @@ export function TnsAnalysePage() {
           <h1>Diagnostic TNS — où en est la boîte ?</h1>
           <p className="page-intro">
             Une grille courte pour le premier rendez-vous : tu coches la situation,
-            l’outil fait apparaître les démarches, documents, liens utiles, un texto documents et un rappel de rendez-vous.
+            l’outil fait apparaître les démarches, documents, liens utiles, textos documents et rappels de rendez-vous.
           </p>
         </div>
       </header>
@@ -398,9 +405,9 @@ export function TnsAnalysePage() {
       </section>
 
       <section className="page-card">
-        <h2>Rappel de rendez-vous</h2>
+        <h2>Rappels de rendez-vous</h2>
         <p className="section-help">
-          Comme les rendez-vous manqués sont un vrai point de fragilité, cette zone prépare un message de rappel court à envoyer par SMS ou WhatsApp.
+          Deux rappels simples : un une semaine avant pour préparer les documents, puis un deux jours avant pour confirmer la venue.
         </p>
 
         <div className="identity-form-grid">
@@ -443,20 +450,33 @@ export function TnsAnalysePage() {
           </label>
         </div>
 
-        <label className="insertis-summary-field">
-          <span>Message de rappel prêt à copier</span>
-          <textarea rows="8" value={rappelRdv} readOnly />
-        </label>
+        <div className="page-grid">
+          <article className="page-card">
+            <h3>Rappel J-7</h3>
+            <label className="insertis-summary-field">
+              <span>Message une semaine avant</span>
+              <textarea rows="8" value={rappelSemaine} readOnly />
+            </label>
+            <div className="identity-actions">
+              <button className="primary-button" type="button" onClick={() => copierMessage(rappelSemaine, "Rappel J-7 copié.")}>Copier J-7</button>
+              <a className="secondary-button" href={lienRappelSemaine}>Ouvrir {rdv.canal} J-7</a>
+            </div>
+          </article>
 
-        <div className="identity-actions">
-          <button className="primary-button" type="button" onClick={copierRappel}>
-            Copier le rappel RDV
-          </button>
-          <a className="secondary-button" href={lienRappel}>
-            Ouvrir {rdv.canal} rappel RDV
-          </a>
-          {rappelCopie && <p className="validation-message">Rappel copié.</p>}
+          <article className="page-card">
+            <h3>Rappel J-2</h3>
+            <label className="insertis-summary-field">
+              <span>Message deux jours avant</span>
+              <textarea rows="8" value={rappelDeuxJours} readOnly />
+            </label>
+            <div className="identity-actions">
+              <button className="primary-button" type="button" onClick={() => copierMessage(rappelDeuxJours, "Rappel J-2 copié.")}>Copier J-2</button>
+              <a className="secondary-button" href={lienRappelDeuxJours}>Ouvrir {rdv.canal} J-2</a>
+            </div>
+          </article>
         </div>
+
+        {copie && <p className="validation-message">{copie}</p>}
       </section>
 
       <section className="page-card">
@@ -469,13 +489,8 @@ export function TnsAnalysePage() {
           <textarea rows="9" value={texto} readOnly />
         </label>
         <div className="identity-actions">
-          <button className="primary-button" type="button" onClick={copierTexto}>
-            Copier le texto documents
-          </button>
-          <a className="secondary-button" href={lienDocuments}>
-            Ouvrir {rdv.canal} documents
-          </a>
-          {textoCopie && <p className="validation-message">Texto copié.</p>}
+          <button className="primary-button" type="button" onClick={() => copierMessage(texto, "Texto documents copié.")}>Copier le texto documents</button>
+          <a className="secondary-button" href={lienDocuments}>Ouvrir {rdv.canal} documents</a>
         </div>
       </section>
 
