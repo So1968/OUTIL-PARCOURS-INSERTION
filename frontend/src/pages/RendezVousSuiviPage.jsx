@@ -8,6 +8,8 @@ import {
   typesRendezVous,
 } from "../data/troncCommunSuivi";
 
+const STORAGE_KEY = "artag-rendez-vous-suivi";
+
 const rdvInitial = {
   prenom: "",
   telephone: "",
@@ -20,6 +22,15 @@ const rdvInitial = {
   lieu: "ARTAG",
   statut: "À confirmer",
 };
+
+function getHistoriqueInitial() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
 
 function formaterDateRdv(date) {
   if (!date) {
@@ -104,10 +115,54 @@ function genererRappel(rdv, moment) {
   ].join("\n");
 }
 
+function analyserAssiduite(historique) {
+  const total = historique.length;
+  const presents = historique.filter((item) => item.statut === "Présent").length;
+  const absentsExcuses = historique.filter((item) => item.statut === "Absent excusé").length;
+  const absentsNonPrevenus = historique.filter((item) => item.statut === "Absent non prévenu").length;
+  const reportes = historique.filter((item) => item.statut === "Reporté").length;
+  const annules = historique.filter((item) => item.statut === "Annulé").length;
+  const rendezVousEffectifs = presents + absentsExcuses + absentsNonPrevenus;
+  const tauxPresence = rendezVousEffectifs > 0 ? Math.round((presents / rendezVousEffectifs) * 100) : 0;
+  const tauxAbsenceNonPrevenue = rendezVousEffectifs > 0 ? Math.round((absentsNonPrevenus / rendezVousEffectifs) * 100) : 0;
+
+  let lecture = "Pas encore assez de rendez-vous enregistrés pour repérer une tendance.";
+  let vigilance = "À observer";
+
+  if (total >= 2 && absentsNonPrevenus >= 2) {
+    lecture = "Plusieurs absences non prévenues sont repérées. Il peut être utile d’adapter les rappels, de vérifier le bon canal de contact et de clarifier les freins à la venue.";
+    vigilance = "Vigilance forte";
+  } else if (total >= 3 && tauxPresence >= 70) {
+    lecture = "La présence aux rendez-vous semble plutôt régulière sur les rendez-vous enregistrés.";
+    vigilance = "Présence plutôt stable";
+  } else if (total >= 3 && tauxPresence < 50) {
+    lecture = "La présence est fragile. Il peut être utile de reprendre avec la personne les horaires, le lieu, le canal de rappel, la mobilité ou les freins d’organisation.";
+    vigilance = "Vigilance à travailler";
+  } else if (absentsExcuses > 0 || reportes > 0) {
+    lecture = "Des reports ou absences excusées apparaissent. La personne prévient au moins partiellement ; la difficulté peut relever de l’organisation ou de la disponibilité.";
+    vigilance = "À soutenir";
+  }
+
+  return {
+    total,
+    presents,
+    absentsExcuses,
+    absentsNonPrevenus,
+    reportes,
+    annules,
+    tauxPresence,
+    tauxAbsenceNonPrevenue,
+    lecture,
+    vigilance,
+  };
+}
+
 export function RendezVousSuiviPage() {
   const [rdv, setRdv] = useState(rdvInitial);
+  const [historique, setHistorique] = useState(getHistoriqueInitial);
   const [copie, setCopie] = useState("");
   const documents = useMemo(() => getDocuments(rdv.motif), [rdv.motif]);
+  const analyse = useMemo(() => analyserAssiduite(historique), [historique]);
   const rappelSemaine = useMemo(() => genererRappel(rdv, "J-7"), [rdv]);
   const rappelDeuxJours = useMemo(() => genererRappel(rdv, "J-2"), [rdv]);
   const lienSemaine = useMemo(
@@ -130,6 +185,24 @@ export function RendezVousSuiviPage() {
     setCopie(label);
   }
 
+  function enregistrerRendezVous() {
+    const nouveauRdv = {
+      ...rdv,
+      id: crypto.randomUUID(),
+      enregistreLe: new Date().toISOString(),
+    };
+    const updated = [nouveauRdv, ...historique];
+    setHistorique(updated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    setCopie("Rendez-vous enregistré dans l’historique.");
+  }
+
+  function effacerHistorique() {
+    setHistorique([]);
+    localStorage.removeItem(STORAGE_KEY);
+    setCopie("Historique local effacé.");
+  }
+
   return (
     <main className="page-shell tns-page rendez-vous-suivi-page">
       <header className="page-header">
@@ -147,9 +220,30 @@ export function RendezVousSuiviPage() {
       <section className="page-card tns-focus-card">
         <h2>Objectif</h2>
         <p>
-          Préparer le rendez-vous, rappeler la personne au bon moment, demander les bons documents
-          et sortir avec une prochaine action claire.
+          Préparer le rendez-vous, rappeler la personne au bon moment, demander les bons documents,
+          suivre la présence et sortir avec une prochaine action claire.
         </p>
+      </section>
+
+      <section className="page-card">
+        <h2>Analyse de présence aux rendez-vous</h2>
+        <p className="section-help">
+          Lecture factuelle, non jugeante : on mesure la présence, les absences prévenues et les absences non prévenues pour adapter l’accompagnement.
+        </p>
+
+        <div className="referentiel-domaines-grid dossier-domaines-grid">
+          <span>Total : {analyse.total}</span>
+          <span>Présent : {analyse.presents}</span>
+          <span>Absent excusé : {analyse.absentsExcuses}</span>
+          <span>Absent non prévenu : {analyse.absentsNonPrevenus}</span>
+          <span>Reporté : {analyse.reportes}</span>
+          <span>Taux présence : {analyse.tauxPresence}%</span>
+        </div>
+
+        <div className="pilotage-list">
+          <p><strong>Lecture :</strong> {analyse.lecture}</p>
+          <p><strong>Niveau :</strong> {analyse.vigilance}</p>
+        </div>
       </section>
 
       <section className="page-card">
@@ -231,6 +325,17 @@ export function RendezVousSuiviPage() {
             Accord à vérifier avant envoi. Le message peut être préparé, mais ne doit pas être envoyé sans accord.
           </p>
         )}
+
+        <div className="identity-actions">
+          <button className="primary-button" type="button" onClick={enregistrerRendezVous}>
+            Enregistrer ce rendez-vous
+          </button>
+          {historique.length > 0 && (
+            <button className="secondary-button" type="button" onClick={effacerHistorique}>
+              Effacer l’historique local
+            </button>
+          )}
+        </div>
       </section>
 
       <section className="page-card">
@@ -271,6 +376,26 @@ export function RendezVousSuiviPage() {
         </div>
 
         {copie && <p className="validation-message">{copie}</p>}
+      </section>
+
+      <section className="page-card">
+        <h2>Historique local des rendez-vous</h2>
+        {historique.length > 0 ? (
+          <div className="dossier-modules-list">
+            {historique.map((item) => (
+              <article className="dossier-module-item" key={item.id}>
+                <div>
+                  <strong>{item.date || "Date à préciser"} {item.heure || ""}</strong>
+                  <span>{item.statut}</span>
+                </div>
+                <p>{item.type} — {item.motif}</p>
+                <p>{item.prenom || "Personne"} · {item.lieu || "Lieu à préciser"}</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="section-help">Aucun rendez-vous enregistré pour l’instant.</p>
+        )}
       </section>
 
       <section className="page-card">
