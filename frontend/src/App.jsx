@@ -16,6 +16,7 @@ import { GouvernancePage } from "./pages/GouvernancePage";
 import { HomePage } from "./pages/HomePage";
 import { ModuleDomainePage } from "./pages/ModuleDomainePage";
 import { ParcoursPage } from "./pages/ParcoursPage";
+import { RendezVousSuiviPage } from "./pages/RendezVousSuiviPage";
 import { SocleAutonomiePage } from "./pages/SocleAutonomiePage";
 import { TnsAnalysePage } from "./pages/TnsAnalysePage";
 import { TnsCoordinationPage } from "./pages/TnsCoordinationPage";
@@ -43,6 +44,15 @@ export default function App() {
           element={
             <RequireRole allowedRoles={[ROLE_PROFESSIONNELLE]}>
               <DossierPage />
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/parcours-social-socio-professionnel/dossier/rendez-vous"
+          element={
+            <RequireRole allowedRoles={[ROLE_PROFESSIONNELLE, ROLE_APPUI_TNS, ROLE_DIRECTION]}>
+              <RendezVousSuiviPage />
             </RequireRole>
           }
         />
