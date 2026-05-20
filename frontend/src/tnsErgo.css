@@ -1,0 +1,146 @@
+/* ===== APPUI TNS — ergonomie rendez-vous =====
+   Objectif : rendre la page utilisable en entretien, avec moins de scroll et des priorités visibles. */
+
+.tns-page {
+  --tns-green: #6f8f43;
+  --tns-soft-green: #eef5e8;
+  --tns-amber: #c08a2d;
+  --tns-soft-amber: #fff8ea;
+  --tns-border: #dfd0bd;
+  --tns-text: #302923;
+  --tns-muted: #6f6559;
+}
+
+.tns-diagnostic-page .page-header {
+  margin-bottom: 18px;
+}
+
+.tns-diagnostic-page .tns-focus-card {
+  border-left: 8px solid var(--tns-green);
+}
+
+.tns-diagnostic-page > .page-card,
+.tns-diagnostic-page > .tns-focus-card {
+  margin-bottom: 18px;
+}
+
+.tns-diagnostic-page .identity-form-grid {
+  gap: 14px;
+}
+
+.tns-diagnostic-page label small {
+  display: block;
+  margin: 4px 0 8px;
+  color: var(--tns-muted);
+  line-height: 1.35;
+}
+
+.tns-diagnostic-page select,
+.tns-diagnostic-page input {
+  min-height: 46px;
+}
+
+/* Le diagnostic doit se lire comme une grille courte, pas comme un formulaire administratif. */
+.tns-select-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tns-diagnostic-page .page-grid {
+  gap: 14px;
+}
+
+.tns-diagnostic-page .page-grid > .page-card {
+  min-width: 0;
+}
+
+/* Les zones de texte ne doivent pas manger tout l'écran. */
+.tns-diagnostic-page textarea {
+  min-height: 0;
+  resize: vertical;
+}
+
+.tns-diagnostic-page textarea[rows="4"] {
+  min-height: 92px;
+}
+
+.tns-diagnostic-page textarea[rows="5"] {
+  min-height: 110px;
+}
+
+.tns-diagnostic-page textarea[rows="8"],
+.tns-diagnostic-page textarea[rows="9"] {
+  min-height: 150px;
+}
+
+/* Priorité rendez-vous : les blocs messages doivent être plus scannables. */
+.tns-diagnostic-page .identity-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.tns-diagnostic-page .identity-actions .primary-button,
+.tns-diagnostic-page .identity-actions .secondary-button {
+  min-height: 42px;
+  padding-inline: 14px;
+}
+
+/* Démarches proposées : lisible mais pas envahissant. */
+.tns-diagnostic-page ul {
+  margin: 10px 0 0;
+  padding-left: 1.1rem;
+}
+
+.tns-diagnostic-page li {
+  margin-bottom: 7px;
+  line-height: 1.42;
+}
+
+.tns-diagnostic-page h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
+
+/* Créer un effet de parcours : les gros blocs après diagnostic restent plus compacts. */
+.tns-diagnostic-page > .page-card h2 {
+  margin-bottom: 8px;
+}
+
+.tns-diagnostic-page .section-help {
+  margin-bottom: 14px;
+}
+
+/* Les liens officiels et documents tous types passent en cartes compactes. */
+.tns-diagnostic-page .dossier-modules-list {
+  gap: 12px;
+}
+
+.tns-diagnostic-page .dossier-module-item {
+  padding: 15px;
+}
+
+.tns-diagnostic-page .dossier-module-item p {
+  margin: 8px 0 10px;
+}
+
+/* Mobile : l'entretien doit rester praticable sur téléphone pro. */
+@media (max-width: 980px) {
+  .tns-select-grid,
+  .tns-diagnostic-page .page-grid,
+  .tns-diagnostic-page .identity-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tns-diagnostic-page textarea[rows="8"],
+  .tns-diagnostic-page textarea[rows="9"] {
+    min-height: 130px;
+  }
+
+  .tns-diagnostic-page .identity-actions .primary-button,
+  .tns-diagnostic-page .identity-actions .secondary-button {
+    width: 100%;
+  }
+}
