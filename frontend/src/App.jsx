@@ -2,20 +2,51 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { PrototypeProfileBanner } from "./auth/PrototypeProfileBanner";
 import { RequireRole } from "./auth/RequireRole";
 import { RoleProvider } from "./auth/RoleContext";
-import { ROLE_APPUI_TNS, ROLE_DIRECTION, ROLE_GOUVERNANCE_CA, ROLE_PROFESSIONNELLE } from "./auth/roles";
-import { ContinuiteServicePage } from "./pages/ContinuiteServicePage";
-import { DirectionPage } from "./pages/DirectionPage";
-import { DirectionRegulationPage } from "./pages/DirectionRegulationPage";
-import { DossierAvecRdvPage } from "./pages/DossierAvecRdvPage";
-import { DossierPage } from "./pages/DossierPage";
-import { GouvernancePage } from "./pages/GouvernancePage";
+import { ROLE_APPUI_TNS, ROLE_PROFESSIONNELLE } from "./auth/roles";
 import { HomePage } from "./pages/HomePage";
-import { ModuleDomainePage } from "./pages/ModuleDomainePage";
-import { ParcoursPage } from "./pages/ParcoursPage";
-import { RendezVousSuiviPage } from "./pages/RendezVousSuiviPage";
-import { SocleAutonomiePage } from "./pages/SocleAutonomiePage";
 import { TnsAnalysePage } from "./pages/TnsAnalysePage";
-import { TnsCoordinationPage } from "./pages/TnsCoordinationPage";
 import { TnsFicheMinutePage } from "./pages/TnsFicheMinutePage";
 import { TnsPage } from "./pages/TnsPage";
-export default function App(){return(<RoleProvider><PrototypeProfileBanner/><Routes><Route path='/' element={<HomePage/>}/><Route path='/appui-tns' element={<RequireRole allowedRoles={[ROLE_APPUI_TNS]}><TnsPage/></RequireRole>}/><Route path='/appui-tns/fiche-minute' element={<RequireRole allowedRoles={[ROLE_APPUI_TNS]}><TnsFicheMinutePage/></RequireRole>}/><Route path='/appui-tns/analyse' element={<RequireRole allowedRoles={[ROLE_APPUI_TNS]}><TnsAnalysePage/></RequireRole>}/><Route path='*' element={<Navigate to='/' replace/>}/></Routes></RoleProvider>)}
+
+const ACCOMPAGNEMENT_ROLES = [ROLE_PROFESSIONNELLE, ROLE_APPUI_TNS];
+
+export default function App() {
+  return (
+    <RoleProvider>
+      <PrototypeProfileBanner />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route
+          path="/accompagnement-global"
+          element={
+            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
+              <TnsPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/accompagnement-global/fiche-minute"
+          element={
+            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
+              <TnsFicheMinutePage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/accompagnement-global/lecture-globale"
+          element={
+            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
+              <TnsAnalysePage />
+            </RequireRole>
+          }
+        />
+
+        {/* Anciennes routes conservées mais sorties de la façade principale. */}
+        <Route path="/appui-tns" element={<Navigate to="/accompagnement-global" replace />} />
+        <Route path="/appui-tns/fiche-minute" element={<Navigate to="/accompagnement-global/fiche-minute" replace />} />
+        <Route path="/appui-tns/analyse" element={<Navigate to="/accompagnement-global/lecture-globale" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </RoleProvider>
+  );
+}
