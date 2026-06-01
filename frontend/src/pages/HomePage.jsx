@@ -18,7 +18,7 @@ export function HomePage() {
           <img src="/logo-artag.png" alt="ARTAG" className="artag-logo" />
           <div className="home-brand-text">
             <strong>ARTAG</strong>
-            <span>Application métier</span>
+            <span>Accompagnement global</span>
           </div>
         </div>
 
@@ -31,70 +31,104 @@ export function HomePage() {
 
       <section className="home-hero-panel">
         <div className="home-hero-copy">
-          <p className="hero-kicker">APPLICATION MÉTIER ARTAG</p>
-          <h1>Outil parcours insertion</h1>
+          <p className="hero-kicker">FILE ACTIVE · MI-TEMPS · CONTINUITE</p>
+          <h1>Accompagnement global</h1>
           <p>
-            Un point d’entrée clair pour ouvrir un dossier, organiser les appuis
-            et sécuriser la continuité de service.
+            Suivi des personnes accompagnees, des rendez-vous, des actions et des alertes pour securiser une file active sur un mi-temps.
           </p>
         </div>
 
         <div className="home-hero-actions" aria-label="Action principale">
           <Link
-            to="/parcours-social-socio-professionnel/dossier"
+            to="/accompagnement-global"
             className="open-dossier-btn"
             onClick={() => setCurrentRole(ROLE_PROFESSIONNELLE)}
           >
-            Ouvrir le dossier de suivi
+            Ouvrir l'accompagnement global
+          </Link>
+          <Link
+            to="/accompagnement-global/fiche-minute"
+            className="home-secondary-action"
+            onClick={() => setCurrentRole(ROLE_PROFESSIONNELLE)}
+          >
+            Fiche minute rendez-vous
           </Link>
         </div>
       </section>
 
-      <section className="home-workspace" aria-label="Bureau quotidien">
+      <section className="home-workspace" aria-label="Bureau quotidien accompagnement global">
         <article className="bureau-card home-focus-card">
-          <p className="home-card-label">Repères rapides</p>
-          <h2>Mon bureau</h2>
+          <p className="home-card-label">Aujourd'hui</p>
+          <h2>Rendez-vous du jour</h2>
           <ul>
-            <li>Dossiers à reprendre</li>
-            <li>Alertes et échéances</li>
-            <li>Actions du jour</li>
-            <li>Brouillons professionnels</li>
+            <li>Voir les personnes recues aujourd'hui</li>
+            <li>Noter presence, absence ou report</li>
+            <li>Garder une trace courte apres contact</li>
           </ul>
         </article>
 
         <article className="bureau-card home-access-card">
-          <p className="home-card-label">Accès métier</p>
-          <h2>Choisir un espace</h2>
+          <p className="home-card-label">File active</p>
+          <h2>Dossiers accompagnes</h2>
+          <p>
+            Suivre les situations en accompagnement global : prochaine action, niveau de charge, documents attendus et points de vigilance.
+          </p>
           <div className="home-access-buttons">
             <Link
-              to="/parcours-social-socio-professionnel"
+              to="/accompagnement-global"
               onClick={() => setCurrentRole(ROLE_PROFESSIONNELLE)}
             >
-              Parcours social / socio-professionnel
-            </Link>
-
-            <Link
-              to="/appui-tns"
-              onClick={() => setCurrentRole(ROLE_APPUI_TNS)}
-            >
-              Appui TNS
+              Ouvrir les dossiers accompagnes
             </Link>
           </div>
         </article>
 
         <article className="bureau-card home-continuity-card">
-          <p className="home-card-label">Relais temporaire</p>
-          <h2>Continuité de service</h2>
+          <p className="home-card-label">Anti-perte</p>
+          <h2>Actions · Alertes · Le Camping</h2>
           <p>
-            Reprendre temporairement les dossiers d’une collègue ou d’un collègue,
-            avec uniquement les éléments nécessaires à la continuité.
+            Regrouper les actions a faire, les relances, la saisie Insertis, les questions metier et les sujets a reprendre plus tard.
           </p>
           <div className="home-access-buttons">
             <Link
-              to="/continuite-service"
+              to="/accompagnement-global/lecture-globale"
               onClick={() => setCurrentRole(ROLE_PROFESSIONNELLE)}
             >
-              Ouvrir la continuité de service
+              Lecture globale de situation
+            </Link>
+          </div>
+        </article>
+      </section>
+
+      <section className="home-workspace home-secondary-workspace" aria-label="Briques complementaires">
+        <article className="bureau-card">
+          <p className="home-card-label">Reperes</p>
+          <h2>Reperes d'autonomie</h2>
+          <p>
+            Observer des faits professionnels : documents apportes, comprehension, demarches realisees entre deux rendez-vous, capacite a demander de l'aide.
+          </p>
+        </article>
+
+        <article className="bureau-card">
+          <p className="home-card-label">Insertis</p>
+          <h2>Saisie preparee</h2>
+          <p>
+            Preparer une synthese courte : situation abordee, demarches realisees, freins identifies, actions prevues et prochaine etape.
+          </p>
+        </article>
+
+        <article className="bureau-card">
+          <p className="home-card-label">Brique dormante</p>
+          <h2>Activite independante</h2>
+          <p>
+            Les elements TNS restent conserves comme sous-rubrique de la situation professionnelle, sans porter la facade officielle de l'outil.
+          </p>
+          <div className="home-access-buttons">
+            <Link
+              to="/accompagnement-global/lecture-globale"
+              onClick={() => setCurrentRole(ROLE_APPUI_TNS)}
+            >
+              Ouvrir la sous-rubrique activite
             </Link>
           </div>
         </article>
