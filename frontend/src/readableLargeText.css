@@ -1,0 +1,210 @@
+/* ===== MODE LECTURE CONFORTABLE =====
+   Objectif : rendre l'outil lisible en entretien sans forcer la vue.
+   Ce fichier est charge en dernier pour agrandir les textes, champs et boutons. */
+
+:root {
+  font-size: 19px;
+}
+
+body {
+  font-size: 1.08rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.page-shell,
+.home-v4.home-premium {
+  font-size: 1.08rem !important;
+  line-height: 1.6 !important;
+}
+
+.page-shell {
+  width: min(1240px, calc(100% - 56px));
+  margin: 0 auto;
+  padding: 30px 0 72px;
+}
+
+.page-header {
+  gap: 22px !important;
+  align-items: center !important;
+}
+
+.page-header h1,
+.home-v4.home-premium .home-hero-copy h1 {
+  letter-spacing: -0.03em !important;
+}
+
+.page-header h1 {
+  font-size: clamp(2.25rem, 4vw, 3.6rem) !important;
+  line-height: 1.05 !important;
+  margin: 0 0 10px !important;
+}
+
+.page-intro,
+.section-help,
+.page-card p,
+.page-card li,
+.bureau-card p,
+.bureau-card li {
+  font-size: 1.12rem !important;
+  line-height: 1.65 !important;
+}
+
+.page-card,
+.bureau-card {
+  padding: 30px 32px !important;
+}
+
+.page-card h2,
+.bureau-card h2 {
+  font-size: 1.7rem !important;
+  line-height: 1.2 !important;
+  margin-bottom: 14px !important;
+}
+
+.page-card h3,
+.bureau-card h3 {
+  font-size: 1.32rem !important;
+  line-height: 1.25 !important;
+}
+
+.referentiel-label,
+.home-card-label {
+  font-size: 0.95rem !important;
+  letter-spacing: 0.06em !important;
+}
+
+label span,
+.identity-form-grid label span,
+.insertis-summary-field span {
+  font-size: 1.06rem !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important;
+}
+
+label small,
+.tns-diagnostic-page label small {
+  font-size: 1rem !important;
+  line-height: 1.45 !important;
+}
+
+input,
+select,
+textarea,
+button,
+.primary-button,
+.secondary-button,
+.small-action,
+.home-v4.home-premium .open-dossier-btn,
+.home-v4.home-premium .home-secondary-action,
+.home-v4.home-premium .home-access-buttons a {
+  font-size: 1.08rem !important;
+  line-height: 1.45 !important;
+}
+
+input,
+select {
+  min-height: 56px !important;
+  padding: 12px 16px !important;
+}
+
+textarea {
+  padding: 14px 16px !important;
+  line-height: 1.6 !important;
+}
+
+button,
+.primary-button,
+.secondary-button,
+.small-action,
+.home-v4.home-premium .open-dossier-btn,
+.home-v4.home-premium .home-secondary-action,
+.home-v4.home-premium .home-access-buttons a {
+  min-height: 58px !important;
+  padding: 12px 22px !important;
+  font-weight: 850 !important;
+}
+
+.checkbox-chip {
+  min-height: 52px !important;
+  padding: 12px 14px !important;
+}
+
+.checkbox-chip span {
+  font-size: 1.05rem !important;
+}
+
+.home-v4.home-premium .home-brand-text strong {
+  font-size: 1.18rem !important;
+}
+
+.home-v4.home-premium .home-brand-text span,
+.home-v4.home-premium .profile-box,
+.home-v4.home-premium .profile-box span {
+  font-size: 1.05rem !important;
+}
+
+.home-v4.home-premium .home-hero-copy p:not(.hero-kicker) {
+  font-size: 1.22rem !important;
+  line-height: 1.65 !important;
+}
+
+.home-v4.home-premium .bureau-card p,
+.home-v4.home-premium .bureau-card li {
+  font-size: 1.12rem !important;
+  line-height: 1.65 !important;
+}
+
+.home-v4.home-premium .bureau-card h2 {
+  font-size: 1.75rem !important;
+}
+
+.home-v4.home-premium .home-workspace {
+  gap: 24px !important;
+}
+
+.tns-select-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.tns-diagnostic-page .identity-form-grid,
+.identity-form-grid {
+  gap: 18px !important;
+}
+
+.tns-diagnostic-page textarea[rows="4"] {
+  min-height: 130px !important;
+}
+
+.tns-diagnostic-page textarea[rows="5"] {
+  min-height: 155px !important;
+}
+
+.tns-diagnostic-page textarea[rows="12"],
+.tns-diagnostic-page textarea[rows="16"] {
+  min-height: 310px !important;
+}
+
+@media (max-width: 900px) {
+  :root {
+    font-size: 18px;
+  }
+
+  .page-shell,
+  .home-v4.home-premium {
+    width: min(100% - 28px, 720px) !important;
+  }
+
+  .page-card,
+  .bureau-card {
+    padding: 24px 22px !important;
+  }
+
+  .tns-select-grid,
+  .identity-form-grid,
+  .page-grid,
+  .home-v4.home-premium .home-workspace {
+    grid-template-columns: 1fr !important;
+  }
+}
