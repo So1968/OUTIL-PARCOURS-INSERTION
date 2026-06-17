@@ -1,9 +1,10 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+﻿import { Navigate, Route, Routes } from "react-router-dom";
 import { PrototypeProfileBanner } from "./auth/PrototypeProfileBanner";
 import { RequireRole } from "./auth/RequireRole";
 import { RoleProvider } from "./auth/RoleContext";
 import { ROLE_APPUI_TNS, ROLE_PROFESSIONNELLE } from "./auth/roles";
 import { HomePage } from "./pages/HomePage";
+import { SasInsertisPage } from "./pages/SasInsertisPage";
 import { TnsAnalysePage } from "./pages/TnsAnalysePage";
 import { TnsFicheMinutePage } from "./pages/TnsFicheMinutePage";
 import { TnsPage } from "./pages/TnsPage";
@@ -16,6 +17,14 @@ export default function App() {
       <PrototypeProfileBanner />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route
+          path="/sas-insertis"
+          element={
+            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
+              <SasInsertisPage />
+            </RequireRole>
+          }
+        />
         <Route
           path="/accompagnement-global"
           element={
