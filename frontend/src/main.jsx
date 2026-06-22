@@ -7,6 +7,7 @@ import "./continuiteErgo.css";
 import "./parcoursReferentiel.css";
 import "./diagnosticReferentiel.css";
 import "./tnsErgo.css";
+import "./echeancesVigilances.css";
 import "./darkMode.css";
 import "./readableLargeText.css";
 import "./caravaneLisibilite.css";
@@ -18,4 +19,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </BrowserRouter>
   </React.StrictMode>,
 );
-
