@@ -3,27 +3,27 @@ import { Link } from "react-router-dom";
 const alertesSynthese = [
   {
     niveau: "urgent",
-    titre: "Contrats échus ou sans suite préparée",
-    valeur: "0",
-    detail: "À vérifier en priorité avant tout renouvellement.",
+    titre: "Sans étape en cours",
+    valeur: "À lancer",
+    detail: "Requête Insertis : bénéficiaires dont toutes les étapes ont une date de fin dépassée.",
   },
   {
     niveau: "attention",
     titre: "Contrats à échéance sous 60 jours",
     valeur: "3",
-    detail: "Issu de la requête Insertis : contrats à échéance à deux mois.",
+    detail: "Requête Insertis : contrats à échéance à deux mois.",
   },
   {
     niveau: "veille",
-    titre: "Rendez-vous à programmer",
-    valeur: "2",
-    detail: "Situations à sécuriser avant rupture de parcours.",
+    titre: "Sans entretien depuis le 23/04/2026",
+    valeur: "4",
+    detail: "Requête Insertis : bénéficiaires sans entretien physique individuel depuis la date saisie.",
   },
   {
     niveau: "stable",
     titre: "Dossiers à jour",
-    valeur: "15",
-    detail: "Suivis sans alerte immédiate identifiée.",
+    valeur: "À calculer",
+    detail: "Dossiers sans alerte immédiate après vérification des requêtes.",
   },
 ];
 
@@ -31,7 +31,7 @@ const lignesEcheances = [
   {
     personne: "Pierre D.",
     type: "Contrat d’accompagnement",
-    source: "Requête Insertis · contrats à échéance à deux mois",
+    source: "Contrats à échéance à deux mois",
     echeance: "À compléter depuis Insertis",
     delai: "≤ 60 jours",
     priorite: "orange",
@@ -41,7 +41,7 @@ const lignesEcheances = [
   {
     personne: "Paul-Kenzo W.",
     type: "Contrat d’accompagnement",
-    source: "Requête Insertis · contrats à échéance à deux mois",
+    source: "Contrats à échéance à deux mois",
     echeance: "À compléter depuis Insertis",
     delai: "≤ 60 jours",
     priorite: "orange",
@@ -51,12 +51,50 @@ const lignesEcheances = [
   {
     personne: "Troisième situation",
     type: "Contrat d’accompagnement",
-    source: "Requête Insertis · contrats à échéance à deux mois",
+    source: "Contrats à échéance à deux mois",
     echeance: "À compléter depuis Insertis",
     delai: "≤ 60 jours",
     priorite: "orange",
     action: "Identifier la personne dans l’export, compléter l’échéance et qualifier la priorité.",
     statut: "À compléter",
+  },
+  {
+    personne: "4 bénéficiaires",
+    type: "Entretien à reprogrammer",
+    source: "Bénéficiaires sans entretien · depuis le 23/04/2026",
+    echeance: "Date critère : 23/04/2026",
+    delai: "À traiter",
+    priorite: "gold",
+    action: "Vérifier s’il existe un entretien téléphonique, collectif ou physique non saisi, puis programmer ou tracer la suite.",
+    statut: "À exporter",
+  },
+  {
+    personne: "Bénéficiaires sans étape",
+    type: "Étape de parcours absente",
+    source: "Bénéficiaires sans étape",
+    echeance: "Date à renseigner avant lancement de requête",
+    delai: "Rupture possible",
+    priorite: "red",
+    action: "Lancer la requête avec une date de départ, exporter le résultat et créer une nouvelle étape ou une action de sécurisation.",
+    statut: "À lancer",
+  },
+];
+
+const requetesInsertis = [
+  {
+    titre: "Contrats à échéance à deux mois",
+    resultat: "3 éléments",
+    usage: "Anticiper les renouvellements et éviter les fins de contrat non préparées.",
+  },
+  {
+    titre: "Bénéficiaires sans entretien",
+    resultat: "4 éléments avec le critère depuis le 23/04/2026",
+    usage: "Repérer les personnes sans entretien présent depuis la date saisie et reposer un contact.",
+  },
+  {
+    titre: "Bénéficiaires sans étape",
+    resultat: "À lancer après saisie d’une date",
+    usage: "Repérer les parcours dont toutes les étapes sont dépassées et recréer une étape en cours.",
   },
 ];
 
@@ -70,8 +108,9 @@ const reglesRelance = [
 
 const champsV1 = [
   "Personne suivie",
-  "Type d’échéance : contrat, rendez-vous, document, orientation, formation, saisie Insertis",
-  "Date d’échéance ou délai restant",
+  "Type d’échéance : contrat, entretien, étape, rendez-vous, document, orientation, formation, saisie Insertis",
+  "Source de l’alerte : requête Insertis, rendez-vous, échange, document reçu",
+  "Date d’échéance ou date critère de la requête",
   "Niveau de priorité : rouge, orange, jaune, vert",
   "Action attendue et personne responsable",
   "Statut : à faire, en attente, fait, relais nécessaire",
@@ -87,8 +126,8 @@ export function EcheancesVigilancesPage() {
           <h1>Échéances et vigilances</h1>
           <p className="page-intro">
             Transformer les requêtes Insertis en tableau de suivi simple : voir ce qui arrive à échéance,
-            décider la prochaine action et éviter qu’un contrat, un rendez-vous ou un document attendu
-            disparaisse dans la charge mentale.
+            repérer les absences d’entretien ou d’étape, décider la prochaine action et éviter qu’un point
+            important disparaisse dans la charge mentale.
           </p>
         </div>
       </header>
@@ -107,19 +146,19 @@ export function EcheancesVigilancesPage() {
         <article className="vigilance-panel wide">
           <div className="vigilance-panel-heading">
             <p className="referentiel-label">V1 manuelle · depuis Insertis</p>
-            <h2>Contrats à échéance sous deux mois</h2>
+            <h2>Points de vigilance issus du tableau de bord</h2>
           </div>
 
-          <div className="vigilance-table" role="table" aria-label="Contrats à échéance">
+          <div className="vigilance-table" role="table" aria-label="Points de vigilance">
             <div className="vigilance-table-row header" role="row">
-              <span>Personne</span>
+              <span>Personne / groupe</span>
               <span>Type</span>
               <span>Délai</span>
               <span>Action utile</span>
               <span>Statut</span>
             </div>
             {lignesEcheances.map((ligne) => (
-              <div className="vigilance-table-row" role="row" key={ligne.personne}>
+              <div className="vigilance-table-row" role="row" key={`${ligne.personne}-${ligne.type}`}>
                 <span>
                   <strong>{ligne.personne}</strong>
                   <small>{ligne.source}</small>
@@ -138,21 +177,26 @@ export function EcheancesVigilancesPage() {
 
         <aside className="vigilance-side-stack">
           <article className="vigilance-panel">
-            <p className="referentiel-label">Repère métier</p>
-            <h2>Ce que le module doit éviter</h2>
-            <p>
-              Une fin de contrat non anticipée, une saisie Insertis oubliée, un rendez-vous non reposé
-              ou une pièce attendue qui bloque la continuité du parcours RSA.
-            </p>
+            <p className="referentiel-label">Requêtes repérées</p>
+            <h2>Tableau de bord Insertis</h2>
+            <ul className="vigilance-list">
+              {requetesInsertis.map((requete) => (
+                <li key={requete.titre}>
+                  <strong>{requete.titre}</strong><br />
+                  <span>{requete.resultat}</span><br />
+                  <small>{requete.usage}</small>
+                </li>
+              ))}
+            </ul>
           </article>
 
           <article className="vigilance-panel">
             <p className="referentiel-label">Priorisation</p>
             <h2>Lecture rapide</h2>
             <ul className="vigilance-list compact">
-              <li><b className="dot red" /> Rouge : rupture ou échéance dépassée.</li>
-              <li><b className="dot orange" /> Orange : moins de 60 jours.</li>
-              <li><b className="dot gold" /> Jaune : attente ou document manquant.</li>
+              <li><b className="dot red" /> Rouge : rupture ou absence d’étape en cours.</li>
+              <li><b className="dot orange" /> Orange : contrat à moins de 60 jours.</li>
+              <li><b className="dot gold" /> Jaune : entretien, pièce ou réponse à reprendre.</li>
               <li><b className="dot green" /> Vert : suivi à jour.</li>
             </ul>
           </article>
@@ -186,7 +230,8 @@ export function EcheancesVigilancesPage() {
         <p>
           Insertis reste l’outil officiel. Cette page sert de sas de pilotage personnel : elle aide à voir,
           prioriser et préparer les actions avant ou après la saisie officielle, sans stocker plus
-          d’informations sensibles que nécessaire.
+          d’informations sensibles que nécessaire. Les exports de requêtes peuvent ensuite servir à alimenter
+          manuellement cette V1.
         </p>
       </section>
 
