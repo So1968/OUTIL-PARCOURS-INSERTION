@@ -32,6 +32,15 @@ export function TnsPage() {
             Ouvrir la lecture globale
           </Link>
         </article>
+
+        <article className="page-card">
+          <p className="referentiel-label">Échéances · Insertis</p>
+          <h2>Échéances et vigilances</h2>
+          <p>Suivre les contrats à échéance, les rendez-vous à reposer, les documents attendus et les relances.</p>
+          <Link className="secondary-button" to="/accompagnement-global/echeances-vigilances">
+            Ouvrir les vigilances
+          </Link>
+        </article>
       </section>
 
       <Link className="back-link" to="/">
