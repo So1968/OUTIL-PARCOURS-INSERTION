@@ -1,0 +1,223 @@
+.vigilance-page {
+  background: #faf6ef;
+}
+
+.vigilance-summary-grid {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto 28px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.vigilance-summary-card,
+.vigilance-panel,
+.vigilance-note {
+  border: 1px solid #dccfbe;
+  border-radius: 26px;
+  background: #fffaf3;
+  box-shadow: 0 14px 32px rgba(63, 55, 47, 0.06);
+}
+
+.vigilance-summary-card {
+  padding: 22px;
+}
+
+.vigilance-summary-card strong {
+  display: inline-grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 18px;
+  color: #ffffff;
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.vigilance-summary-card h2 {
+  margin: 16px 0 8px;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.vigilance-summary-card p,
+.vigilance-panel p,
+.vigilance-note p {
+  margin: 0;
+  color: #6f6559;
+  line-height: 1.5;
+}
+
+.vigilance-summary-card.urgent strong,
+.priority-pill.red,
+.dot.red {
+  background: #b94d3e;
+}
+
+.vigilance-summary-card.attention strong,
+.priority-pill.orange,
+.dot.orange {
+  background: #c76446;
+}
+
+.vigilance-summary-card.veille strong,
+.priority-pill.gold,
+.dot.gold {
+  background: #c58e39;
+}
+
+.vigilance-summary-card.stable strong,
+.priority-pill.green,
+.dot.green {
+  background: #5d7c55;
+}
+
+.vigilance-layout {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto 22px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 20px;
+  align-items: start;
+}
+
+.vigilance-layout.second {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.vigilance-panel {
+  padding: 24px;
+}
+
+.vigilance-panel.wide {
+  overflow: hidden;
+}
+
+.vigilance-panel-heading {
+  margin-bottom: 18px;
+}
+
+.vigilance-panel h2,
+.vigilance-note h2 {
+  margin: 0 0 10px;
+  color: #3f372f;
+  font-size: 1.35rem;
+}
+
+.vigilance-table {
+  display: grid;
+  gap: 10px;
+}
+
+.vigilance-table-row {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr 0.85fr 1.45fr 0.75fr;
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  border-radius: 18px;
+  background: #faf6ef;
+  border: 1px solid #eadfce;
+}
+
+.vigilance-table-row.header {
+  background: #efe4d2;
+  color: #4b4239;
+  font-weight: 800;
+}
+
+.vigilance-table-row span {
+  min-width: 0;
+  line-height: 1.4;
+}
+
+.vigilance-table-row strong,
+.vigilance-table-row small {
+  display: block;
+}
+
+.vigilance-table-row small {
+  margin-top: 4px;
+  color: #756b60;
+  font-size: 0.82rem;
+}
+
+.priority-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 0.82rem;
+}
+
+.vigilance-side-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.vigilance-list {
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  color: #574f47;
+  line-height: 1.45;
+}
+
+.vigilance-list li {
+  position: relative;
+  padding-left: 22px;
+}
+
+.vigilance-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #9a9f76;
+}
+
+.vigilance-list.compact li {
+  padding-left: 0;
+}
+
+.vigilance-list.compact li::before {
+  display: none;
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  margin-right: 8px;
+}
+
+.vigilance-note {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto 22px;
+  padding: 24px;
+  background: #f4eadb;
+}
+
+@media (max-width: 1050px) {
+  .vigilance-summary-grid,
+  .vigilance-layout,
+  .vigilance-layout.second {
+    grid-template-columns: 1fr;
+  }
+
+  .vigilance-table-row {
+    grid-template-columns: 1fr;
+  }
+
+  .vigilance-table-row.header {
+    display: none;
+  }
+}
