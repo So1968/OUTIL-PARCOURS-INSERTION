@@ -13,6 +13,7 @@ const navigationItems = [
   { label: "File active", icon: "□", to: "/accompagnement-global" },
   { label: "Rendez-vous", icon: "◷", to: "/accompagnement-global" },
   { label: "Actions", icon: "✓", to: "/accompagnement-global/fiche-minute" },
+  { label: "Échéances", icon: "!", to: "/accompagnement-global/echeances-vigilances" },
   { label: "Parcours", icon: "⌁", to: "/accompagnement-global" },
   { label: "Référentiel", icon: "▤", to: "/accompagnement-global/lecture-globale" },
   { label: "Outils", icon: "⚙", to: "/accompagnement-global/lecture-globale" },
@@ -55,11 +56,12 @@ const caravanCards = [
   },
   {
     number: "5.",
-    title: "Alertes référentiel",
-    value: "3 alertes",
-    detail: "À consulter",
+    title: "Échéances",
+    value: "3 contrats",
+    detail: "Sous 60 jours",
     tone: "red",
     icon: "!",
+    to: "/accompagnement-global/echeances-vigilances",
   },
   {
     number: "6.",
@@ -89,7 +91,7 @@ const caravanCards = [
 
 const weekItems = [
   { text: "3 rendez-vous à venir", tone: "green" },
-  { text: "2 contrats à mettre à jour", tone: "gold" },
+  { text: "3 contrats à échéance sous 60 jours", tone: "gold" },
   { text: "4 diagnostics à compléter", tone: "red" },
   { text: "2 relais à organiser", tone: "green" },
 ];
@@ -101,8 +103,8 @@ const appointments = [
 ];
 
 const watchItems = [
-  "2 dossiers en dépassement de délai de traitement",
-  "5 contrats arrivent à échéance dans les 30 jours",
+  "3 contrats arrivent à échéance dans les 60 jours",
+  "2 rendez-vous à reprogrammer avant rupture de suivi",
   "3 pièces justificatives manquantes",
 ];
 
@@ -118,9 +120,9 @@ function PanelCard({ title, icon, children }) {
   );
 }
 
-function CaravanCard({ number, title, value, detail, tone, icon }) {
-  return (
-    <article className="caravan-module-card">
+function CaravanCard({ number, title, value, detail, tone, icon, to, onClick }) {
+  const content = (
+    <>
       <span className={`caravan-module-icon ${tone}`}>{icon}</span>
       <div className="caravan-module-copy">
         <h3>
@@ -129,8 +131,18 @@ function CaravanCard({ number, title, value, detail, tone, icon }) {
         <strong className={tone}>{value}</strong>
         <p>{detail}</p>
       </div>
-    </article>
+    </>
   );
+
+  if (to) {
+    return (
+      <Link className="caravan-module-card" to={to} onClick={onClick}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <article className="caravan-module-card">{content}</article>;
 }
 
 export function HomePage() {
@@ -201,7 +213,7 @@ export function HomePage() {
           <p className="caravan-kicker">POSTE DE PILOTAGE · RÉFÉRENTIEL · FILE ACTIVE</p>
           <h1>Poste de pilotage RSA – activité indépendante</h1>
           <p className="caravan-hero-subtitle">
-            Voir la file active, les rendez-vous, les actions et les repères du parcours.
+            Voir la file active, les rendez-vous, les actions, les échéances et les repères du parcours.
           </p>
         </section>
 
@@ -220,7 +232,7 @@ export function HomePage() {
 
               <div className="caravan-modules-grid">
                 {caravanCards.map((card) => (
-                  <CaravanCard key={card.title} {...card} />
+                  <CaravanCard key={card.title} {...card} onClick={setProfessionalRole} />
                 ))}
               </div>
 
@@ -265,7 +277,7 @@ export function HomePage() {
               </article>
               <article>
                 <h2>Repères clés</h2>
-                <p>8 suivis actifs avec évolution positive</p>
+                <p>3 contrats à anticiper sous 60 jours</p>
                 <p>4 passages d’étape cette semaine</p>
               </article>
             </section>
@@ -282,7 +294,7 @@ export function HomePage() {
                   <li key={item.text} className={item.tone}>{item.text}</li>
                 ))}
               </ul>
-              <Link to="/accompagnement-global" onClick={setProfessionalRole}>Voir le détail</Link>
+              <Link to="/accompagnement-global/echeances-vigilances" onClick={setProfessionalRole}>Voir le détail</Link>
             </PanelCard>
 
             <PanelCard title="Prochains rendez-vous" icon="◴">
@@ -310,7 +322,7 @@ export function HomePage() {
                   <li key={item}>{item}</li>
                 ))}
               </ul>
-              <Link to="/accompagnement-global/lecture-globale" onClick={setProfessionalRole}>Voir toutes les alertes</Link>
+              <Link to="/accompagnement-global/echeances-vigilances" onClick={setProfessionalRole}>Voir toutes les vigilances</Link>
             </PanelCard>
           </aside>
         </section>
