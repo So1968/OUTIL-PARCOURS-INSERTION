@@ -3,6 +3,7 @@ import { PrototypeProfileBanner } from "./auth/PrototypeProfileBanner";
 import { RequireRole } from "./auth/RequireRole";
 import { RoleProvider } from "./auth/RoleContext";
 import { ROLE_APPUI_TNS, ROLE_PROFESSIONNELLE } from "./auth/roles";
+import { EcheancesVigilancesPage } from "./pages/EcheancesVigilancesPage";
 import { HomePage } from "./pages/HomePage";
 import { SasInsertisPage } from "./pages/SasInsertisPage";
 import { TnsAnalysePage } from "./pages/TnsAnalysePage";
@@ -46,6 +47,14 @@ export default function App() {
           element={
             <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
               <TnsAnalysePage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/accompagnement-global/echeances-vigilances"
+          element={
+            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
+              <EcheancesVigilancesPage />
             </RequireRole>
           }
         />
