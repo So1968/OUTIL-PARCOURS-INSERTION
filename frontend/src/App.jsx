@@ -1,10 +1,12 @@
-﻿import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { PrototypeProfileBanner } from "./auth/PrototypeProfileBanner";
 import { RequireRole } from "./auth/RequireRole";
 import { RoleProvider } from "./auth/RoleContext";
 import { ROLE_APPUI_TNS, ROLE_PROFESSIONNELLE } from "./auth/roles";
+import { DossierPersonnePage } from "./pages/DossierPersonnePage";
 import { EcheancesVigilancesPage } from "./pages/EcheancesVigilancesPage";
 import { HomePage } from "./pages/HomePage";
+import { PilotageActionsPage } from "./pages/PilotageActionsPage";
 import { SasInsertisPage } from "./pages/SasInsertisPage";
 import { TnsAnalysePage } from "./pages/TnsAnalysePage";
 import { TnsFicheMinutePage } from "./pages/TnsFicheMinutePage";
@@ -23,6 +25,22 @@ export default function App() {
           element={
             <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
               <SasInsertisPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/pilotage-actions"
+          element={
+            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
+              <PilotageActionsPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/pilotage-actions/dossier/:dossierId"
+          element={
+            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
+              <DossierPersonnePage />
             </RequireRole>
           }
         />
