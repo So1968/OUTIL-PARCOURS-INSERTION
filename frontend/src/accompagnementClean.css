@@ -1,0 +1,244 @@
+/* Correctif ergonomie des anciennes pages accompagnement global.
+   Objectif : revenir à un poste de travail calme, centré et lisible. */
+
+.tns-page.tns-diagnostic-page,
+.page-shell.tns-page,
+.page-shell.tns-diagnostic-page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 22px 56px;
+  background: #F7F1E8;
+  color: #443E37;
+  font-family: Arial, system-ui, sans-serif;
+  letter-spacing: normal;
+}
+
+.tns-page .page-header,
+.tns-diagnostic-page .page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 18px;
+  padding: 0 0 16px;
+  border-bottom: 1px solid #D2C4B3;
+}
+
+.tns-page .page-logo,
+.tns-diagnostic-page .page-logo {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.tns-page .referentiel-label,
+.tns-diagnostic-page .referentiel-label {
+  display: inline-flex;
+  margin: 0 0 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #EFE4D2;
+  color: #6F765D;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tns-page h1,
+.tns-diagnostic-page h1 {
+  margin: 0;
+  color: #334052;
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.08;
+  letter-spacing: 0.02em;
+}
+
+.tns-page h2,
+.tns-diagnostic-page h2 {
+  margin: 0 0 12px;
+  color: #334052;
+  font-size: 22px;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+}
+
+.tns-page h3,
+.tns-diagnostic-page h3 {
+  margin: 0 0 8px;
+  color: #334052;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.tns-page .page-intro,
+.tns-diagnostic-page .page-intro,
+.tns-page p,
+.tns-diagnostic-page p {
+  color: #5D554B;
+  font-size: 15px;
+  line-height: 1.45;
+  letter-spacing: normal;
+}
+
+.tns-page .page-card,
+.tns-diagnostic-page .page-card,
+.tns-page .tns-focus-card,
+.tns-diagnostic-page .tns-focus-card {
+  width: auto;
+  max-width: none;
+  margin: 0 0 16px;
+  padding: 20px;
+  border: 1px solid #D2C4B3;
+  border-radius: 18px;
+  background: #FBF7EF;
+  box-shadow: 0 6px 14px rgba(63, 55, 47, 0.04);
+}
+
+.tns-page .page-grid,
+.tns-diagnostic-page .page-grid,
+.tns-page .identity-form-grid,
+.tns-diagnostic-page .identity-form-grid,
+.tns-page .referentiel-domaines-grid,
+.tns-diagnostic-page .referentiel-domaines-grid,
+.tns-page .dossier-domaines-grid,
+.tns-diagnostic-page .dossier-domaines-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.tns-page label,
+.tns-diagnostic-page label,
+.tns-page .insertis-summary-field,
+.tns-diagnostic-page .insertis-summary-field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  color: #4B443C;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.tns-page label span,
+.tns-diagnostic-page label span,
+.tns-page .insertis-summary-field span,
+.tns-diagnostic-page .insertis-summary-field span {
+  color: #4B443C;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: normal;
+}
+
+.tns-page input,
+.tns-page select,
+.tns-page textarea,
+.tns-diagnostic-page input,
+.tns-diagnostic-page select,
+.tns-diagnostic-page textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #D2C4B3;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #FBF7EF;
+  color: #443E37;
+  font-family: Arial, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: normal;
+}
+
+.tns-page textarea,
+.tns-diagnostic-page textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.tns-page .checkbox-chip,
+.tns-diagnostic-page .checkbox-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #D2C4B3;
+  border-radius: 14px;
+  background: #FBF7EF;
+}
+
+.tns-page .checkbox-chip input,
+.tns-diagnostic-page .checkbox-chip input {
+  width: 16px;
+  min-height: 16px;
+  flex: 0 0 auto;
+}
+
+.tns-page .identity-actions,
+.tns-diagnostic-page .identity-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.tns-page button,
+.tns-page .primary-button,
+.tns-page .secondary-button,
+.tns-diagnostic-page button,
+.tns-diagnostic-page .primary-button,
+.tns-diagnostic-page .secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #D2C4B3;
+  background: #E8DDCC;
+  color: #334052;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.1;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.tns-page .primary-button,
+.tns-diagnostic-page .primary-button {
+  border-color: #7F8A69;
+  background: #7F8A69;
+  color: #FFFFFF;
+}
+
+.tns-page .validation-message,
+.tns-diagnostic-page .validation-message {
+  margin: 0;
+  color: #6F765D;
+  font-weight: 900;
+}
+
+@media (max-width: 720px) {
+  .tns-page.tns-diagnostic-page,
+  .page-shell.tns-page,
+  .page-shell.tns-diagnostic-page {
+    padding: 20px 14px 42px;
+  }
+
+  .tns-page .page-header,
+  .tns-diagnostic-page .page-header {
+    align-items: flex-start;
+  }
+
+  .tns-page .page-logo,
+  .tns-diagnostic-page .page-logo {
+    width: 44px;
+    height: 44px;
+  }
+}
