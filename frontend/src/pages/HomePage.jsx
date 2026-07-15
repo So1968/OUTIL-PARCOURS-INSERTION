@@ -10,9 +10,9 @@ import "../homePremium.css";
 
 const navigationItems = [
   { label: "Accueil", active: true, icon: "⌂" },
-  { label: "File active", icon: "□", to: "/accompagnement-global" },
+  { label: "File active", icon: "□", to: "/pilotage-actions" },
   { label: "Rendez-vous", icon: "◷", to: "/accompagnement-global" },
-  { label: "Actions", icon: "✓", to: "/accompagnement-global/fiche-minute" },
+  { label: "Actions", icon: "✓", to: "/pilotage-actions" },
   { label: "Échéances", icon: "!", to: "/accompagnement-global/echeances-vigilances" },
   { label: "Parcours", icon: "⌁", to: "/accompagnement-global" },
   { label: "Référentiel", icon: "▤", to: "/accompagnement-global/lecture-globale" },
@@ -25,10 +25,11 @@ const caravanCards = [
   {
     number: "1.",
     title: "File active",
-    value: "20 dossiers",
-    detail: "À traiter : 7",
+    value: "Pilotage",
+    detail: "Importer et suivre",
     tone: "green",
     icon: "▰",
+    to: "/pilotage-actions",
   },
   {
     number: "2.",
@@ -40,19 +41,21 @@ const caravanCards = [
   },
   {
     number: "3.",
-    title: "Actions à venir",
-    value: "12 actions",
-    detail: "Prioritaires : 4",
+    title: "Actions à faire",
+    value: "Ouvrir la liste",
+    detail: "Filtrer et traiter",
     tone: "green",
     icon: "✓",
+    to: "/pilotage-actions",
   },
   {
     number: "4.",
     title: "Insertis à saisir",
-    value: "5 à saisir",
-    detail: "En attente",
+    value: "Traces",
+    detail: "À préparer",
     tone: "gold",
     icon: "▤",
+    to: "/pilotage-actions",
   },
   {
     number: "5.",
@@ -237,14 +240,14 @@ export function HomePage() {
               </div>
 
               <Link
-                to="/accompagnement-global"
+                to="/pilotage-actions"
                 className="caravan-enter-button"
                 onClick={setProfessionalRole}
               >
                 <span>↳</span>
                 <div>
-                  <strong>Entrer dans la caravane</strong>
-                  <small>Ouvrir le tableau de bord</small>
+                  <strong>Entrer dans le pilotage</strong>
+                  <small>Ouvrir la file active et les actions</small>
                 </div>
               </Link>
 
@@ -337,7 +340,7 @@ export function HomePage() {
 
         <Link
           className="tns-discreet-door"
-          to="/accompagnement-global/lecture-globale"
+          to="/pilotage-actions"
           onClick={() => setCurrentRole(ROLE_APPUI_TNS)}
         >
           Sous-rubrique activité indépendante
