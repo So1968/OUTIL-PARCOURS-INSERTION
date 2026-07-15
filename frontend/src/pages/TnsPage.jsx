@@ -16,10 +16,19 @@ export function TnsPage() {
 
       <section className="page-grid">
         <article className="page-card">
+          <p className="referentiel-label">File active · actions</p>
+          <h2>Pilotage actions Insertis</h2>
+          <p>Importer un export CSV Insertis, pre-remplir les actions, filtrer les priorites et ouvrir une fiche dossier.</p>
+          <Link className="primary-button" to="/pilotage-actions">
+            Ouvrir le pilotage
+          </Link>
+        </article>
+
+        <article className="page-card">
           <p className="referentiel-label">Rendez-vous</p>
           <h2>Fiche minute apres contact</h2>
           <p>Noter vite apres un contact, produire une trace courte et preparer la suite.</p>
-          <Link className="primary-button" to="/accompagnement-global/fiche-minute">
+          <Link className="secondary-button" to="/accompagnement-global/fiche-minute">
             Ouvrir la fiche minute
           </Link>
         </article>
