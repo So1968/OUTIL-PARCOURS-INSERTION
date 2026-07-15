@@ -9,6 +9,7 @@ import "./diagnosticReferentiel.css";
 import "./tnsErgo.css";
 import "./echeancesVigilances.css";
 import "./accompagnementClean.css";
+import "./interfaceSombre.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
