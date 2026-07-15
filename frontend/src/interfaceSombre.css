@@ -1,0 +1,163 @@
+:root {
+  color-scheme: dark;
+  background: #121417;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background: #121417 !important;
+  color: #EDE7DC !important;
+}
+
+body {
+  margin: 0;
+}
+
+.page-shell,
+.tns-page,
+.tns-diagnostic-page,
+main {
+  background: #121417 !important;
+  color: #EDE7DC !important;
+}
+
+.page-shell,
+.tns-page {
+  max-width: 1120px !important;
+  margin: 0 auto !important;
+  padding: 28px 22px 56px !important;
+}
+
+.page-header,
+header {
+  color: #EDE7DC !important;
+}
+
+.page-card,
+.tns-focus-card,
+section,
+article {
+  background: #1B1F24 !important;
+  border-color: #343B45 !important;
+  color: #EDE7DC !important;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22) !important;
+}
+
+h1,
+h2,
+h3,
+strong,
+label,
+label span,
+.page-intro,
+.section-help,
+.insertis-summary-field span,
+.identity-form-grid span,
+.referentiel-label {
+  color: #EDE7DC !important;
+}
+
+p,
+small,
+li,
+span,
+div {
+  color: inherit;
+}
+
+.referentiel-label,
+.validation-message {
+  color: #B9D2A1 !important;
+}
+
+input,
+select,
+textarea {
+  background: #0F1216 !important;
+  color: #F4EFE6 !important;
+  border: 1px solid #46515E !important;
+  box-shadow: none !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9DA7B2 !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #8EA36F !important;
+  outline-offset: 2px !important;
+  border-color: #8EA36F !important;
+}
+
+button,
+.primary-button,
+.secondary-button,
+a.secondary-button,
+a.primary-button {
+  border-radius: 999px !important;
+  border: 1px solid #5D6B4D !important;
+  background: #26301F !important;
+  color: #F4EFE6 !important;
+  font-weight: 800 !important;
+}
+
+.primary-button {
+  background: #6F7F55 !important;
+  border-color: #8EA36F !important;
+  color: #FFFFFF !important;
+}
+
+button:hover,
+a.secondary-button:hover,
+a.primary-button:hover {
+  filter: brightness(1.1);
+}
+
+.checkbox-chip,
+.dossier-domaines-grid label,
+.tns-select-grid label {
+  background: #171B20 !important;
+  border-color: #343B45 !important;
+  color: #EDE7DC !important;
+}
+
+.page-logo {
+  background: #F4EFE6 !important;
+  border-radius: 14px !important;
+  padding: 6px !important;
+}
+
+/* Bandeau prototype */
+.prototype-profile-banner,
+[class*="prototype"],
+[class*="Prototype"] {
+  background: #151A20 !important;
+  color: #EDE7DC !important;
+  border-color: #2F3742 !important;
+}
+
+/* Cartes inline des pages pilotage/dossier */
+[style*="background: rgb(251, 247, 239)"],
+[style*="background:#FBF7EF"],
+[style*="background: #FBF7EF"],
+[style*="background:#F7F1E8"],
+[style*="background: #F7F1E8"] {
+  background: #1B1F24 !important;
+  color: #EDE7DC !important;
+  border-color: #343B45 !important;
+}
+
+[style*="color: rgb(68, 62, 55)"],
+[style*="color:#443E37"],
+[style*="color: #443E37"],
+[style*="color:#334052"],
+[style*="color: #334052"],
+[style*="color:#5D554B"],
+[style*="color: #5D554B"] {
+  color: #EDE7DC !important;
+}
