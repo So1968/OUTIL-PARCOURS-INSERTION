@@ -1,351 +1,254 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { useRole } from "../auth/RoleContext";
-import {
-  ROLE_APPUI_TNS,
-  ROLE_DIRECTION,
-  ROLE_PROFESSIONNELLE,
-} from "../auth/roles";
-import "../homePremium.css";
+import { ROLE_PROFESSIONNELLE } from "../auth/roles";
 
-const navigationItems = [
-  { label: "Accueil", active: true, icon: "⌂" },
-  { label: "File active", icon: "□", to: "/pilotage-actions" },
-  { label: "Rendez-vous", icon: "◷", to: "/accompagnement-global" },
-  { label: "Actions", icon: "✓", to: "/pilotage-actions" },
-  { label: "Échéances", icon: "!", to: "/accompagnement-global/echeances-vigilances" },
-  { label: "Parcours", icon: "⌁", to: "/accompagnement-global" },
-  { label: "Référentiel", icon: "▤", to: "/accompagnement-global/lecture-globale" },
-  { label: "Outils", icon: "⚙", to: "/accompagnement-global/lecture-globale" },
-  { label: "Le Camping", icon: "△", to: "/accompagnement-global/lecture-globale" },
-  { label: "La Caravane", icon: "▱", to: "/accompagnement-global/lecture-globale" },
-];
-
-const caravanCards = [
+const actionsPrincipales = [
   {
-    number: "1.",
-    title: "File active",
-    value: "Pilotage",
-    detail: "Importer et suivre",
-    tone: "green",
-    icon: "▰",
-    to: "/pilotage-actions",
+    titre: "Pilotage actions Insertis",
+    texte: "Importer la liste, voir les actions à faire, ouvrir les dossiers et préparer les traces.",
+    lien: "/pilotage-actions",
+    bouton: "Ouvrir le pilotage",
+    principal: true,
   },
   {
-    number: "2.",
-    title: "Rendez-vous",
-    value: "Aujourd’hui : 3",
-    detail: "Cette semaine : 9",
-    tone: "terracotta",
-    icon: "◷",
+    titre: "Fiche minute",
+    texte: "Noter rapidement un contact et préparer une trace courte.",
+    lien: "/accompagnement-global/fiche-minute",
+    bouton: "Ouvrir la fiche",
   },
   {
-    number: "3.",
-    title: "Actions à faire",
-    value: "Ouvrir la liste",
-    detail: "Filtrer et traiter",
-    tone: "green",
-    icon: "✓",
-    to: "/pilotage-actions",
+    titre: "Lecture globale",
+    texte: "Qualifier la situation et préparer la prochaine action utile.",
+    lien: "/accompagnement-global/lecture-globale",
+    bouton: "Ouvrir la lecture",
   },
   {
-    number: "4.",
-    title: "Insertis à saisir",
-    value: "Traces",
-    detail: "À préparer",
-    tone: "gold",
-    icon: "▤",
-    to: "/pilotage-actions",
-  },
-  {
-    number: "5.",
-    title: "Échéances",
-    value: "3 contrats",
-    detail: "Sous 60 jours",
-    tone: "red",
-    icon: "!",
-    to: "/accompagnement-global/echeances-vigilances",
-  },
-  {
-    number: "6.",
-    title: "Repères d’évolution",
-    value: "8 suivis actifs",
-    detail: "Mises à jour récentes",
-    tone: "green",
-    icon: "↗",
-  },
-  {
-    number: "7.",
-    title: "Le Camping",
-    value: "Mes sujets",
-    detail: "à reprendre",
-    tone: "green",
-    icon: "△",
-  },
-  {
-    number: "8.",
-    title: "La Caravane",
-    value: "Points parcours",
-    detail: "à revoir",
-    tone: "gold",
-    icon: "▱",
+    titre: "Échéances et vigilances",
+    texte: "Surveiller les contrats, relances, documents et points à ne pas perdre.",
+    lien: "/accompagnement-global/echeances-vigilances",
+    bouton: "Voir les vigilances",
   },
 ];
 
-const weekItems = [
-  { text: "3 rendez-vous à venir", tone: "green" },
-  { text: "3 contrats à échéance sous 60 jours", tone: "gold" },
-  { text: "4 diagnostics à compléter", tone: "red" },
-  { text: "2 relais à organiser", tone: "green" },
+const reperes = [
+  "Importer le CSV Insertis dans le pilotage actions.",
+  "Cliquer sur Actions à faire pour filtrer la liste.",
+  "Ouvrir un dossier pour noter, prioriser et journaliser.",
 ];
 
-const appointments = [
-  { time: "10:00", name: "Claire D.", detail: "Point activité indépendante" },
-  { time: "14:30", name: "Julien R.", detail: "Suivi contrat d’engagement" },
-  { time: "16:00", name: "Samira B.", detail: "Point lancement activité" },
-];
-
-const watchItems = [
-  "3 contrats arrivent à échéance dans les 60 jours",
-  "2 rendez-vous à reprogrammer avant rupture de suivi",
-  "3 pièces justificatives manquantes",
-];
-
-function PanelCard({ title, icon, children }) {
-  return (
-    <article className="caravan-side-panel">
-      <div className="caravan-panel-heading">
-        <span className="caravan-panel-icon">{icon}</span>
-        <h2>{title}</h2>
-      </div>
-      {children}
-    </article>
-  );
-}
-
-function CaravanCard({ number, title, value, detail, tone, icon, to, onClick }) {
-  const content = (
-    <>
-      <span className={`caravan-module-icon ${tone}`}>{icon}</span>
-      <div className="caravan-module-copy">
-        <h3>
-          <span>{number}</span> {title}
-        </h3>
-        <strong className={tone}>{value}</strong>
-        <p>{detail}</p>
-      </div>
-    </>
-  );
-
-  if (to) {
-    return (
-      <Link className="caravan-module-card" to={to} onClick={onClick}>
-        {content}
-      </Link>
-    );
-  }
-
-  return <article className="caravan-module-card">{content}</article>;
-}
+const s = {
+  page: {
+    minHeight: "100vh",
+    background: "#F7F1E8",
+    color: "#443E37",
+    padding: "34px 26px 70px",
+    fontFamily: "Arial, system-ui, sans-serif",
+  },
+  wrap: {
+    maxWidth: "1120px",
+    margin: "0 auto",
+  },
+  header: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "22px",
+    paddingBottom: "22px",
+    borderBottom: "1px solid #D2C4B3",
+    marginBottom: "28px",
+  },
+  brand: {
+    display: "flex",
+    alignItems: "center",
+    gap: "16px",
+  },
+  logo: {
+    width: "58px",
+    height: "58px",
+    objectFit: "contain",
+    background: "#FBF7EF",
+    border: "1px solid #D2C4B3",
+    borderRadius: "10px",
+    padding: "6px",
+  },
+  label: {
+    margin: "0 0 6px",
+    color: "#6F765D",
+    fontSize: "12px",
+    fontWeight: 900,
+    letterSpacing: "0.16em",
+    textTransform: "uppercase",
+  },
+  h1: {
+    margin: 0,
+    color: "#334052",
+    fontSize: "30px",
+    lineHeight: 1.12,
+  },
+  signature: {
+    margin: 0,
+    color: "#746B60",
+    maxWidth: "280px",
+    textAlign: "right",
+    lineHeight: 1.35,
+    fontSize: "14px",
+  },
+  hero: {
+    background: "#FBF7EF",
+    border: "1px solid #D2C4B3",
+    borderRadius: "22px",
+    padding: "28px",
+    marginBottom: "20px",
+    boxShadow: "0 10px 24px rgba(63,55,47,0.06)",
+  },
+  heroTitle: {
+    margin: "0 0 10px",
+    color: "#334052",
+    fontSize: "34px",
+    lineHeight: 1.1,
+  },
+  heroText: {
+    margin: 0,
+    color: "#5D554B",
+    fontSize: "17px",
+    lineHeight: 1.45,
+    maxWidth: "820px",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+    gap: "16px",
+    marginTop: "18px",
+  },
+  card: {
+    background: "#FBF7EF",
+    border: "1px solid #D2C4B3",
+    borderRadius: "18px",
+    padding: "20px",
+    boxShadow: "0 8px 18px rgba(63,55,47,0.05)",
+  },
+  cardMain: {
+    background: "#EFE6D7",
+    border: "2px solid #7F8A69",
+    borderRadius: "18px",
+    padding: "20px",
+    boxShadow: "0 10px 22px rgba(63,55,47,0.08)",
+  },
+  cardTitle: {
+    margin: "0 0 10px",
+    color: "#334052",
+    fontSize: "21px",
+    lineHeight: 1.2,
+  },
+  cardText: {
+    margin: "0 0 16px",
+    color: "#5D554B",
+    lineHeight: 1.42,
+  },
+  button: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "40px",
+    padding: "9px 15px",
+    borderRadius: "999px",
+    background: "#E8DDCC",
+    color: "#334052",
+    textDecoration: "none",
+    fontWeight: 900,
+    border: "1px solid #D2C4B3",
+  },
+  buttonMain: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "40px",
+    padding: "9px 15px",
+    borderRadius: "999px",
+    background: "#7F8A69",
+    color: "white",
+    textDecoration: "none",
+    fontWeight: 900,
+    border: "1px solid #7F8A69",
+  },
+  aside: {
+    background: "#FBF7EF",
+    border: "1px solid #D2C4B3",
+    borderRadius: "18px",
+    padding: "20px",
+    marginTop: "18px",
+  },
+  list: {
+    margin: "10px 0 0",
+    paddingLeft: "20px",
+    color: "#5D554B",
+    lineHeight: 1.6,
+  },
+  note: {
+    marginTop: "18px",
+    color: "#746B60",
+    fontSize: "14px",
+    lineHeight: 1.45,
+  },
+};
 
 export function HomePage() {
   const { setCurrentRole } = useRole();
-
   const setProfessionalRole = () => setCurrentRole(ROLE_PROFESSIONNELLE);
 
   return (
-    <main className="home-caravan-shell" aria-label="Accueil poste de pilotage ARTAG">
-      <aside className="caravan-sidebar" aria-label="Navigation principale">
-        <div className="caravan-brand">
-          <img src="/logo-artag.png" alt="ARTAG" className="caravan-brand-logo" />
-          <strong>ARTAG</strong>
-        </div>
-
-        <nav className="caravan-nav">
-          {navigationItems.map((item) => {
-            const className = `caravan-nav-item ${item.active ? "active" : ""}`;
-            if (item.to) {
-              return (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  className={className}
-                  onClick={setProfessionalRole}
-                >
-                  <span>{item.icon}</span>
-                  {item.label}
-                </Link>
-              );
-            }
-
-            return (
-              <span key={item.label} className={className}>
-                <span>{item.icon}</span>
-                {item.label}
-              </span>
-            );
-          })}
-        </nav>
-
-        <div className="caravan-sidebar-tools">
-          <span className="caravan-nav-item muted"><span>⌕</span>Rechercher</span>
-          <span className="caravan-nav-item muted"><span>✉</span>Messages <b>2</b></span>
-          <span className="caravan-nav-item muted"><span>⚙</span>Paramètres</span>
-        </div>
-
-        <div className="caravan-user-card">
-          <span className="caravan-avatar">SM</span>
-          <div>
-            <strong>Sofia Martin</strong>
-            <small>Conseillère</small>
-            <em>● En ligne</em>
+    <main style={s.page} aria-label="Accueil poste de pilotage ARTAG">
+      <div style={s.wrap}>
+        <header style={s.header}>
+          <div style={s.brand}>
+            <img style={s.logo} src="/logo-artag.png" alt="ARTAG" />
+            <div>
+              <p style={s.label}>Outil de parcours et d’appui insertion</p>
+              <h1 style={s.h1}>Poste de travail RSA — activité indépendante</h1>
+            </div>
           </div>
-        </div>
-      </aside>
-
-      <section className="caravan-main">
-        <header className="caravan-topbar">
-          <div />
-          <div className="caravan-topbar-actions">
-            <span aria-label="Notifications">♢</span>
-            <span className="caravan-avatar small">SM</span>
-          </div>
+          <p style={s.signature}>Outil conçu par Sofia de los Rios dans le cadre de sa mission.</p>
         </header>
 
-        <section className="caravan-hero-copy">
-          <p className="caravan-kicker">POSTE DE PILOTAGE · RÉFÉRENTIEL · FILE ACTIVE</p>
-          <h1>Poste de pilotage RSA – activité indépendante</h1>
-          <p className="caravan-hero-subtitle">
-            Voir la file active, les rendez-vous, les actions, les échéances et les repères du parcours.
+        <section style={s.hero}>
+          <p style={s.label}>Accueil</p>
+          <h2 style={s.heroTitle}>Choisir l’action utile maintenant</h2>
+          <p style={s.heroText}>
+            Une entrée claire pour piloter la file active, préparer les actions et sécuriser les traces Insertis,
+            sans décor inutile ni informations fictives.
           </p>
         </section>
 
-        <section className="caravan-dashboard-grid">
-          <section className="caravan-scene" aria-label="Tableau de bord en forme de caravane">
-            <div className="modern-caravan">
-              <div className="caravan-roof" />
-              <div className="caravan-front-window" />
-              <div className="caravan-side-window" />
-              <div className="caravan-door-shape">
-                <span />
-              </div>
-              <div className="caravan-trim top" />
-              <div className="caravan-trim middle" />
-              <div className="caravan-prestige">PRESTIGE</div>
-
-              <div className="caravan-modules-grid">
-                {caravanCards.map((card) => (
-                  <CaravanCard key={card.title} {...card} onClick={setProfessionalRole} />
-                ))}
-              </div>
-
+        <section style={s.grid} aria-label="Actions principales">
+          {actionsPrincipales.map((action) => (
+            <article key={action.titre} style={action.principal ? s.cardMain : s.card}>
+              <h3 style={s.cardTitle}>{action.titre}</h3>
+              <p style={s.cardText}>{action.texte}</p>
               <Link
-                to="/pilotage-actions"
-                className="caravan-enter-button"
+                style={action.principal ? s.buttonMain : s.button}
+                to={action.lien}
                 onClick={setProfessionalRole}
               >
-                <span>↳</span>
-                <div>
-                  <strong>Entrer dans le pilotage</strong>
-                  <small>Ouvrir la file active et les actions</small>
-                </div>
+                {action.bouton}
               </Link>
-
-              <div className="caravan-wheel wheel-one" />
-              <div className="caravan-wheel wheel-two" />
-              <div className="caravan-step" />
-            </div>
-
-            <div className="caravan-plant plant-left" />
-            <div className="caravan-plant plant-right" />
-            <div className="caravan-lantern" />
-            <div className="caravan-rug" />
-
-            <section className="caravan-overview-strip" aria-label="Vue d’ensemble">
-              <article>
-                <h2>Vue d’ensemble</h2>
-                <div className="overview-metrics">
-                  <span><small>Dossiers en cours</small><strong>20</strong></span>
-                  <span><small>Actions en cours</small><strong>12</strong></span>
-                  <span><small>Rendez-vous cette semaine</small><strong>9</strong></span>
-                </div>
-              </article>
-              <article>
-                <h2>Avancement global</h2>
-                <div className="global-progress">
-                  <strong>68%</strong>
-                  <span>des suivis à jour</span>
-                  <i aria-hidden="true" />
-                </div>
-              </article>
-              <article>
-                <h2>Repères clés</h2>
-                <p>3 contrats à anticiper sous 60 jours</p>
-                <p>4 passages d’étape cette semaine</p>
-              </article>
-            </section>
-
-            <p className="caravan-security-note">
-              ARTAG est un outil sécurisé et conforme au référentiel socio-professionnel. Vos données sont protégées.
-            </p>
-          </section>
-
-          <aside className="caravan-right-column" aria-label="Informations de la semaine">
-            <PanelCard title="Cette semaine" icon="◷">
-              <ul className="caravan-status-list">
-                {weekItems.map((item) => (
-                  <li key={item.text} className={item.tone}>{item.text}</li>
-                ))}
-              </ul>
-              <Link to="/accompagnement-global/echeances-vigilances" onClick={setProfessionalRole}>Voir le détail</Link>
-            </PanelCard>
-
-            <PanelCard title="Prochains rendez-vous" icon="◴">
-              <div className="caravan-appointments">
-                {appointments.map((appointment) => (
-                  <Link
-                    key={`${appointment.time}-${appointment.name}`}
-                    to="/accompagnement-global"
-                    onClick={setProfessionalRole}
-                  >
-                    <time>{appointment.time}</time>
-                    <span>
-                      <strong>{appointment.name}</strong>
-                      <small>{appointment.detail}</small>
-                    </span>
-                  </Link>
-                ))}
-              </div>
-              <Link to="/accompagnement-global" onClick={setProfessionalRole}>Voir tous les rendez-vous</Link>
-            </PanelCard>
-
-            <PanelCard title="À surveiller" icon="◎">
-              <ul className="caravan-watch-list">
-                {watchItems.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-              <Link to="/accompagnement-global/echeances-vigilances" onClick={setProfessionalRole}>Voir toutes les vigilances</Link>
-            </PanelCard>
-          </aside>
+            </article>
+          ))}
         </section>
 
-        <Link
-          className="direction-door"
-          to="/direction"
-          onClick={() => setCurrentRole(ROLE_DIRECTION)}
-        >
-          Direction / CA
-        </Link>
+        <section style={s.aside}>
+          <p style={s.label}>Méthode simple</p>
+          <ul style={s.list}>
+            {reperes.map((repere) => (
+              <li key={repere}>{repere}</li>
+            ))}
+          </ul>
+        </section>
 
-        <Link
-          className="tns-discreet-door"
-          to="/pilotage-actions"
-          onClick={() => setCurrentRole(ROLE_APPUI_TNS)}
-        >
-          Sous-rubrique activité indépendante
-        </Link>
-      </section>
+        <p style={s.note}>
+          Insertis reste l’outil officiel. Ce poste de travail sert à préparer, prioriser et reprendre les informations
+          utiles sans ajouter de bruit visuel.
+        </p>
+      </div>
     </main>
   );
 }
