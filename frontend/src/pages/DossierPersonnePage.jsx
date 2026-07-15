@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 const STORAGE_ROWS = "artag-pilotage-actions-rows-v1";
 const STORAGE_ACTIONS = "artag-pilotage-actions-suivi-v1";
 const STORAGE_JOURNAL = "artag-pilotage-actions-journal-v1";
-const STORAGE_INTERVENTIONS = "artag-pilotage-interventions-brouillons-v1";
+const STORAGE_INTERVENTIONS = "artag-pilotage-interventions-brouillons-v2";
 
 function lireJson(cle, defaut) {
   try {
@@ -62,9 +62,6 @@ function actionVide() {
 
 function interventionVide() {
   return {
-    date: new Date().toISOString().slice(0, 10),
-    typeContact: "Entretien",
-    objet: "",
     faits: "",
     parolePersonne: "",
     analyse: "",
@@ -72,6 +69,10 @@ function interventionVide() {
     vigilance: "",
     suitePrevue: "",
   };
+}
+
+function texteCourt(valeurTexte, remplacement = "à compléter") {
+  return String(valeurTexte || "").trim() || remplacement;
 }
 
 function scorePriorite(action) {
@@ -113,43 +114,31 @@ const TACHES = [
   "Autre action à préciser",
 ];
 
-function texteCourt(valeurTexte, remplacement = "à compléter") {
-  return String(valeurTexte || "").trim() || remplacement;
-}
-
 function genererTraceInsertis(row, rows, intervention, action) {
   return [
-    `Contact du ${texteCourt(intervention.date)} — ${texteCourt(intervention.typeContact)}.`,
-    `Objet : ${texteCourt(intervention.objet)}.`,
     `Éléments abordés : ${texteCourt(intervention.faits)}.`,
     intervention.parolePersonne ? `Parole de la personne : ${intervention.parolePersonne}.` : "",
-    intervention.demarches ? `Action réalisée : ${intervention.demarches}.` : "",
+    intervention.analyse ? `Analyse professionnelle : ${intervention.analyse}.` : "",
+    intervention.demarches ? `Démarches réalisées : ${intervention.demarches}.` : "",
+    `Vigilance : ${texteCourt(intervention.vigilance || action.vigilance, "aucune vigilance particulière renseignée")}.`,
     `Suite prévue : ${texteCourt(intervention.suitePrevue || action.prochaineAction)}.`,
-    `Vigilance : ${texteCourt(intervention.vigilance || action.vigilance)}.`,
     `Dossier : ${affichageDossier(row, rows)}.`,
   ].filter(Boolean).join("\n");
 }
 
-function genererMonSuiviSocial(row, rows, intervention, action) {
+function genererMonSuiviSocial(intervention, action) {
   return [
-    `Date de l’intervention : ${texteCourt(intervention.date)}`,
-    `Type de contact : ${texteCourt(intervention.typeContact)}`,
-    `Personne suivie : ${affichageDossier(row, rows)}`,
-    `Numéro Insertis : ${valeur(row, ["Numéro Insertis", "Numero Insertis"]) || "à préciser"}`,
+    `Faits / situation abordée :\n${texteCourt(intervention.faits)}`,
     "",
-    `Objet de l’intervention : ${texteCourt(intervention.objet)}`,
+    `Parole de la personne :\n${texteCourt(intervention.parolePersonne, "non renseigné")}`,
     "",
-    `Éléments de situation / faits :\n${texteCourt(intervention.faits)}`,
-    "",
-    `Éléments exprimés par la personne :\n${texteCourt(intervention.parolePersonne, "non renseigné")}`,
-    "",
-    `Analyse professionnelle / repères :\n${texteCourt(intervention.analyse, "à compléter si nécessaire")}`,
+    `Analyse professionnelle :\n${texteCourt(intervention.analyse, "à compléter si nécessaire")}`,
     "",
     `Démarches réalisées :\n${texteCourt(intervention.demarches, "à compléter")}`,
     "",
-    `Points de vigilance :\n${texteCourt(intervention.vigilance || action.vigilance, "aucune vigilance particulière renseignée")}`,
+    `Vigilance :\n${texteCourt(intervention.vigilance || action.vigilance, "aucune vigilance particulière renseignée")}`,
     "",
-    `Suite prévue / prochaine action :\n${texteCourt(intervention.suitePrevue || action.prochaineAction, "à préciser")}`,
+    `Suite prévue :\n${texteCourt(intervention.suitePrevue || action.prochaineAction, "à préciser")}`,
   ].join("\n");
 }
 
@@ -232,7 +221,7 @@ export function DossierPersonnePage() {
   const suggestion = suggestionPriorite(action);
   const synthese = useMemo(() => (row ? syntheseDossier(row, rows, action, journal) : ""), [row, rows, action, journal]);
   const traceInsertis = useMemo(() => (row ? genererTraceInsertis(row, rows, intervention, action) : ""), [row, rows, intervention, action]);
-  const noteMonSuiviSocial = useMemo(() => (row ? genererMonSuiviSocial(row, rows, intervention, action) : ""), [row, rows, intervention, action]);
+  const noteMonSuiviSocial = useMemo(() => genererMonSuiviSocial(intervention, action), [intervention, action]);
 
   function enregistrerAction(nextAction) {
     const next = { ...actions, [idCourant]: nextAction };
@@ -283,7 +272,7 @@ export function DossierPersonnePage() {
   }
 
   function ajouterInterventionAuJournal() {
-    ajouterEntreeJournal("Intervention / suivi social", noteMonSuiviSocial, intervention.date);
+    ajouterEntreeJournal("Intervention / suivi social", noteMonSuiviSocial, new Date().toISOString().slice(0, 10));
     enregistrerAction({ ...action, traceInsertis: "À faire", prochaineAction: intervention.suitePrevue || action.prochaineAction });
     setMessage("Intervention ajoutée au journal. Trace Insertis marquée à faire.");
   }
@@ -315,7 +304,7 @@ export function DossierPersonnePage() {
           <div>
             <p style={s.label}>Dossier personne</p>
             <h1 style={s.h1}>{affichageDossier(row, rows)}</h1>
-            <p style={s.intro}>Saisie unique : une intervention peut produire une trace Insertis, une note Mon Suivi Social et une entrée de journal.</p>
+            <p style={s.intro}>Saisie sociale unique : les cases techniques restent à cocher dans Insertis ou Mon Suivi Social ; ici on prépare uniquement le contenu professionnel.</p>
           </div>
           <Link style={s.link} to="/pilotage-actions">Retour pilotage</Link>
         </header>
@@ -374,15 +363,10 @@ export function DossierPersonnePage() {
         </section>
 
         <section style={s.card}>
-          <p style={s.label}>Saisie unique d’intervention</p>
-          <h2 style={s.h2}>Insertis + Mon Suivi Social</h2>
-          <p style={s.intro}>Tu remplis une fois. L’outil prépare ensuite deux textes à copier, puis peut ajouter l’intervention au journal du dossier.</p>
-          <div style={s.grid}>
-            <label style={s.field}>Date<input style={s.input} type="date" value={intervention.date} onChange={(event) => updateIntervention("date", event.target.value)} /></label>
-            <label style={s.field}>Type de contact<select style={s.input} value={intervention.typeContact} onChange={(event) => updateIntervention("typeContact", event.target.value)}><option>Entretien</option><option>Téléphone</option><option>SMS</option><option>Mail</option><option>Partenaire</option><option>Administratif</option><option>Autre</option></select></label>
-          </div>
+          <p style={s.label}>Saisie sociale unique</p>
+          <h2 style={s.h2}>Contenu libre à copier dans Insertis et Mon Suivi Social</h2>
+          <p style={s.intro}>On ne ressaisit pas les cases techniques déjà prévues dans les logiciels. Ici : faits, parole, analyse, démarches, vigilance et suite.</p>
           <div style={{ ...s.grid, marginTop: "12px" }}>
-            <label style={s.field}>Objet<textarea style={s.textarea} value={intervention.objet} onChange={(event) => updateIntervention("objet", event.target.value)} /></label>
             <label style={s.field}>Faits / situation abordée<textarea style={s.textarea} value={intervention.faits} onChange={(event) => updateIntervention("faits", event.target.value)} /></label>
             <label style={s.field}>Parole de la personne<textarea style={s.textarea} value={intervention.parolePersonne} onChange={(event) => updateIntervention("parolePersonne", event.target.value)} /></label>
             <label style={s.field}>Analyse professionnelle<textarea style={s.textarea} value={intervention.analyse} onChange={(event) => updateIntervention("analyse", event.target.value)} /></label>
@@ -391,8 +375,8 @@ export function DossierPersonnePage() {
             <label style={s.field}>Suite prévue<textarea style={s.textarea} value={intervention.suitePrevue} onChange={(event) => updateIntervention("suitePrevue", event.target.value)} /></label>
           </div>
           <div style={{ ...s.grid, marginTop: "12px" }}>
-            <label style={s.field}>Texte court pour Insertis<textarea style={{ ...s.textarea, minHeight: "180px" }} readOnly value={traceInsertis} /></label>
-            <label style={s.field}>Note pour Mon Suivi Social<textarea style={{ ...s.textarea, minHeight: "180px" }} readOnly value={noteMonSuiviSocial} /></label>
+            <label style={s.field}>Texte court pour Insertis<textarea style={{ ...s.textarea, minHeight: "170px" }} readOnly value={traceInsertis} /></label>
+            <label style={s.field}>Note pour Mon Suivi Social<textarea style={{ ...s.textarea, minHeight: "170px" }} readOnly value={noteMonSuiviSocial} /></label>
           </div>
           <div style={s.actions}>
             <button style={s.mainButton} type="button" onClick={() => copierTexte(traceInsertis, "Texte Insertis")}>Copier pour Insertis</button>
@@ -411,13 +395,13 @@ export function DossierPersonnePage() {
           <label style={{ ...s.field, marginTop: "12px" }}>Nouvelle note<textarea style={s.textarea} value={nouvelleNote} onChange={(event) => setNouvelleNote(event.target.value)} /></label>
           <button style={s.mainButton} type="button" onClick={ajouterJournal}>Ajouter au journal</button>
           <div style={{ marginTop: "16px" }}>
-            {journal.length === 0 ? <p style={s.info}>Aucune note journalisée pour le moment.</p> : journal.map((item) => <article key={item.id} style={{ ...s.card, marginBottom: "10px", padding: "14px" }}><p style={{ ...s.info, margin: 0 }}><strong>{item.date} — {item.type}</strong></p><p style={{ ...s.info, marginBottom: 0, whiteSpace: "pre-wrap" }}>{item.texte}</p></article>)}
+            {journal.length === 0 ? <p style={s.info}>Aucune note journalisée pour le moment.</p> : journal.map((item) => <article key={item.id} style={{ ...s.card, marginBottom: "10px", padding: "12px" }}><p style={{ ...s.info, margin: 0 }}><strong>{item.date} — {item.type}</strong></p><p style={{ ...s.info, marginBottom: 0 }}>{item.texte}</p></article>)}
           </div>
         </section>
 
         <section style={s.card}>
           <p style={s.label}>Synthèse dossier</p>
-          <textarea style={{ ...s.textarea, minHeight: "220px" }} readOnly value={synthese} />
+          <textarea style={{ ...s.textarea, minHeight: "230px" }} readOnly value={synthese} />
           <div style={s.actions}>
             <button style={s.mainButton} type="button" onClick={() => copierTexte(synthese, "Synthèse dossier")}>Copier la synthèse</button>
             {message && <p style={s.message}>{message}</p>}
