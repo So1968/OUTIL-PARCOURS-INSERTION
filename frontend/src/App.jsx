@@ -5,83 +5,37 @@ import { RoleProvider } from "./auth/RoleContext";
 import { ROLE_APPUI_TNS, ROLE_PROFESSIONNELLE } from "./auth/roles";
 import { DossierPersonnePage } from "./pages/DossierPersonnePage";
 import { EcheancesVigilancesPage } from "./pages/EcheancesVigilancesPage";
-import { HomePage } from "./pages/HomePage";
 import { PilotageActionsPage } from "./pages/PilotageActionsPage";
 import { SasInsertisPage } from "./pages/SasInsertisPage";
-import { TnsAnalysePage } from "./pages/TnsAnalysePage";
-import { TnsFicheMinutePage } from "./pages/TnsFicheMinutePage";
-import { TnsPage } from "./pages/TnsPage";
 
 const ACCOMPAGNEMENT_ROLES = [ROLE_PROFESSIONNELLE, ROLE_APPUI_TNS];
+
+function PilotageProtege() {
+  return (
+    <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
+      <PilotageActionsPage />
+    </RequireRole>
+  );
+}
 
 export default function App() {
   return (
     <RoleProvider>
       <PrototypeProfileBanner />
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route
-          path="/sas-insertis"
-          element={
-            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
-              <SasInsertisPage />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/pilotage-actions"
-          element={
-            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
-              <PilotageActionsPage />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/pilotage-actions/dossier/:dossierId"
-          element={
-            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
-              <DossierPersonnePage />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/accompagnement-global"
-          element={
-            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
-              <TnsPage />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/accompagnement-global/fiche-minute"
-          element={
-            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
-              <TnsFicheMinutePage />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/accompagnement-global/lecture-globale"
-          element={
-            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
-              <TnsAnalysePage />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/accompagnement-global/echeances-vigilances"
-          element={
-            <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
-              <EcheancesVigilancesPage />
-            </RequireRole>
-          }
-        />
+        <Route path="/" element={<Navigate to="/pilotage-actions" replace />} />
+        <Route path="/pilotage-actions" element={<PilotageProtege />} />
+        <Route path="/pilotage-actions/dossier/:dossierId" element={<RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}><DossierPersonnePage /></RequireRole>} />
+        <Route path="/sas-insertis" element={<RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}><SasInsertisPage /></RequireRole>} />
+        <Route path="/accompagnement-global/echeances-vigilances" element={<RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}><EcheancesVigilancesPage /></RequireRole>} />
 
-        {/* Anciennes routes conservées mais sorties de la façade principale. */}
-        <Route path="/appui-tns" element={<Navigate to="/accompagnement-global" replace />} />
-        <Route path="/appui-tns/fiche-minute" element={<Navigate to="/accompagnement-global/fiche-minute" replace />} />
-        <Route path="/appui-tns/analyse" element={<Navigate to="/accompagnement-global/lecture-globale" replace />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/accompagnement-global" element={<Navigate to="/pilotage-actions" replace />} />
+        <Route path="/accompagnement-global/fiche-minute" element={<Navigate to="/pilotage-actions" replace />} />
+        <Route path="/accompagnement-global/lecture-globale" element={<Navigate to="/pilotage-actions" replace />} />
+        <Route path="/appui-tns" element={<Navigate to="/pilotage-actions" replace />} />
+        <Route path="/appui-tns/fiche-minute" element={<Navigate to="/pilotage-actions" replace />} />
+        <Route path="/appui-tns/analyse" element={<Navigate to="/pilotage-actions" replace />} />
+        <Route path="*" element={<Navigate to="/pilotage-actions" replace />} />
       </Routes>
     </RoleProvider>
   );
