@@ -292,6 +292,22 @@ function genererBilanAutonomie(autonomie) {
   return lignes.join("\n");
 }
 
+function genererParcoursAutonomie(autonomie, action) {
+  const bilan = bilanAutonomie(autonomie);
+  return [
+    "Parcours autonomie — étapes de travail",
+    "",
+    `Lecture actuelle : ${bilan.phrase}`,
+    `Points d’appui : ${bilan.pointsAppui.length ? bilan.pointsAppui.join(", ") : "à repérer avec la personne"}.`,
+    `Points ressources : ${bilan.pointsRessource.length ? bilan.pointsRessource.join(", ") : "à préciser"}.`,
+    "",
+    "Prochaine étape utile :",
+    action.prochaineAction || "Choisir avec la personne une action simple et réaliste à faire avant le prochain contact.",
+    "",
+    "Principe de travail : ne pas faire à la place si la personne peut faire avec un appui léger ; renforcer seulement les domaines bloquants.",
+  ].join("\n");
+}
+
 const TACHES = [
   "Appeler la personne",
   "Envoyer un SMS de rappel",
@@ -384,6 +400,7 @@ const s = {
   wrap: { maxWidth: "1080px", margin: "0 auto" },
   header: { display: "flex", justifyContent: "space-between", gap: "18px", alignItems: "flex-start", marginBottom: "18px" },
   card: { background: "#FBF7EF", border: "1px solid #D2C4B3", borderRadius: "16px", padding: "18px", marginBottom: "14px", boxShadow: "0 6px 14px rgba(63,55,47,0.04)" },
+  compactCard: { background: "#FBF7EF", border: "1px solid #D2C4B3", borderRadius: "16px", padding: "14px", marginBottom: "12px" },
   grid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "12px" },
   questionGrid: { display: "grid", gridTemplateColumns: "minmax(260px, 1.1fr) minmax(260px, 0.9fr)", gap: "14px", alignItems: "start", padding: "14px", border: "1px solid #D2C4B3", borderRadius: "14px", background: "#FBF7EF", marginTop: "10px" },
   label: { margin: "0 0 6px", color: "#6F765D", fontSize: "11px", fontWeight: 900, letterSpacing: "0.12em", textTransform: "uppercase" },
@@ -403,6 +420,8 @@ const s = {
   checkboxLine: { display: "flex", gap: "10px", alignItems: "flex-start", padding: "8px 0", color: "#4B443C", fontWeight: 800 },
   checkboxText: { display: "block", fontSize: "13px", color: "#746B60", fontWeight: 500, marginTop: "2px" },
   message: { color: "#6F765D", fontWeight: 900 },
+  summary: { cursor: "pointer", fontWeight: 900, color: "#334052", fontSize: "18px", listStyle: "none" },
+  summaryHelp: { display: "block", marginTop: "4px", color: "#5D554B", fontSize: "14px", fontWeight: 500 },
 };
 
 export function DossierPersonnePage() {
@@ -430,10 +449,12 @@ export function DossierPersonnePage() {
   const suggestion = suggestionPriorite(action);
   const syntheseAutonomieRedigee = useMemo(() => genererSyntheseAutonomieRedigee(autonomie), [autonomie]);
   const texteAutonomie = useMemo(() => genererBilanAutonomie(autonomie), [autonomie]);
+  const parcoursAutonomie = useMemo(() => genererParcoursAutonomie(autonomie, action), [autonomie, action]);
   const bilanSocle = useMemo(() => bilanAutonomie(autonomie), [autonomie]);
   const synthese = useMemo(() => (row ? syntheseDossier(row, rows, action, journal, autonomie) : ""), [row, rows, action, journal, autonomie]);
   const traceInsertis = useMemo(() => (row ? genererTraceInsertis(row, rows, intervention, action, autonomie) : ""), [row, rows, intervention, action, autonomie]);
   const noteMonSuiviSocial = useMemo(() => genererMonSuiviSocial(intervention, action, syntheseAutonomieRedigee), [intervention, action, syntheseAutonomieRedigee]);
+  const derniereNote = journal[0];
 
   function enregistrerAction(nextAction) {
     const next = { ...actions, [idCourant]: nextAction };
@@ -496,12 +517,17 @@ export function DossierPersonnePage() {
     setMessage("Synthèse autonomie ajoutée au journal.");
   }
 
+  function ajouterParcoursAuJournal() {
+    ajouterEntreeJournal("Parcours autonomie", parcoursAutonomie, new Date().toISOString().slice(0, 10));
+    setMessage("Parcours autonomie ajouté au journal.");
+  }
+
   function alimenterAnalyseAvecAutonomie() {
     const base = texteCourt(intervention.analyse, "");
     const ajout = syntheseAutonomieRedigee.trim();
     const prochaineAnalyse = base ? `${base}\n\n${ajout}` : ajout;
     updateIntervention("analyse", prochaineAnalyse);
-    setMessage("Synthèse autonomie ajoutée dans l’analyse professionnelle du dossier écrit.");
+    setMessage("Synthèse autonomie ajoutée dans l’analyse professionnelle.");
   }
 
   function ajouterInterventionAuJournal() {
@@ -537,27 +563,88 @@ export function DossierPersonnePage() {
           <div>
             <p style={s.label}>Dossier personne</p>
             <h1 style={s.h1}>{affichageDossier(row, rows)}</h1>
-            <p style={s.intro}>Saisie sociale unique : évaluer l’autonomie, piloter l’action, préparer la trace Insertis et la note Mon Suivi Social.</p>
+            <p style={s.intro}>D’abord le journal et l’action du jour. Les grilles autonomie restent fermées et s’ouvrent seulement quand elles sont utiles.</p>
           </div>
           <Link style={s.link} to="/pilotage-actions">Retour pilotage</Link>
         </header>
 
-        <section style={s.card}>
-          <p style={s.label}>Cadre Insertis</p>
+        {message && <section style={s.compactCard}><p style={s.message}>{message}</p></section>}
+
+        <section style={s.compactCard}>
+          <p style={s.label}>Cadre rapide</p>
           <div style={s.grid}>
             <p style={s.info}><strong>Numéro Insertis :</strong><br />{valeur(row, ["Numéro Insertis", "Numero Insertis"]) || "à préciser"}</p>
             <p style={s.info}><strong>Ville :</strong><br />{valeur(row, ["Ville", "Commune"]) || "à préciser"}</p>
             <p style={s.info}><strong>CLI :</strong><br />{row.CLI || "à préciser"}</p>
-            <p style={s.info}><strong>CTM :</strong><br />{row.CTM || "à préciser"}</p>
             <p style={s.info}><strong>Accompagnement :</strong><br />{valeur(row, ["Type d'accompagnement", "Type d’accompagnement"]) || "à préciser"}</p>
-            <p style={s.info}><strong>Intensité :</strong><br />{valeur(row, ["Intensité", "Intensite"]) || "à préciser"}</p>
           </div>
         </section>
 
         <section style={s.card}>
-          <p style={s.label}>Socle autonomie retrouvé dans Git</p>
-          <h2 style={s.h2}>8 questions validées du socle autonomie</h2>
-          <p style={s.intro}>Ces questions sont celles de l’historique du projet. Elles ne sont pas réinventées. Le socle prépare l’approfondissement, il ne le remplace pas.</p>
+          <p style={s.label}>1. Journal du dossier</p>
+          <h2 style={s.h2}>Reprendre vite ce qui s’est passé</h2>
+          {derniereNote ? (
+            <article style={s.scoreBox}>
+              <p style={{ ...s.info, margin: 0 }}><strong>Dernière note : {derniereNote.date} — {derniereNote.type}</strong></p>
+              <p style={{ ...s.info, marginBottom: 0 }}>{derniereNote.texte}</p>
+            </article>
+          ) : (
+            <p style={s.info}>Aucune note journalisée pour le moment.</p>
+          )}
+
+          <div style={{ ...s.grid, marginTop: "12px" }}>
+            <label style={s.field}>Date<input style={s.input} type="date" value={dateNote} onChange={(event) => setDateNote(event.target.value)} /></label>
+            <label style={s.field}>Type de note<select style={s.input} value={typeNote} onChange={(event) => setTypeNote(event.target.value)}><option>Contact</option><option>Administratif</option><option>Échéance</option><option>Vigilance</option><option>Partenaire</option><option>À reprendre</option></select></label>
+          </div>
+          <label style={{ ...s.field, marginTop: "12px" }}>Nouvelle note<textarea style={s.textarea} value={nouvelleNote} onChange={(event) => setNouvelleNote(event.target.value)} placeholder="Noter l’essentiel tout de suite : ce qui est dit, ce qui est fait, ce qui est à reprendre." /></label>
+          <button style={s.mainButton} type="button" onClick={ajouterJournal}>Ajouter au journal</button>
+
+          <details style={{ marginTop: "14px" }}>
+            <summary style={s.summary}>Voir tout le journal<span style={s.summaryHelp}>Notes classées de la plus récente à la plus ancienne.</span></summary>
+            <div style={{ marginTop: "12px" }}>
+              {journal.length === 0 ? <p style={s.info}>Aucune note journalisée pour le moment.</p> : journal.map((item) => <article key={item.id} style={{ ...s.card, marginBottom: "10px", padding: "12px" }}><p style={{ ...s.info, margin: 0 }}><strong>{item.date} — {item.type}</strong></p><p style={{ ...s.info, marginBottom: 0 }}>{item.texte}</p></article>)}
+            </div>
+          </details>
+        </section>
+
+        <section style={s.card}>
+          <p style={s.label}>2. Action du moment</p>
+          <h2 style={s.h2}>Ce qu’il faut faire maintenant</h2>
+          <div style={s.grid}>
+            <p style={s.info}><strong>Priorité :</strong><br />{action.priorite}</p>
+            <p style={s.info}><strong>Échéance :</strong><br />{action.echeance || "à préciser"}</p>
+            <p style={s.info}><strong>Vigilance :</strong><br />{action.vigilance}</p>
+            <p style={s.info}><strong>Statut :</strong><br />{action.statut}</p>
+          </div>
+          <label style={{ ...s.field, marginTop: "12px" }}>Prochaine action<textarea style={s.textarea} value={action.prochaineAction} onChange={(event) => updateAction("prochaineAction", event.target.value)} placeholder="La prochaine chose concrète à faire." /></label>
+          <select style={{ ...s.input, marginTop: "8px" }} value="" onChange={(event) => { ajouterTache(event.target.value); event.target.value = ""; }}><option value="">Ajouter une tâche rapide...</option>{TACHES.map((tache) => <option key={tache} value={tache}>{tache}</option>)}</select>
+        </section>
+
+        <section style={s.card}>
+          <p style={s.label}>3. Note du contact</p>
+          <h2 style={s.h2}>Préparer la trace et la note sociale</h2>
+          <p style={s.intro}>Cette partie reste ouverte parce qu’elle sert pendant l’échange. Les grilles d’évaluation sont plus bas, fermées.</p>
+          <div style={{ ...s.grid, marginTop: "12px" }}>
+            <label style={s.field}>Faits / situation abordée<textarea style={s.textarea} value={intervention.faits} onChange={(event) => updateIntervention("faits", event.target.value)} /></label>
+            <label style={s.field}>Parole de la personne<textarea style={s.textarea} value={intervention.parolePersonne} onChange={(event) => updateIntervention("parolePersonne", event.target.value)} /></label>
+            <label style={s.field}>Analyse professionnelle<textarea style={s.textarea} value={intervention.analyse} onChange={(event) => updateIntervention("analyse", event.target.value)} /></label>
+            <label style={s.field}>Démarches réalisées<textarea style={s.textarea} value={intervention.demarches} onChange={(event) => updateIntervention("demarches", event.target.value)} /></label>
+            <label style={s.field}>Vigilance<textarea style={s.textarea} value={intervention.vigilance} onChange={(event) => updateIntervention("vigilance", event.target.value)} /></label>
+            <label style={s.field}>Suite prévue<textarea style={s.textarea} value={intervention.suitePrevue} onChange={(event) => updateIntervention("suitePrevue", event.target.value)} /></label>
+          </div>
+          <div style={{ ...s.grid, marginTop: "12px" }}>
+            <label style={s.field}>Texte court pour Insertis<textarea style={{ ...s.textarea, minHeight: "150px" }} readOnly value={traceInsertis} /></label>
+            <label style={s.field}>Note pour Mon Suivi Social<textarea style={{ ...s.textarea, minHeight: "150px" }} readOnly value={noteMonSuiviSocial} /></label>
+          </div>
+          <div style={s.actions}>
+            <button style={s.mainButton} type="button" onClick={() => copierTexte(traceInsertis, "Texte Insertis")}>Copier pour Insertis</button>
+            <button style={s.mainButton} type="button" onClick={() => copierTexte(noteMonSuiviSocial, "Note Mon Suivi Social")}>Copier pour Mon Suivi Social</button>
+            <button style={s.button} type="button" onClick={ajouterInterventionAuJournal}>Ajouter au journal + marquer Insertis à faire</button>
+          </div>
+        </section>
+
+        <details style={s.card}>
+          <summary style={s.summary}>Socle autonomie — ouvrir si besoin<span style={s.summaryHelp}>Les 8 questions validées du projet sont fermées par défaut.</span></summary>
           <div style={s.scoreBox}>
             <p style={s.info}><strong>Lecture :</strong> {bilanSocle.phrase}</p>
             <p style={s.info}><strong>Domaines d’appui :</strong> {bilanSocle.pointsAppui.length ? bilanSocle.pointsAppui.join(", ") : "non repérés à ce stade"}</p>
@@ -583,19 +670,27 @@ export function DossierPersonnePage() {
           ))}
 
           <div style={{ ...s.grid, marginTop: "12px" }}>
-            <label style={s.field}>Synthèse rédigée pour le dossier écrit<textarea style={{ ...s.textarea, minHeight: "260px" }} readOnly value={syntheseAutonomieRedigee} /></label>
-            <label style={s.field}>Repères détaillés conservés<textarea style={{ ...s.textarea, minHeight: "260px" }} readOnly value={texteAutonomie} /></label>
+            <label style={s.field}>Synthèse rédigée pour le dossier écrit<textarea style={{ ...s.textarea, minHeight: "220px" }} readOnly value={syntheseAutonomieRedigee} /></label>
+            <label style={s.field}>Repères détaillés conservés<textarea style={{ ...s.textarea, minHeight: "220px" }} readOnly value={texteAutonomie} /></label>
           </div>
           <div style={s.actions}>
             <button style={s.mainButton} type="button" onClick={() => copierTexte(syntheseAutonomieRedigee, "Synthèse autonomie")}>Copier synthèse autonomie</button>
             <button style={s.mainButton} type="button" onClick={alimenterAnalyseAvecAutonomie}>Alimenter l’analyse professionnelle</button>
             <button style={s.button} type="button" onClick={ajouterAutonomieAuJournal}>Ajouter au journal</button>
           </div>
-        </section>
+        </details>
 
-        <section style={s.card}>
-          <p style={s.label}>Grille complémentaire Métropole / Insertis retrouvée dans Git</p>
-          <h2 style={s.h2}>Questions de relecture institutionnelle</h2>
+        <details style={s.card}>
+          <summary style={s.summary}>Parcours autonomie — ouvrir après le socle<span style={s.summaryHelp}>Transformer les repères en étapes simples et réalistes.</span></summary>
+          <textarea style={{ ...s.textarea, minHeight: "220px", marginTop: "12px" }} readOnly value={parcoursAutonomie} />
+          <div style={s.actions}>
+            <button style={s.mainButton} type="button" onClick={() => copierTexte(parcoursAutonomie, "Parcours autonomie")}>Copier parcours autonomie</button>
+            <button style={s.button} type="button" onClick={ajouterParcoursAuJournal}>Ajouter au journal</button>
+          </div>
+        </details>
+
+        <details style={s.card}>
+          <summary style={s.summary}>Relecture institutionnelle Métropole / Insertis — ouvrir si besoin<span style={s.summaryHelp}>Grille complémentaire retrouvée dans Git, fermée par défaut.</span></summary>
           <p style={s.intro}>Cette grille complète le socle. Elle sert à relire la situation et préparer la formalisation dans Insertis, sans remplacer l’échange principal.</p>
           <div style={s.grid}>
             {GRILLE_COMPLEMENTAIRE.map((item) => (
@@ -605,10 +700,10 @@ export function DossierPersonnePage() {
               </article>
             ))}
           </div>
-        </section>
+        </details>
 
-        <section style={s.card}>
-          <p style={s.label}>Évaluation rapide de priorité</p>
+        <details style={s.card}>
+          <summary style={s.summary}>Évaluation de priorité complète — ouvrir si besoin<span style={s.summaryHelp}>À utiliser quand il faut recalculer ou justifier la priorité.</span></summary>
           <p style={s.intro}>Coche ce qui est vrai. L’outil propose une priorité, mais tu gardes la main.</p>
           <div style={s.grid}>
             {[
@@ -631,10 +726,10 @@ export function DossierPersonnePage() {
             <p style={s.info}>{suggestion.phrase}</p>
             <button style={s.mainButton} type="button" onClick={appliquerSuggestion}>Appliquer la suggestion</button>
           </div>
-        </section>
+        </details>
 
-        <section style={s.card}>
-          <p style={s.label}>Pilotage du dossier</p>
+        <details style={s.card}>
+          <summary style={s.summary}>Pilotage détaillé — ouvrir pour modifier les champs<span style={s.summaryHelp}>Les champs techniques sont cachés pour alléger la fiche.</span></summary>
           <div style={s.grid}>
             <label style={s.field}>Priorité retenue<select style={s.input} value={action.priorite} onChange={(event) => updateAction("priorite", event.target.value)}><option>À qualifier</option><option>Priorité 1</option><option>Priorité 2</option><option>Priorité 3</option><option>À reporter</option></select></label>
             <label style={s.field}>Échéance<input style={s.input} type="date" value={action.echeance} onChange={(event) => updateAction("echeance", event.target.value)} /></label>
@@ -642,55 +737,14 @@ export function DossierPersonnePage() {
             <label style={s.field}>Statut<select style={s.input} value={action.statut} onChange={(event) => updateAction("statut", event.target.value)}><option>À faire</option><option>En cours</option><option>En attente</option><option>Fait</option><option>Reporté</option></select></label>
             <label style={s.field}>Trace Insertis<select style={s.input} value={action.traceInsertis} onChange={(event) => updateAction("traceInsertis", event.target.value)}><option>À prévoir</option><option>À faire</option><option>Faite</option><option>Pas nécessaire</option></select></label>
           </div>
-          <div style={{ ...s.grid, marginTop: "12px" }}>
-            <label style={s.field}>Prochaine action<textarea style={s.textarea} value={action.prochaineAction} onChange={(event) => updateAction("prochaineAction", event.target.value)} /><select style={{ ...s.input, marginTop: "8px" }} value="" onChange={(event) => { ajouterTache(event.target.value); event.target.value = ""; }}><option value="">Ajouter une tâche...</option>{TACHES.map((tache) => <option key={tache} value={tache}>{tache}</option>)}</select></label>
-            <label style={s.field}>Note de suivi<textarea style={s.textarea} value={action.note} onChange={(event) => updateAction("note", event.target.value)} /></label>
-          </div>
-        </section>
-
-        <section style={s.card}>
-          <p style={s.label}>Saisie sociale unique</p>
-          <h2 style={s.h2}>Contenu libre à copier dans Insertis et Mon Suivi Social</h2>
-          <p style={s.intro}>La note Mon Suivi Social reprend aussi la synthèse autonomie issue des réponses au socle.</p>
-          <div style={{ ...s.grid, marginTop: "12px" }}>
-            <label style={s.field}>Faits / situation abordée<textarea style={s.textarea} value={intervention.faits} onChange={(event) => updateIntervention("faits", event.target.value)} /></label>
-            <label style={s.field}>Parole de la personne<textarea style={s.textarea} value={intervention.parolePersonne} onChange={(event) => updateIntervention("parolePersonne", event.target.value)} /></label>
-            <label style={s.field}>Analyse professionnelle<textarea style={s.textarea} value={intervention.analyse} onChange={(event) => updateIntervention("analyse", event.target.value)} /></label>
-            <label style={s.field}>Démarches réalisées<textarea style={s.textarea} value={intervention.demarches} onChange={(event) => updateIntervention("demarches", event.target.value)} /></label>
-            <label style={s.field}>Vigilance<textarea style={s.textarea} value={intervention.vigilance} onChange={(event) => updateIntervention("vigilance", event.target.value)} /></label>
-            <label style={s.field}>Suite prévue<textarea style={s.textarea} value={intervention.suitePrevue} onChange={(event) => updateIntervention("suitePrevue", event.target.value)} /></label>
-          </div>
-          <div style={{ ...s.grid, marginTop: "12px" }}>
-            <label style={s.field}>Texte court pour Insertis<textarea style={{ ...s.textarea, minHeight: "170px" }} readOnly value={traceInsertis} /></label>
-            <label style={s.field}>Note pour Mon Suivi Social<textarea style={{ ...s.textarea, minHeight: "170px" }} readOnly value={noteMonSuiviSocial} /></label>
-          </div>
-          <div style={s.actions}>
-            <button style={s.mainButton} type="button" onClick={() => copierTexte(traceInsertis, "Texte Insertis")}>Copier pour Insertis</button>
-            <button style={s.mainButton} type="button" onClick={() => copierTexte(noteMonSuiviSocial, "Note Mon Suivi Social")}>Copier pour Mon Suivi Social</button>
-            <button style={s.button} type="button" onClick={ajouterInterventionAuJournal}>Ajouter au journal + marquer Insertis à faire</button>
-          </div>
-        </section>
-
-        <section style={s.card}>
-          <p style={s.label}>Journal du dossier</p>
-          <p style={s.info}>Notes classées par date, de la plus récente à la plus ancienne.</p>
-          <div style={s.grid}>
-            <label style={s.field}>Date<input style={s.input} type="date" value={dateNote} onChange={(event) => setDateNote(event.target.value)} /></label>
-            <label style={s.field}>Type de note<select style={s.input} value={typeNote} onChange={(event) => setTypeNote(event.target.value)}><option>Contact</option><option>Administratif</option><option>Échéance</option><option>Vigilance</option><option>Partenaire</option><option>À reprendre</option></select></label>
-          </div>
-          <label style={{ ...s.field, marginTop: "12px" }}>Nouvelle note<textarea style={s.textarea} value={nouvelleNote} onChange={(event) => setNouvelleNote(event.target.value)} /></label>
-          <button style={s.mainButton} type="button" onClick={ajouterJournal}>Ajouter au journal</button>
-          <div style={{ marginTop: "16px" }}>
-            {journal.length === 0 ? <p style={s.info}>Aucune note journalisée pour le moment.</p> : journal.map((item) => <article key={item.id} style={{ ...s.card, marginBottom: "10px", padding: "12px" }}><p style={{ ...s.info, margin: 0 }}><strong>{item.date} — {item.type}</strong></p><p style={{ ...s.info, marginBottom: 0 }}>{item.texte}</p></article>)}
-          </div>
-        </section>
+          <label style={{ ...s.field, marginTop: "12px" }}>Note de suivi<textarea style={s.textarea} value={action.note} onChange={(event) => updateAction("note", event.target.value)} /></label>
+        </details>
 
         <section style={s.card}>
           <p style={s.label}>Synthèse dossier</p>
           <textarea style={{ ...s.textarea, minHeight: "230px" }} readOnly value={synthese} />
           <div style={s.actions}>
             <button style={s.mainButton} type="button" onClick={() => copierTexte(synthese, "Synthèse dossier")}>Copier la synthèse</button>
-            {message && <p style={s.message}>{message}</p>}
           </div>
         </section>
       </div>
