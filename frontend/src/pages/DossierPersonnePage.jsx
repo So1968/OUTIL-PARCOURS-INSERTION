@@ -84,49 +84,49 @@ const QUESTIONS_AUTONOMIE = [
   {
     id: "demarches",
     domaine: "Démarches / droits",
-    question: "Pour vos papiers et vos démarches, vous vous y retrouvez comment en ce moment ?",
-    repere: "CAF, RSA, DTR, impôts, courriers, justificatifs, ouverture ou maintien des droits.",
+    question: "Quand vous recevez un courrier ou une demande — CAF, RSA, impôts — que faites-vous en premier ?",
+    repere: "Comprendre la demande, repérer le délai, chercher les justificatifs, demander de l’aide si besoin.",
   },
   {
     id: "organisation",
     domaine: "Organisation",
-    question: "Pour vous organiser dans ce que vous avez à faire, vous vous en sortez comment ?",
+    question: "Quand il y a plusieurs choses à faire, comment choisissez-vous par quoi commencer ?",
     repere: "Rendez-vous, priorités, papiers à apporter, rappels, étapes entre deux contacts.",
   },
   {
     id: "budget",
     domaine: "Budget",
-    question: "Pour gérer l’argent au quotidien, vous vous en sortez comment ?",
+    question: "Pour les dépenses, les factures ou les dettes, qu’est-ce qui est facile et qu’est-ce qui est difficile ?",
     repere: "Charges, dettes, échéances, reste à vivre, capacité à anticiper les paiements.",
   },
   {
     id: "sante",
     domaine: "Santé",
-    question: "Pour votre santé, les rendez-vous ou les soins, vous vous en sortez comment ?",
+    question: "Pour prendre ou suivre un rendez-vous de santé, de quoi avez-vous besoin ?",
     repere: "Accès aux soins, rendez-vous, couverture, frein santé exprimé sans poser de diagnostic.",
   },
   {
     id: "mobilite",
     domaine: "Mobilité",
-    question: "Pour vous déplacer là où vous avez besoin d’aller, ça se passe comment pour vous ?",
-    repere: "Venir aux rendez-vous, démarches extérieures, transport, coût, dépendance à un tiers.",
+    question: "Pour aller à un rendez-vous ou faire une démarche, qu’est-ce qui vous aide ou vous bloque ?",
+    repere: "Transport, distance, coût, disponibilité, dépendance à un tiers, fatigue ou organisation.",
   },
   {
     id: "ecritNumerique",
     domaine: "Écrit / numérique",
-    question: "Pour les courriers, les papiers ou les démarches sur téléphone, vous vous en sortez comment ?",
+    question: "Pour lire un courrier, envoyer un mail ou utiliser un espace en ligne, qu’est-ce qui est facile ou difficile ?",
     repere: "Lecture, écriture, mails, mots de passe, comptes en ligne, scan, téléphone.",
   },
   {
     id: "famille",
     domaine: "Vie familiale",
-    question: "Avec tout ce que vous avez à gérer dans la famille, pour vos démarches, vous vous en sortez comment ?",
+    question: "Dans la famille ou à la maison, qu’est-ce qui prend beaucoup de place en ce moment ?",
     repere: "Charge familiale, aidance, isolement, soutien, contraintes de garde ou de soins.",
   },
   {
     id: "projet",
     domaine: "Projet / mise en mouvement",
-    question: "Quand vous voulez faire avancer quelque chose pour vous, vous y arrivez comment ?",
+    question: "Quand vous voulez régler un problème ou avancer un projet, qu’est-ce qui vous aide à commencer ?",
     repere: "Pouvoir d’agir, capacité à initier une démarche, confiance, besoin d’appui pour passer à l’action.",
   },
 ];
@@ -486,7 +486,7 @@ export function DossierPersonnePage() {
                   {NIVEAUX_AUTONOMIE.map((niveau) => <option key={niveau}>{niveau}</option>)}
                 </select>
                 <span>Observation courte</span>
-                <textarea style={s.textarea} value={autonomie[`${question.id}Note`]} onChange={(event) => updateAutonomie(`${question.id}Note`, event.target.value)} placeholder="Ex. ce que la personne fait seule, ce qui bloque, appui nécessaire..." />
+                <textarea style={s.textarea} value={autonomie[`${question.id}Note`]} onChange={(event) => updateAutonomie(`${question.id}Note`, event.target.value)} placeholder="Ce que la personne fait seule, ce qui bloque, appui utile..." />
               </div>
             </div>
           ))}
