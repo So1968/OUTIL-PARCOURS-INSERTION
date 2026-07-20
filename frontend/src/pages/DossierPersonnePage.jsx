@@ -5,6 +5,7 @@ const STORAGE_ROWS = "artag-pilotage-actions-rows-v1";
 const STORAGE_ACTIONS = "artag-pilotage-actions-suivi-v1";
 const STORAGE_JOURNAL = "artag-pilotage-actions-journal-v1";
 const STORAGE_INTERVENTIONS = "artag-pilotage-interventions-brouillons-v2";
+const STORAGE_AUTONOMIE = "artag-pilotage-autonomie-socle-v1";
 
 function lireJson(cle, defaut) {
   try {
@@ -71,6 +72,73 @@ function interventionVide() {
   };
 }
 
+const NIVEAUX_AUTONOMIE = [
+  "Non évalué",
+  "Autonome",
+  "Autonomie partielle",
+  "Besoin d'appui régulier",
+  "Besoin d'appui renforcé",
+];
+
+const QUESTIONS_AUTONOMIE = [
+  {
+    id: "demarches",
+    domaine: "Démarches / droits",
+    question: "Pour vos papiers et vos démarches, vous vous y retrouvez comment en ce moment ?",
+    repere: "CAF, RSA, DTR, impôts, courriers, justificatifs, ouverture ou maintien des droits.",
+  },
+  {
+    id: "organisation",
+    domaine: "Organisation",
+    question: "Pour vous organiser dans ce que vous avez à faire, vous vous en sortez comment ?",
+    repere: "Rendez-vous, priorités, papiers à apporter, rappels, étapes entre deux contacts.",
+  },
+  {
+    id: "budget",
+    domaine: "Budget",
+    question: "Pour gérer l’argent au quotidien, vous vous en sortez comment ?",
+    repere: "Charges, dettes, échéances, reste à vivre, capacité à anticiper les paiements.",
+  },
+  {
+    id: "sante",
+    domaine: "Santé",
+    question: "Pour votre santé, les rendez-vous ou les soins, vous vous en sortez comment ?",
+    repere: "Accès aux soins, rendez-vous, couverture, frein santé exprimé sans poser de diagnostic.",
+  },
+  {
+    id: "mobilite",
+    domaine: "Mobilité",
+    question: "Pour vous déplacer là où vous avez besoin d’aller, ça se passe comment pour vous ?",
+    repere: "Venir aux rendez-vous, démarches extérieures, transport, coût, dépendance à un tiers.",
+  },
+  {
+    id: "ecritNumerique",
+    domaine: "Écrit / numérique",
+    question: "Pour les courriers, les papiers ou les démarches sur téléphone, vous vous en sortez comment ?",
+    repere: "Lecture, écriture, mails, mots de passe, comptes en ligne, scan, téléphone.",
+  },
+  {
+    id: "famille",
+    domaine: "Vie familiale",
+    question: "Avec tout ce que vous avez à gérer dans la famille, pour vos démarches, vous vous en sortez comment ?",
+    repere: "Charge familiale, aidance, isolement, soutien, contraintes de garde ou de soins.",
+  },
+  {
+    id: "projet",
+    domaine: "Projet / mise en mouvement",
+    question: "Quand vous voulez faire avancer quelque chose pour vous, vous y arrivez comment ?",
+    repere: "Pouvoir d’agir, capacité à initier une démarche, confiance, besoin d’appui pour passer à l’action.",
+  },
+];
+
+function autonomieVide() {
+  return QUESTIONS_AUTONOMIE.reduce((acc, question) => {
+    acc[question.id] = "Non évalué";
+    acc[`${question.id}Note`] = "";
+    return acc;
+  }, {});
+}
+
 function texteCourt(valeurTexte, remplacement = "à compléter") {
   return String(valeurTexte || "").trim() || remplacement;
 }
@@ -98,6 +166,56 @@ function suggestionPriorite(action) {
   if (score === 2) return { score, priorite: "Priorité 2", vigilance: "Importante", phrase: "Important cette semaine, mais pas forcément à faire dans l’heure." };
   if (score === 1) return { score, priorite: "Priorité 3", vigilance: "À suivre", phrase: "À garder dans le radar, sans en faire une urgence du jour." };
   return { score, priorite: "À reporter", vigilance: "Faible", phrase: "Pas d’urgence identifiée : peut être reporté sans culpabilité." };
+}
+
+function bilanAutonomie(autonomie) {
+  const renseignes = QUESTIONS_AUTONOMIE.filter((question) => autonomie[question.id] && autonomie[question.id] !== "Non évalué");
+  if (!renseignes.length) {
+    return {
+      phrase: "Socle autonomie non renseigné : l’évaluation peut être faite au prochain contact, sans remplacer l’approfondissement.",
+      pointsAppui: [],
+      pointsRessource: [],
+    };
+  }
+
+  const pointsAppui = renseignes
+    .filter((question) => ["Besoin d'appui régulier", "Besoin d'appui renforcé"].includes(autonomie[question.id]))
+    .map((question) => question.domaine);
+
+  const pointsRessource = renseignes
+    .filter((question) => ["Autonome", "Autonomie partielle"].includes(autonomie[question.id]))
+    .map((question) => question.domaine);
+
+  let phrase = "Autonomie à préciser : plusieurs domaines sont renseignés, mais la lecture doit encore être consolidée avec la personne.";
+  if (pointsAppui.length >= 3) phrase = "Besoin d’appui important : plusieurs domaines nécessitent un accompagnement régulier ou renforcé.";
+  else if (pointsAppui.length >= 1) phrase = "Autonomie partielle : certains domaines peuvent être travaillés seuls, mais des points d’appui sont à prévoir.";
+  else if (pointsRessource.length >= 4) phrase = "Autonomie globalement repérée : garder des points de vigilance sans renforcer inutilement l’accompagnement.";
+
+  return { phrase, pointsAppui, pointsRessource };
+}
+
+function genererBilanAutonomie(autonomie) {
+  const bilan = bilanAutonomie(autonomie);
+  const lignes = [
+    "Repères autonomie — socle rapide",
+    "Référentiel : démarches/droits, organisation, budget, santé, mobilité, écrit-numérique, vie familiale, projet/pouvoir d’agir.",
+    "Le socle autonomie ne remplace pas l’approfondissement ; il le prépare.",
+    "",
+  ];
+
+  QUESTIONS_AUTONOMIE.forEach((question) => {
+    lignes.push(`${question.domaine} : ${autonomie[question.id] || "Non évalué"}`);
+    const note = texteCourt(autonomie[`${question.id}Note`], "");
+    if (note) lignes.push(`Note : ${note}`);
+    lignes.push("");
+  });
+
+  lignes.push("Lecture professionnelle :");
+  lignes.push(bilan.phrase);
+  lignes.push(`Domaines d'appui : ${bilan.pointsAppui.length ? bilan.pointsAppui.join(", ") : "non repérés à ce stade"}.`);
+  lignes.push(`Domaines ressources : ${bilan.pointsRessource.length ? bilan.pointsRessource.join(", ") : "à préciser"}.`);
+
+  return lignes.join("\n");
 }
 
 const TACHES = [
@@ -142,8 +260,9 @@ function genererMonSuiviSocial(intervention, action) {
   ].join("\n");
 }
 
-function syntheseDossier(row, rows, action, journal) {
+function syntheseDossier(row, rows, action, journal, autonomie) {
   const suggestion = suggestionPriorite(action);
+  const bilan = bilanAutonomie(autonomie);
   return [
     `Dossier — ${affichageDossier(row, rows)}`,
     "",
@@ -153,6 +272,11 @@ function syntheseDossier(row, rows, action, journal) {
     `CTM : ${row.CTM || "à préciser"}`,
     `Type d’accompagnement : ${valeur(row, ["Type d'accompagnement", "Type d’accompagnement"]) || "à préciser"}`,
     `Intensité : ${valeur(row, ["Intensité", "Intensite"]) || "à préciser"}`,
+    "",
+    "Repères autonomie :",
+    `- Lecture : ${bilan.phrase}`,
+    `- Domaines d'appui : ${bilan.pointsAppui.length ? bilan.pointsAppui.join(", ") : "non repérés à ce stade"}`,
+    `- Domaines ressources : ${bilan.pointsRessource.length ? bilan.pointsRessource.join(", ") : "à préciser"}`,
     "",
     "Évaluation priorité :",
     `- Score : ${suggestion.score}/5`,
@@ -180,6 +304,7 @@ const s = {
   header: { display: "flex", justifyContent: "space-between", gap: "18px", alignItems: "flex-start", marginBottom: "18px" },
   card: { background: "#FBF7EF", border: "1px solid #D2C4B3", borderRadius: "16px", padding: "18px", marginBottom: "14px", boxShadow: "0 6px 14px rgba(63,55,47,0.04)" },
   grid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "12px" },
+  questionGrid: { display: "grid", gridTemplateColumns: "minmax(260px, 1.1fr) minmax(260px, 0.9fr)", gap: "14px", alignItems: "start", padding: "14px", border: "1px solid #D2C4B3", borderRadius: "14px", background: "#FBF7EF", marginTop: "10px" },
   label: { margin: "0 0 6px", color: "#6F765D", fontSize: "11px", fontWeight: 900, letterSpacing: "0.12em", textTransform: "uppercase" },
   h1: { margin: 0, color: "#334052", fontSize: "28px", lineHeight: 1.1 },
   h2: { margin: "0 0 8px", color: "#334052", fontSize: "20px", lineHeight: 1.2 },
@@ -206,6 +331,7 @@ export function DossierPersonnePage() {
   const [actions, setActions] = useState(() => lireJson(STORAGE_ACTIONS, {}));
   const [journaux, setJournaux] = useState(() => lireJson(STORAGE_JOURNAL, {}));
   const [interventions, setInterventions] = useState(() => lireJson(STORAGE_INTERVENTIONS, {}));
+  const [autonomies, setAutonomies] = useState(() => lireJson(STORAGE_AUTONOMIE, {}));
   const [dateNote, setDateNote] = useState(new Date().toISOString().slice(0, 10));
   const [typeNote, setTypeNote] = useState("Contact");
   const [nouvelleNote, setNouvelleNote] = useState("");
@@ -215,13 +341,16 @@ export function DossierPersonnePage() {
   const row = index >= 0 ? rows[index] : null;
   const action = row ? { ...actionVide(), ...(actions[idCourant] || {}) } : actionVide();
   const intervention = row ? { ...interventionVide(), ...(interventions[idCourant] || {}) } : interventionVide();
+  const autonomie = row ? { ...autonomieVide(), ...(autonomies[idCourant] || {}) } : autonomieVide();
   const journal = row
     ? [...(journaux[idCourant] || [])].sort((a, b) => `${b.date || ""} ${b.createdAt || ""}`.localeCompare(`${a.date || ""} ${a.createdAt || ""}`))
     : [];
   const suggestion = suggestionPriorite(action);
-  const synthese = useMemo(() => (row ? syntheseDossier(row, rows, action, journal) : ""), [row, rows, action, journal]);
+  const synthese = useMemo(() => (row ? syntheseDossier(row, rows, action, journal, autonomie) : ""), [row, rows, action, journal, autonomie]);
   const traceInsertis = useMemo(() => (row ? genererTraceInsertis(row, rows, intervention, action) : ""), [row, rows, intervention, action]);
   const noteMonSuiviSocial = useMemo(() => genererMonSuiviSocial(intervention, action), [intervention, action]);
+  const texteAutonomie = useMemo(() => genererBilanAutonomie(autonomie), [autonomie]);
+  const bilanSocle = useMemo(() => bilanAutonomie(autonomie), [autonomie]);
 
   function enregistrerAction(nextAction) {
     const next = { ...actions, [idCourant]: nextAction };
@@ -240,6 +369,14 @@ export function DossierPersonnePage() {
     setInterventions(next);
     localStorage.setItem(STORAGE_INTERVENTIONS, JSON.stringify(next));
     setMessage("Brouillon d’intervention enregistré.");
+  }
+
+  function updateAutonomie(champ, v) {
+    const nextAutonomie = { ...autonomie, [champ]: v };
+    const next = { ...autonomies, [idCourant]: nextAutonomie };
+    setAutonomies(next);
+    localStorage.setItem(STORAGE_AUTONOMIE, JSON.stringify(next));
+    setMessage("Repères autonomie enregistrés.");
   }
 
   function ajouterTache(tache) {
@@ -269,6 +406,11 @@ export function DossierPersonnePage() {
     ajouterEntreeJournal(typeNote, nouvelleNote, dateNote);
     setNouvelleNote("");
     setMessage("Note ajoutée au journal du dossier.");
+  }
+
+  function ajouterAutonomieAuJournal() {
+    ajouterEntreeJournal("Repères autonomie", texteAutonomie, new Date().toISOString().slice(0, 10));
+    setMessage("Repères autonomie ajoutés au journal.");
   }
 
   function ajouterInterventionAuJournal() {
@@ -304,7 +446,7 @@ export function DossierPersonnePage() {
           <div>
             <p style={s.label}>Dossier personne</p>
             <h1 style={s.h1}>{affichageDossier(row, rows)}</h1>
-            <p style={s.intro}>Saisie sociale unique : les cases techniques restent à cocher dans Insertis ou Mon Suivi Social ; ici on prépare uniquement le contenu professionnel.</p>
+            <p style={s.intro}>Saisie sociale unique : évaluer l’autonomie, piloter l’action, préparer la trace Insertis et la note Mon Suivi Social.</p>
           </div>
           <Link style={s.link} to="/pilotage-actions">Retour pilotage</Link>
         </header>
@@ -322,13 +464,48 @@ export function DossierPersonnePage() {
         </section>
 
         <section style={s.card}>
+          <p style={s.label}>Socle autonomie</p>
+          <h2 style={s.h2}>8 questions repères liées au référentiel</h2>
+          <p style={s.intro}>Question à gauche, réponse à droite. L’objectif est de repérer vite les domaines d’autonomie, sans transformer l’entretien en questionnaire lourd.</p>
+          <div style={s.scoreBox}>
+            <p style={s.info}><strong>Lecture :</strong> {bilanSocle.phrase}</p>
+            <p style={s.info}><strong>Domaines d’appui :</strong> {bilanSocle.pointsAppui.length ? bilanSocle.pointsAppui.join(", ") : "non repérés à ce stade"}</p>
+            <p style={s.info}><strong>Domaines ressources :</strong> {bilanSocle.pointsRessource.length ? bilanSocle.pointsRessource.join(", ") : "à préciser"}</p>
+          </div>
+
+          {QUESTIONS_AUTONOMIE.map((question, index) => (
+            <div style={s.questionGrid} key={question.id}>
+              <div>
+                <p style={s.label}>{index + 1}. {question.domaine}</p>
+                <p style={s.info}><strong>{question.question}</strong></p>
+                <p style={s.info}>{question.repere}</p>
+              </div>
+              <div style={s.field}>
+                <span>Niveau repéré</span>
+                <select style={s.input} value={autonomie[question.id]} onChange={(event) => updateAutonomie(question.id, event.target.value)}>
+                  {NIVEAUX_AUTONOMIE.map((niveau) => <option key={niveau}>{niveau}</option>)}
+                </select>
+                <span>Observation courte</span>
+                <textarea style={s.textarea} value={autonomie[`${question.id}Note`]} onChange={(event) => updateAutonomie(`${question.id}Note`, event.target.value)} placeholder="Ex. ce que la personne fait seule, ce qui bloque, appui nécessaire..." />
+              </div>
+            </div>
+          ))}
+
+          <label style={{ ...s.field, marginTop: "12px" }}>Bilan autonomie prêt à copier<textarea style={{ ...s.textarea, minHeight: "220px" }} readOnly value={texteAutonomie} /></label>
+          <div style={s.actions}>
+            <button style={s.mainButton} type="button" onClick={() => copierTexte(texteAutonomie, "Bilan autonomie")}>Copier bilan autonomie</button>
+            <button style={s.button} type="button" onClick={ajouterAutonomieAuJournal}>Ajouter au journal</button>
+          </div>
+        </section>
+
+        <section style={s.card}>
           <p style={s.label}>Évaluation rapide de priorité</p>
           <p style={s.intro}>Coche ce qui est vrai. L’outil propose une priorité, mais tu gardes la main.</p>
           <div style={s.grid}>
             {[
               ["critereDateLimite", "Date limite proche", "RDV, recours, DTR, justificatif, dette, convocation."],
               ["critereRisqueDroits", "Risque de rupture de droit ou d’aggravation", "RSA, CAF, radiation, dette, expulsion, situation qui se dégrade."],
-              ["criterePersonneBloquee", "Personne bloquée sans mon appui", "Elle attend ton retour ou ne peut pas avancer seule."],
+              ["criterePersonneBloquee", "Personne bloquée sans appui", "Elle attend un retour ou ne peut pas avancer seule."],
               ["criterePartenaireAttend", "Partenaire en attente", "Métropole, CAF, MDM, DGFIP, bailleur, autre service."],
               ["critereTraceRapide", "Trace Insertis à faire rapidement", "Entretien réalisé, action engagée, vigilance ou décision à tracer."],
             ].map(([champ, titre, aide]) => (
