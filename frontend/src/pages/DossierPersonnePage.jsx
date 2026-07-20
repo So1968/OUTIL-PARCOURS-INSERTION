@@ -83,51 +83,90 @@ const NIVEAUX_AUTONOMIE = [
 const QUESTIONS_AUTONOMIE = [
   {
     id: "demarches",
-    domaine: "Démarches / droits",
-    question: "Quand vous recevez un courrier ou une demande — CAF, RSA, impôts — que faites-vous en premier ?",
-    repere: "Comprendre la demande, repérer le délai, chercher les justificatifs, demander de l’aide si besoin.",
+    domaine: "Démarches / accès aux droits",
+    question: "Pour vos papiers et vos démarches, vous vous y retrouvez comment en ce moment ?",
+    repere: "Socle autonomie — question 1 validée. Repérer comment la personne se situe face aux démarches administratives et aux droits.",
   },
   {
     id: "organisation",
-    domaine: "Organisation",
-    question: "Quand il y a plusieurs choses à faire, comment choisissez-vous par quoi commencer ?",
-    repere: "Rendez-vous, priorités, papiers à apporter, rappels, étapes entre deux contacts.",
+    domaine: "Organisation du quotidien",
+    question: "Pour vous organiser dans ce que vous avez à faire, vous vous en sortez comment ?",
+    repere: "Socle autonomie — question 2 validée. Repérer les appuis et les difficultés dans l’organisation quotidienne.",
   },
   {
     id: "budget",
-    domaine: "Budget",
-    question: "Pour les dépenses, les factures ou les dettes, qu’est-ce qui est facile et qu’est-ce qui est difficile ?",
-    repere: "Charges, dettes, échéances, reste à vivre, capacité à anticiper les paiements.",
+    domaine: "Budget / argent",
+    question: "Pour gérer l’argent au quotidien, vous vous en sortez comment ?",
+    repere: "Socle autonomie — question 3 validée. Repérer la stabilité ou la fragilité dans la gestion de l’argent au quotidien.",
   },
   {
     id: "sante",
-    domaine: "Santé",
-    question: "Pour prendre ou suivre un rendez-vous de santé, de quoi avez-vous besoin ?",
-    repere: "Accès aux soins, rendez-vous, couverture, frein santé exprimé sans poser de diagnostic.",
+    domaine: "Santé / accès aux soins",
+    question: "Pour votre santé, les rendez-vous ou les soins, vous vous en sortez comment ?",
+    repere: "Socle autonomie — question 4 validée. Repérer l’accès effectif aux soins, sans poser de diagnostic médical.",
   },
   {
     id: "mobilite",
-    domaine: "Mobilité",
-    question: "Pour aller à un rendez-vous ou faire une démarche, qu’est-ce qui vous aide ou vous bloque ?",
-    repere: "Transport, distance, coût, disponibilité, dépendance à un tiers, fatigue ou organisation.",
+    domaine: "Mobilité / déplacements",
+    question: "Pour vous déplacer là où vous avez besoin d’aller, ça se passe comment pour vous ?",
+    repere: "Socle autonomie — question 5 validée. Ne pas réduire la mobilité à la possession d’un véhicule.",
   },
   {
     id: "ecritNumerique",
     domaine: "Écrit / numérique",
-    question: "Pour lire un courrier, envoyer un mail ou utiliser un espace en ligne, qu’est-ce qui est facile ou difficile ?",
-    repere: "Lecture, écriture, mails, mots de passe, comptes en ligne, scan, téléphone.",
+    question: "Pour les courriers, les papiers ou les démarches sur téléphone, vous vous en sortez comment ?",
+    repere: "Socle autonomie — question 6 validée. Repérer les appuis ou difficultés avec l’écrit, les documents et les démarches numériques.",
   },
   {
     id: "famille",
-    domaine: "Vie familiale",
-    question: "Dans la famille ou à la maison, qu’est-ce qui prend beaucoup de place en ce moment ?",
-    repere: "Charge familiale, aidance, isolement, soutien, contraintes de garde ou de soins.",
+    domaine: "Vie familiale / disponibilité",
+    question: "Avec tout ce que vous avez à gérer dans la famille, pour vos démarches, vous vous en sortez comment ?",
+    repere: "Socle autonomie — question 7 validée. Comprendre les contraintes familiales sans les transformer en jugement.",
   },
   {
     id: "projet",
     domaine: "Projet / mise en mouvement",
-    question: "Quand vous voulez régler un problème ou avancer un projet, qu’est-ce qui vous aide à commencer ?",
-    repere: "Pouvoir d’agir, capacité à initier une démarche, confiance, besoin d’appui pour passer à l’action.",
+    question: "Quand vous voulez faire avancer quelque chose pour vous, vous y arrivez comment ?",
+    repere: "Socle autonomie — question 8 validée. Ne pas confondre temporalité de la personne et absence de projet.",
+  },
+];
+
+const GRILLE_COMPLEMENTAIRE = [
+  {
+    domaine: "Logement",
+    question: "Pour votre logement ou votre lieu de vie, qu’est-ce qui facilite ou bloque les démarches aujourd’hui ?",
+  },
+  {
+    domaine: "Santé / handicap",
+    question: "Pour votre santé, vos soins ou une situation de handicap, de quoi faut-il tenir compte dans le parcours ?",
+  },
+  {
+    domaine: "Organisation familiale",
+    question: "Avec l’organisation familiale, les enfants ou les proches, qu’est-ce qui peut faciliter ou limiter vos démarches ?",
+  },
+  {
+    domaine: "Mobilité",
+    question: "Pour vous déplacer vers les rendez-vous, les démarches, la formation ou l’emploi, ça se passe comment ?",
+  },
+  {
+    domaine: "Budget et finances",
+    question: "Pour le budget, les factures ou les droits, quels sont les points à sécuriser ?",
+  },
+  {
+    domaine: "Linguistique",
+    question: "Pour comprendre, parler, lire ou écrire en français, qu’est-ce qui est facile ou difficile ?",
+  },
+  {
+    domaine: "Numérique et accès aux droits",
+    question: "Pour les démarches en ligne, les comptes CAF / France Travail / administratifs, vous vous y retrouvez comment ?",
+  },
+  {
+    domaine: "Rapport à soi et à autrui",
+    question: "Dans la confiance, la relation aux autres ou la mise en mouvement, qu’est-ce qui aide ou freine aujourd’hui ?",
+  },
+  {
+    domaine: "Projet professionnel",
+    question: "Pour l’activité, la formation ou l’emploi, où en est votre projet aujourd’hui ?",
   },
 ];
 
@@ -218,31 +257,15 @@ function genererSyntheseAutonomieRedigee(autonomie) {
     return "L’autonomie n’est pas encore évaluée. Le socle pourra être repris avec la personne afin d’identifier les démarches qu’elle réalise seule, les domaines où un appui est nécessaire et les points à approfondir.";
   }
 
-  const lignes = [
-    "Synthèse autonomie — dossier écrit",
-    "",
-    bilan.phrase,
-    "",
-  ];
-
-  if (bilan.pointsRessource.length) {
-    lignes.push(`Les domaines ressources repérés sont : ${bilan.pointsRessource.join(", ")}.`);
-  }
-  if (bilan.pointsAppui.length) {
-    lignes.push(`Les domaines nécessitant un appui sont : ${bilan.pointsAppui.join(", ")}.`);
-  }
-
-  lignes.push("");
-  lignes.push("Éléments issus des réponses :");
-
+  const lignes = ["Synthèse autonomie — dossier écrit", "", bilan.phrase, ""];
+  if (bilan.pointsRessource.length) lignes.push(`Les domaines ressources repérés sont : ${bilan.pointsRessource.join(", ")}.`);
+  if (bilan.pointsAppui.length) lignes.push(`Les domaines nécessitant un appui sont : ${bilan.pointsAppui.join(", ")}.`);
+  lignes.push("", "Éléments issus des réponses :");
   reponses.forEach((question) => {
     const observation = question.note ? ` ${question.note}` : "";
     lignes.push(`- ${phraseNiveau(question)}${observation}`);
   });
-
-  lignes.push("");
-  lignes.push("Cette lecture reste à ajuster avec la personne et ne remplace pas l’approfondissement de la situation. Elle sert à orienter la suite de l’accompagnement et à éviter de renforcer inutilement ce qui peut déjà être fait seul.");
-
+  lignes.push("", "Cette lecture reste à ajuster avec la personne et ne remplace pas l’approfondissement de la situation. Elle sert à orienter la suite de l’accompagnement et à éviter de renforcer inutilement ce qui peut déjà être fait seul.");
   return lignes.join("\n");
 }
 
@@ -266,7 +289,6 @@ function genererBilanAutonomie(autonomie) {
   lignes.push(bilan.phrase);
   lignes.push(`Domaines d'appui : ${bilan.pointsAppui.length ? bilan.pointsAppui.join(", ") : "non repérés à ce stade"}.`);
   lignes.push(`Domaines ressources : ${bilan.pointsRessource.length ? bilan.pointsRessource.join(", ") : "à préciser"}.`);
-
   return lignes.join("\n");
 }
 
@@ -404,13 +426,14 @@ export function DossierPersonnePage() {
   const journal = row
     ? [...(journaux[idCourant] || [])].sort((a, b) => `${b.date || ""} ${b.createdAt || ""}`.localeCompare(`${a.date || ""} ${a.createdAt || ""}`))
     : [];
+
   const suggestion = suggestionPriorite(action);
   const syntheseAutonomieRedigee = useMemo(() => genererSyntheseAutonomieRedigee(autonomie), [autonomie]);
+  const texteAutonomie = useMemo(() => genererBilanAutonomie(autonomie), [autonomie]);
+  const bilanSocle = useMemo(() => bilanAutonomie(autonomie), [autonomie]);
   const synthese = useMemo(() => (row ? syntheseDossier(row, rows, action, journal, autonomie) : ""), [row, rows, action, journal, autonomie]);
   const traceInsertis = useMemo(() => (row ? genererTraceInsertis(row, rows, intervention, action, autonomie) : ""), [row, rows, intervention, action, autonomie]);
   const noteMonSuiviSocial = useMemo(() => genererMonSuiviSocial(intervention, action, syntheseAutonomieRedigee), [intervention, action, syntheseAutonomieRedigee]);
-  const texteAutonomie = useMemo(() => genererBilanAutonomie(autonomie), [autonomie]);
-  const bilanSocle = useMemo(() => bilanAutonomie(autonomie), [autonomie]);
 
   function enregistrerAction(nextAction) {
     const next = { ...actions, [idCourant]: nextAction };
@@ -532,9 +555,9 @@ export function DossierPersonnePage() {
         </section>
 
         <section style={s.card}>
-          <p style={s.label}>Socle autonomie</p>
-          <h2 style={s.h2}>8 questions repères liées au référentiel</h2>
-          <p style={s.intro}>Les réponses alimentent automatiquement une synthèse rédigée pour le dossier écrit, sans avoir à tout reformuler à la main.</p>
+          <p style={s.label}>Socle autonomie retrouvé dans Git</p>
+          <h2 style={s.h2}>8 questions validées du socle autonomie</h2>
+          <p style={s.intro}>Ces questions sont celles de l’historique du projet. Elles ne sont pas réinventées. Le socle prépare l’approfondissement, il ne le remplace pas.</p>
           <div style={s.scoreBox}>
             <p style={s.info}><strong>Lecture :</strong> {bilanSocle.phrase}</p>
             <p style={s.info}><strong>Domaines d’appui :</strong> {bilanSocle.pointsAppui.length ? bilanSocle.pointsAppui.join(", ") : "non repérés à ce stade"}</p>
@@ -567,6 +590,20 @@ export function DossierPersonnePage() {
             <button style={s.mainButton} type="button" onClick={() => copierTexte(syntheseAutonomieRedigee, "Synthèse autonomie")}>Copier synthèse autonomie</button>
             <button style={s.mainButton} type="button" onClick={alimenterAnalyseAvecAutonomie}>Alimenter l’analyse professionnelle</button>
             <button style={s.button} type="button" onClick={ajouterAutonomieAuJournal}>Ajouter au journal</button>
+          </div>
+        </section>
+
+        <section style={s.card}>
+          <p style={s.label}>Grille complémentaire Métropole / Insertis retrouvée dans Git</p>
+          <h2 style={s.h2}>Questions de relecture institutionnelle</h2>
+          <p style={s.intro}>Cette grille complète le socle. Elle sert à relire la situation et préparer la formalisation dans Insertis, sans remplacer l’échange principal.</p>
+          <div style={s.grid}>
+            {GRILLE_COMPLEMENTAIRE.map((item) => (
+              <article key={item.domaine} style={s.scoreBox}>
+                <p style={s.label}>{item.domaine}</p>
+                <p style={s.info}><strong>{item.question}</strong></p>
+              </article>
+            ))}
           </div>
         </section>
 
@@ -614,7 +651,7 @@ export function DossierPersonnePage() {
         <section style={s.card}>
           <p style={s.label}>Saisie sociale unique</p>
           <h2 style={s.h2}>Contenu libre à copier dans Insertis et Mon Suivi Social</h2>
-          <p style={s.intro}>La note Mon Suivi Social reprend maintenant aussi la synthèse autonomie issue des réponses au socle.</p>
+          <p style={s.intro}>La note Mon Suivi Social reprend aussi la synthèse autonomie issue des réponses au socle.</p>
           <div style={{ ...s.grid, marginTop: "12px" }}>
             <label style={s.field}>Faits / situation abordée<textarea style={s.textarea} value={intervention.faits} onChange={(event) => updateIntervention("faits", event.target.value)} /></label>
             <label style={s.field}>Parole de la personne<textarea style={s.textarea} value={intervention.parolePersonne} onChange={(event) => updateIntervention("parolePersonne", event.target.value)} /></label>
