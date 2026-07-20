@@ -81,93 +81,26 @@ const NIVEAUX_AUTONOMIE = [
 ];
 
 const QUESTIONS_AUTONOMIE = [
-  {
-    id: "demarches",
-    domaine: "Démarches / accès aux droits",
-    question: "Pour vos papiers et vos démarches, vous vous y retrouvez comment en ce moment ?",
-    repere: "Socle autonomie — question 1 validée. Repérer comment la personne se situe face aux démarches administratives et aux droits.",
-  },
-  {
-    id: "organisation",
-    domaine: "Organisation du quotidien",
-    question: "Pour vous organiser dans ce que vous avez à faire, vous vous en sortez comment ?",
-    repere: "Socle autonomie — question 2 validée. Repérer les appuis et les difficultés dans l’organisation quotidienne.",
-  },
-  {
-    id: "budget",
-    domaine: "Budget / argent",
-    question: "Pour gérer l’argent au quotidien, vous vous en sortez comment ?",
-    repere: "Socle autonomie — question 3 validée. Repérer la stabilité ou la fragilité dans la gestion de l’argent au quotidien.",
-  },
-  {
-    id: "sante",
-    domaine: "Santé / accès aux soins",
-    question: "Pour votre santé, les rendez-vous ou les soins, vous vous en sortez comment ?",
-    repere: "Socle autonomie — question 4 validée. Repérer l’accès effectif aux soins, sans poser de diagnostic médical.",
-  },
-  {
-    id: "mobilite",
-    domaine: "Mobilité / déplacements",
-    question: "Pour vous déplacer là où vous avez besoin d’aller, ça se passe comment pour vous ?",
-    repere: "Socle autonomie — question 5 validée. Ne pas réduire la mobilité à la possession d’un véhicule.",
-  },
-  {
-    id: "ecritNumerique",
-    domaine: "Écrit / numérique",
-    question: "Pour les courriers, les papiers ou les démarches sur téléphone, vous vous en sortez comment ?",
-    repere: "Socle autonomie — question 6 validée. Repérer les appuis ou difficultés avec l’écrit, les documents et les démarches numériques.",
-  },
-  {
-    id: "famille",
-    domaine: "Vie familiale / disponibilité",
-    question: "Avec tout ce que vous avez à gérer dans la famille, pour vos démarches, vous vous en sortez comment ?",
-    repere: "Socle autonomie — question 7 validée. Comprendre les contraintes familiales sans les transformer en jugement.",
-  },
-  {
-    id: "projet",
-    domaine: "Projet / mise en mouvement",
-    question: "Quand vous voulez faire avancer quelque chose pour vous, vous y arrivez comment ?",
-    repere: "Socle autonomie — question 8 validée. Ne pas confondre temporalité de la personne et absence de projet.",
-  },
+  { id: "demarches", domaine: "Démarches / accès aux droits", question: "Pour vos papiers et vos démarches, vous vous y retrouvez comment en ce moment ?", repere: "Socle autonomie — question 1 validée. Repérer comment la personne se situe face aux démarches administratives et aux droits." },
+  { id: "organisation", domaine: "Organisation du quotidien", question: "Pour vous organiser dans ce que vous avez à faire, vous vous en sortez comment ?", repere: "Socle autonomie — question 2 validée. Repérer les appuis et les difficultés dans l’organisation quotidienne." },
+  { id: "budget", domaine: "Budget / argent", question: "Pour gérer l’argent au quotidien, vous vous en sortez comment ?", repere: "Socle autonomie — question 3 validée. Repérer la stabilité ou la fragilité dans la gestion de l’argent au quotidien." },
+  { id: "sante", domaine: "Santé / accès aux soins", question: "Pour votre santé, les rendez-vous ou les soins, vous vous en sortez comment ?", repere: "Socle autonomie — question 4 validée. Repérer l’accès effectif aux soins, sans poser de diagnostic médical." },
+  { id: "mobilite", domaine: "Mobilité / déplacements", question: "Pour vous déplacer là où vous avez besoin d’aller, ça se passe comment pour vous ?", repere: "Socle autonomie — question 5 validée. Ne pas réduire la mobilité à la possession d’un véhicule." },
+  { id: "ecritNumerique", domaine: "Écrit / numérique", question: "Pour les courriers, les papiers ou les démarches sur téléphone, vous vous en sortez comment ?", repere: "Socle autonomie — question 6 validée. Repérer les appuis ou difficultés avec l’écrit, les documents et les démarches numériques." },
+  { id: "famille", domaine: "Vie familiale / disponibilité", question: "Avec tout ce que vous avez à gérer dans la famille, pour vos démarches, vous vous en sortez comment ?", repere: "Socle autonomie — question 7 validée. Comprendre les contraintes familiales sans les transformer en jugement." },
+  { id: "projet", domaine: "Projet / mise en mouvement", question: "Quand vous voulez faire avancer quelque chose pour vous, vous y arrivez comment ?", repere: "Socle autonomie — question 8 validée. Ne pas confondre temporalité de la personne et absence de projet." },
 ];
 
 const GRILLE_COMPLEMENTAIRE = [
-  {
-    domaine: "Logement",
-    question: "Pour votre logement ou votre lieu de vie, qu’est-ce qui facilite ou bloque les démarches aujourd’hui ?",
-  },
-  {
-    domaine: "Santé / handicap",
-    question: "Pour votre santé, vos soins ou une situation de handicap, de quoi faut-il tenir compte dans le parcours ?",
-  },
-  {
-    domaine: "Organisation familiale",
-    question: "Avec l’organisation familiale, les enfants ou les proches, qu’est-ce qui peut faciliter ou limiter vos démarches ?",
-  },
-  {
-    domaine: "Mobilité",
-    question: "Pour vous déplacer vers les rendez-vous, les démarches, la formation ou l’emploi, ça se passe comment ?",
-  },
-  {
-    domaine: "Budget et finances",
-    question: "Pour le budget, les factures ou les droits, quels sont les points à sécuriser ?",
-  },
-  {
-    domaine: "Linguistique",
-    question: "Pour comprendre, parler, lire ou écrire en français, qu’est-ce qui est facile ou difficile ?",
-  },
-  {
-    domaine: "Numérique et accès aux droits",
-    question: "Pour les démarches en ligne, les comptes CAF / France Travail / administratifs, vous vous y retrouvez comment ?",
-  },
-  {
-    domaine: "Rapport à soi et à autrui",
-    question: "Dans la confiance, la relation aux autres ou la mise en mouvement, qu’est-ce qui aide ou freine aujourd’hui ?",
-  },
-  {
-    domaine: "Projet professionnel",
-    question: "Pour l’activité, la formation ou l’emploi, où en est votre projet aujourd’hui ?",
-  },
+  { domaine: "Logement", question: "Pour votre logement ou votre lieu de vie, qu’est-ce qui facilite ou bloque les démarches aujourd’hui ?" },
+  { domaine: "Santé / handicap", question: "Pour votre santé, vos soins ou une situation de handicap, de quoi faut-il tenir compte dans le parcours ?" },
+  { domaine: "Organisation familiale", question: "Avec l’organisation familiale, les enfants ou les proches, qu’est-ce qui peut faciliter ou limiter vos démarches ?" },
+  { domaine: "Mobilité", question: "Pour vous déplacer vers les rendez-vous, les démarches, la formation ou l’emploi, ça se passe comment ?" },
+  { domaine: "Budget et finances", question: "Pour le budget, les factures ou les droits, quels sont les points à sécuriser ?" },
+  { domaine: "Linguistique", question: "Pour comprendre, parler, lire ou écrire en français, qu’est-ce qui est facile ou difficile ?" },
+  { domaine: "Numérique et accès aux droits", question: "Pour les démarches en ligne, les comptes CAF / France Travail / administratifs, vous vous y retrouvez comment ?" },
+  { domaine: "Rapport à soi et à autrui", question: "Dans la confiance, la relation aux autres ou la mise en mouvement, qu’est-ce qui aide ou freine aujourd’hui ?" },
+  { domaine: "Projet professionnel", question: "Pour l’activité, la formation ou l’emploi, où en est votre projet aujourd’hui ?" },
 ];
 
 function autonomieVide() {
@@ -191,25 +124,12 @@ function reponsesAutonomie(autonomie) {
 }
 
 function scorePriorite(action) {
-  return [
-    action.critereDateLimite,
-    action.critereRisqueDroits,
-    action.criterePersonneBloquee,
-    action.criterePartenaireAttend,
-    action.critereTraceRapide,
-  ].filter(Boolean).length;
+  return [action.critereDateLimite, action.critereRisqueDroits, action.criterePersonneBloquee, action.criterePartenaireAttend, action.critereTraceRapide].filter(Boolean).length;
 }
 
 function suggestionPriorite(action) {
   const score = scorePriorite(action);
-  if (score >= 3) {
-    return {
-      score,
-      priorite: "Priorité 1",
-      vigilance: action.critereRisqueDroits || action.critereDateLimite ? "Urgente" : "Importante",
-      phrase: "À traiter rapidement : plusieurs conséquences possibles si rien n’avance.",
-    };
-  }
+  if (score >= 3) return { score, priorite: "Priorité 1", vigilance: action.critereRisqueDroits || action.critereDateLimite ? "Urgente" : "Importante", phrase: "À traiter rapidement : plusieurs conséquences possibles si rien n’avance." };
   if (score === 2) return { score, priorite: "Priorité 2", vigilance: "Importante", phrase: "Important cette semaine, mais pas forcément à faire dans l’heure." };
   if (score === 1) return { score, priorite: "Priorité 3", vigilance: "À suivre", phrase: "À garder dans le radar, sans en faire une urgence du jour." };
   return { score, priorite: "À reporter", vigilance: "Faible", phrase: "Pas d’urgence identifiée : peut être reporté sans culpabilité." };
@@ -217,27 +137,13 @@ function suggestionPriorite(action) {
 
 function bilanAutonomie(autonomie) {
   const renseignes = QUESTIONS_AUTONOMIE.filter((question) => autonomie[question.id] && autonomie[question.id] !== "Non évalué");
-  if (!renseignes.length) {
-    return {
-      phrase: "Socle autonomie non renseigné : l’évaluation peut être faite au prochain contact, sans remplacer l’approfondissement.",
-      pointsAppui: [],
-      pointsRessource: [],
-    };
-  }
-
-  const pointsAppui = renseignes
-    .filter((question) => ["Besoin d'appui régulier", "Besoin d'appui renforcé"].includes(autonomie[question.id]))
-    .map((question) => question.domaine);
-
-  const pointsRessource = renseignes
-    .filter((question) => ["Autonome", "Autonomie partielle"].includes(autonomie[question.id]))
-    .map((question) => question.domaine);
-
+  if (!renseignes.length) return { phrase: "Socle autonomie non renseigné : l’évaluation peut être faite au prochain contact, sans remplacer l’approfondissement.", pointsAppui: [], pointsRessource: [] };
+  const pointsAppui = renseignes.filter((question) => ["Besoin d'appui régulier", "Besoin d'appui renforcé"].includes(autonomie[question.id])).map((question) => question.domaine);
+  const pointsRessource = renseignes.filter((question) => ["Autonome", "Autonomie partielle"].includes(autonomie[question.id])).map((question) => question.domaine);
   let phrase = "Autonomie à préciser : plusieurs domaines sont renseignés, mais la lecture doit encore être consolidée avec la personne.";
   if (pointsAppui.length >= 3) phrase = "Besoin d’appui important : plusieurs domaines nécessitent un accompagnement régulier ou renforcé.";
   else if (pointsAppui.length >= 1) phrase = "Autonomie partielle : certains domaines peuvent être travaillés seuls, mais des points d’appui sont à prévoir.";
   else if (pointsRessource.length >= 4) phrase = "Autonomie globalement repérée : garder des points de vigilance sans renforcer inutilement l’accompagnement.";
-
   return { phrase, pointsAppui, pointsRessource };
 }
 
@@ -252,41 +158,26 @@ function phraseNiveau(question) {
 function genererSyntheseAutonomieRedigee(autonomie) {
   const reponses = reponsesAutonomie(autonomie);
   const bilan = bilanAutonomie(autonomie);
-
-  if (!reponses.length) {
-    return "L’autonomie n’est pas encore évaluée. Le socle pourra être repris avec la personne afin d’identifier les démarches qu’elle réalise seule, les domaines où un appui est nécessaire et les points à approfondir.";
-  }
-
+  if (!reponses.length) return "L’autonomie n’est pas encore évaluée. Le socle pourra être repris avec la personne afin d’identifier les démarches qu’elle réalise seule, les domaines où un appui est nécessaire et les points à approfondir.";
   const lignes = ["Synthèse autonomie — dossier écrit", "", bilan.phrase, ""];
   if (bilan.pointsRessource.length) lignes.push(`Les domaines ressources repérés sont : ${bilan.pointsRessource.join(", ")}.`);
   if (bilan.pointsAppui.length) lignes.push(`Les domaines nécessitant un appui sont : ${bilan.pointsAppui.join(", ")}.`);
   lignes.push("", "Éléments issus des réponses :");
-  reponses.forEach((question) => {
-    const observation = question.note ? ` ${question.note}` : "";
-    lignes.push(`- ${phraseNiveau(question)}${observation}`);
-  });
+  reponses.forEach((question) => lignes.push(`- ${phraseNiveau(question)}${question.note ? ` ${question.note}` : ""}`));
   lignes.push("", "Cette lecture reste à ajuster avec la personne et ne remplace pas l’approfondissement de la situation. Elle sert à orienter la suite de l’accompagnement et à éviter de renforcer inutilement ce qui peut déjà être fait seul.");
   return lignes.join("\n");
 }
 
 function genererBilanAutonomie(autonomie) {
   const bilan = bilanAutonomie(autonomie);
-  const lignes = [
-    "Repères autonomie — socle rapide",
-    "Référentiel : démarches/droits, organisation, budget, santé, mobilité, écrit-numérique, vie familiale, projet/pouvoir d’agir.",
-    "Le socle autonomie ne remplace pas l’approfondissement ; il le prépare.",
-    "",
-  ];
-
+  const lignes = ["Repères autonomie — socle rapide", "Référentiel : démarches/droits, organisation, budget, santé, mobilité, écrit-numérique, vie familiale, projet/pouvoir d’agir.", "Le socle autonomie ne remplace pas l’approfondissement ; il le prépare.", ""];
   QUESTIONS_AUTONOMIE.forEach((question) => {
     lignes.push(`${question.domaine} : ${autonomie[question.id] || "Non évalué"}`);
     const note = texteCourt(autonomie[`${question.id}Note`], "");
     if (note) lignes.push(`Note : ${note}`);
     lignes.push("");
   });
-
-  lignes.push("Lecture professionnelle :");
-  lignes.push(bilan.phrase);
+  lignes.push("Lecture professionnelle :", bilan.phrase);
   lignes.push(`Domaines d'appui : ${bilan.pointsAppui.length ? bilan.pointsAppui.join(", ") : "non repérés à ce stade"}.`);
   lignes.push(`Domaines ressources : ${bilan.pointsRessource.length ? bilan.pointsRessource.join(", ") : "à préciser"}.`);
   return lignes.join("\n");
@@ -294,105 +185,24 @@ function genererBilanAutonomie(autonomie) {
 
 function genererParcoursAutonomie(autonomie, action) {
   const bilan = bilanAutonomie(autonomie);
-  return [
-    "Parcours autonomie — étapes de travail",
-    "",
-    `Lecture actuelle : ${bilan.phrase}`,
-    `Points d’appui : ${bilan.pointsAppui.length ? bilan.pointsAppui.join(", ") : "à repérer avec la personne"}.`,
-    `Points ressources : ${bilan.pointsRessource.length ? bilan.pointsRessource.join(", ") : "à préciser"}.`,
-    "",
-    "Prochaine étape utile :",
-    action.prochaineAction || "Choisir avec la personne une action simple et réaliste à faire avant le prochain contact.",
-    "",
-    "Principe de travail : ne pas faire à la place si la personne peut faire avec un appui léger ; renforcer seulement les domaines bloquants.",
-  ].join("\n");
+  return ["Parcours autonomie — étapes de travail", "", `Lecture actuelle : ${bilan.phrase}`, `Points d’appui : ${bilan.pointsAppui.length ? bilan.pointsAppui.join(", ") : "à repérer avec la personne"}.`, `Points ressources : ${bilan.pointsRessource.length ? bilan.pointsRessource.join(", ") : "à préciser"}.`, "", "Prochaine étape utile :", action.prochaineAction || "Choisir avec la personne une action simple et réaliste à faire avant le prochain contact.", "", "Principe de travail : ne pas faire à la place si la personne peut faire avec un appui léger ; renforcer seulement les domaines bloquants."].join("\n");
 }
 
-const TACHES = [
-  "Appeler la personne",
-  "Envoyer un SMS de rappel",
-  "Prévoir / confirmer un rendez-vous",
-  "Relancer les justificatifs",
-  "Faire une trace Insertis",
-  "Vérifier CAF / RSA / DTR",
-  "Faire un point activité / micro-entreprise",
-  "Contacter un partenaire",
-  "Préparer une orientation",
-  "Reporter / mettre en attente",
-  "Autre action à préciser",
-];
+const TACHES = ["Appeler la personne", "Envoyer un SMS de rappel", "Prévoir / confirmer un rendez-vous", "Relancer les justificatifs", "Faire une trace Insertis", "Vérifier CAF / RSA / DTR", "Faire un point activité / micro-entreprise", "Contacter un partenaire", "Préparer une orientation", "Reporter / mettre en attente", "Autre action à préciser"];
 
 function genererTraceInsertis(row, rows, intervention, action, autonomie) {
   const bilan = bilanAutonomie(autonomie);
-  return [
-    `Éléments abordés : ${texteCourt(intervention.faits)}.`,
-    bilan.pointsAppui.length || bilan.pointsRessource.length ? `Autonomie : ${bilan.phrase}` : "",
-    intervention.parolePersonne ? `Parole de la personne : ${intervention.parolePersonne}.` : "",
-    intervention.analyse ? `Analyse professionnelle : ${intervention.analyse}.` : "",
-    intervention.demarches ? `Démarches réalisées : ${intervention.demarches}.` : "",
-    `Vigilance : ${texteCourt(intervention.vigilance || action.vigilance, "aucune vigilance particulière renseignée")}.`,
-    `Suite prévue : ${texteCourt(intervention.suitePrevue || action.prochaineAction)}.`,
-    `Dossier : ${affichageDossier(row, rows)}.`,
-  ].filter(Boolean).join("\n");
+  return [`Éléments abordés : ${texteCourt(intervention.faits)}.`, bilan.pointsAppui.length || bilan.pointsRessource.length ? `Autonomie : ${bilan.phrase}` : "", intervention.parolePersonne ? `Parole de la personne : ${intervention.parolePersonne}.` : "", intervention.analyse ? `Analyse professionnelle : ${intervention.analyse}.` : "", intervention.demarches ? `Démarches réalisées : ${intervention.demarches}.` : "", `Vigilance : ${texteCourt(intervention.vigilance || action.vigilance, "aucune vigilance particulière renseignée")}.`, `Suite prévue : ${texteCourt(intervention.suitePrevue || action.prochaineAction)}.`, `Dossier : ${affichageDossier(row, rows)}.`].filter(Boolean).join("\n");
 }
 
 function genererMonSuiviSocial(intervention, action, syntheseAutonomie) {
-  return [
-    `Faits / situation abordée :\n${texteCourt(intervention.faits)}`,
-    "",
-    `Évaluation de l’autonomie :\n${texteCourt(syntheseAutonomie, "à compléter après le socle autonomie")}`,
-    "",
-    `Parole de la personne :\n${texteCourt(intervention.parolePersonne, "non renseigné")}`,
-    "",
-    `Analyse professionnelle :\n${texteCourt(intervention.analyse, "à compléter si nécessaire")}`,
-    "",
-    `Démarches réalisées :\n${texteCourt(intervention.demarches, "à compléter")}`,
-    "",
-    `Vigilance :\n${texteCourt(intervention.vigilance || action.vigilance, "aucune vigilance particulière renseignée")}`,
-    "",
-    `Suite prévue :\n${texteCourt(intervention.suitePrevue || action.prochaineAction, "à préciser")}`,
-  ].join("\n");
+  return [`Faits / situation abordée :\n${texteCourt(intervention.faits)}`, "", `Évaluation de l’autonomie :\n${texteCourt(syntheseAutonomie, "à compléter après le socle autonomie")}`, "", `Parole de la personne :\n${texteCourt(intervention.parolePersonne, "non renseigné")}`, "", `Analyse professionnelle :\n${texteCourt(intervention.analyse, "à compléter si nécessaire")}`, "", `Démarches réalisées :\n${texteCourt(intervention.demarches, "à compléter")}`, "", `Vigilance :\n${texteCourt(intervention.vigilance || action.vigilance, "aucune vigilance particulière renseignée")}`, "", `Suite prévue :\n${texteCourt(intervention.suitePrevue || action.prochaineAction, "à préciser")}`].join("\n");
 }
 
 function syntheseDossier(row, rows, action, journal, autonomie) {
   const suggestion = suggestionPriorite(action);
   const bilan = bilanAutonomie(autonomie);
-  const syntheseAutonomie = genererSyntheseAutonomieRedigee(autonomie);
-  return [
-    `Dossier — ${affichageDossier(row, rows)}`,
-    "",
-    `Numéro Insertis : ${valeur(row, ["Numéro Insertis", "Numero Insertis"]) || "à préciser"}`,
-    `Ville : ${valeur(row, ["Ville", "Commune"]) || "à préciser"}`,
-    `CLI : ${row.CLI || "à préciser"}`,
-    `CTM : ${row.CTM || "à préciser"}`,
-    `Type d’accompagnement : ${valeur(row, ["Type d'accompagnement", "Type d’accompagnement"]) || "à préciser"}`,
-    `Intensité : ${valeur(row, ["Intensité", "Intensite"]) || "à préciser"}`,
-    "",
-    "Repères autonomie :",
-    `- Lecture : ${bilan.phrase}`,
-    `- Domaines d'appui : ${bilan.pointsAppui.length ? bilan.pointsAppui.join(", ") : "non repérés à ce stade"}`,
-    `- Domaines ressources : ${bilan.pointsRessource.length ? bilan.pointsRessource.join(", ") : "à préciser"}`,
-    "",
-    syntheseAutonomie,
-    "",
-    "Évaluation priorité :",
-    `- Score : ${suggestion.score}/5`,
-    `- Priorité conseillée : ${suggestion.priorite}`,
-    `- Vigilance conseillée : ${suggestion.vigilance}`,
-    `- Lecture : ${suggestion.phrase}`,
-    "",
-    "Pilotage actuel :",
-    `- Priorité retenue : ${action.priorite}`,
-    `- Prochaine action : ${action.prochaineAction || "à compléter"}`,
-    `- Échéance : ${action.echeance || "à préciser"}`,
-    `- Vigilance retenue : ${action.vigilance}`,
-    `- Statut : ${action.statut}`,
-    `- Trace Insertis : ${action.traceInsertis}`,
-    `- Note de suivi : ${action.note || "aucune note"}`,
-    "",
-    "Journal récent :",
-    journal.length ? journal.slice(0, 8).map((item) => `- ${item.date} — ${item.type} : ${item.texte}`).join("\n") : "- Aucun élément journalisé pour le moment.",
-  ].join("\n");
+  return [`Dossier — ${affichageDossier(row, rows)}`, "", `Numéro Insertis : ${valeur(row, ["Numéro Insertis", "Numero Insertis"]) || "à préciser"}`, `Ville : ${valeur(row, ["Ville", "Commune"]) || "à préciser"}`, `CLI : ${row.CLI || "à préciser"}`, `CTM : ${row.CTM || "à préciser"}`, `Type d’accompagnement : ${valeur(row, ["Type d'accompagnement", "Type d’accompagnement"]) || "à préciser"}`, `Intensité : ${valeur(row, ["Intensité", "Intensite"]) || "à préciser"}`, "", "Repères autonomie :", `- Lecture : ${bilan.phrase}`, `- Domaines d'appui : ${bilan.pointsAppui.length ? bilan.pointsAppui.join(", ") : "non repérés à ce stade"}`, `- Domaines ressources : ${bilan.pointsRessource.length ? bilan.pointsRessource.join(", ") : "à préciser"}`, "", "Évaluation priorité :", `- Score : ${suggestion.score}/5`, `- Priorité conseillée : ${suggestion.priorite}`, `- Vigilance conseillée : ${suggestion.vigilance}`, `- Lecture : ${suggestion.phrase}`, "", "Pilotage actuel :", `- Priorité retenue : ${action.priorite}`, `- Prochaine action : ${action.prochaineAction || "à compléter"}`, `- Échéance : ${action.echeance || "à préciser"}`, `- Vigilance retenue : ${action.vigilance}`, `- Statut : ${action.statut}`, `- Trace Insertis : ${action.traceInsertis}`, `- Note de suivi : ${action.note || "aucune note"}`, "", "Journal récent :", journal.length ? journal.slice(0, 8).map((item) => `- ${item.date} — ${item.type} : ${item.texte}`).join("\n") : "- Aucun élément journalisé pour le moment."].join("\n");
 }
 
 const s = {
@@ -402,7 +212,8 @@ const s = {
   card: { background: "#FBF7EF", border: "1px solid #D2C4B3", borderRadius: "16px", padding: "18px", marginBottom: "14px", boxShadow: "0 6px 14px rgba(63,55,47,0.04)" },
   compactCard: { background: "#FBF7EF", border: "1px solid #D2C4B3", borderRadius: "16px", padding: "14px", marginBottom: "12px" },
   grid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "12px" },
-  questionGrid: { display: "grid", gridTemplateColumns: "minmax(260px, 1.1fr) minmax(260px, 0.9fr)", gap: "14px", alignItems: "start", padding: "14px", border: "1px solid #D2C4B3", borderRadius: "14px", background: "#FBF7EF", marginTop: "10px" },
+  twoColumns: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "14px", alignItems: "start" },
+  questionGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "14px", alignItems: "start", padding: "14px", border: "1px solid #D2C4B3", borderRadius: "14px", background: "#FBF7EF", marginTop: "10px" },
   label: { margin: "0 0 6px", color: "#6F765D", fontSize: "11px", fontWeight: 900, letterSpacing: "0.12em", textTransform: "uppercase" },
   h1: { margin: 0, color: "#334052", fontSize: "28px", lineHeight: 1.1 },
   h2: { margin: "0 0 8px", color: "#334052", fontSize: "20px", lineHeight: 1.2 },
@@ -419,7 +230,7 @@ const s = {
   scoreNumber: { margin: "0 0 6px", fontSize: "24px", fontWeight: 900, color: "#334052" },
   checkboxLine: { display: "flex", gap: "10px", alignItems: "flex-start", padding: "8px 0", color: "#4B443C", fontWeight: 800 },
   checkboxText: { display: "block", fontSize: "13px", color: "#746B60", fontWeight: 500, marginTop: "2px" },
-  message: { color: "#6F765D", fontWeight: 900 },
+  message: { color: "#6F765D", fontWeight: 900, margin: 0 },
   summary: { cursor: "pointer", fontWeight: 900, color: "#334052", fontSize: "18px", listStyle: "none" },
   summaryHelp: { display: "block", marginTop: "4px", color: "#5D554B", fontSize: "14px", fontWeight: 500 },
 };
@@ -442,10 +253,9 @@ export function DossierPersonnePage() {
   const action = row ? { ...actionVide(), ...(actions[idCourant] || {}) } : actionVide();
   const intervention = row ? { ...interventionVide(), ...(interventions[idCourant] || {}) } : interventionVide();
   const autonomie = row ? { ...autonomieVide(), ...(autonomies[idCourant] || {}) } : autonomieVide();
-  const journal = row
-    ? [...(journaux[idCourant] || [])].sort((a, b) => `${b.date || ""} ${b.createdAt || ""}`.localeCompare(`${a.date || ""} ${a.createdAt || ""}`))
-    : [];
+  const journal = row ? [...(journaux[idCourant] || [])].sort((a, b) => `${b.date || ""} ${b.createdAt || ""}`.localeCompare(`${a.date || ""} ${a.createdAt || ""}`)) : [];
 
+  const derniereNote = journal[0] || null;
   const suggestion = suggestionPriorite(action);
   const syntheseAutonomieRedigee = useMemo(() => genererSyntheseAutonomieRedigee(autonomie), [autonomie]);
   const texteAutonomie = useMemo(() => genererBilanAutonomie(autonomie), [autonomie]);
@@ -454,7 +264,6 @@ export function DossierPersonnePage() {
   const synthese = useMemo(() => (row ? syntheseDossier(row, rows, action, journal, autonomie) : ""), [row, rows, action, journal, autonomie]);
   const traceInsertis = useMemo(() => (row ? genererTraceInsertis(row, rows, intervention, action, autonomie) : ""), [row, rows, intervention, action, autonomie]);
   const noteMonSuiviSocial = useMemo(() => genererMonSuiviSocial(intervention, action, syntheseAutonomieRedigee), [intervention, action, syntheseAutonomieRedigee]);
-  const derniereNote = journal[0];
 
   function enregistrerAction(nextAction) {
     const next = { ...actions, [idCourant]: nextAction };
@@ -496,7 +305,9 @@ export function DossierPersonnePage() {
   }
 
   function ajouterEntreeJournal(type, texte, date = dateNote) {
-    const entree = { id: String(Date.now()), date, type, texte: texte.trim(), createdAt: new Date().toISOString() };
+    const contenu = texte.trim();
+    if (!contenu) return;
+    const entree = { id: String(Date.now()), date, type, texte: contenu, createdAt: new Date().toISOString() };
     const next = { ...journaux, [idCourant]: [entree, ...(journaux[idCourant] || [])] };
     setJournaux(next);
     localStorage.setItem(STORAGE_JOURNAL, JSON.stringify(next));
@@ -542,18 +353,7 @@ export function DossierPersonnePage() {
   }
 
   if (!row) {
-    return (
-      <main style={s.page}>
-        <div style={s.wrap}>
-          <section style={s.card}>
-            <p style={s.label}>Dossier personne</p>
-            <h1 style={s.h1}>Dossier introuvable</h1>
-            <p style={s.intro}>Retourne au pilotage et réimporte la liste Insertis si besoin.</p>
-            <Link style={s.link} to="/pilotage-actions">Retour au pilotage</Link>
-          </section>
-        </div>
-      </main>
-    );
+    return <main style={s.page}><div style={s.wrap}><section style={s.card}><p style={s.label}>Dossier personne</p><h1 style={s.h1}>Dossier introuvable</h1><p style={s.intro}>Retourne au pilotage et réimporte la liste Insertis si besoin.</p><Link style={s.link} to="/pilotage-actions">Retour au pilotage</Link></section></div></main>;
   }
 
   return (
@@ -563,7 +363,7 @@ export function DossierPersonnePage() {
           <div>
             <p style={s.label}>Dossier personne</p>
             <h1 style={s.h1}>{affichageDossier(row, rows)}</h1>
-            <p style={s.intro}>D’abord le journal et l’action du jour. Les grilles autonomie restent fermées et s’ouvrent seulement quand elles sont utiles.</p>
+            <p style={s.intro}>Fiche resserrée : journal, action, note du contact. Les outils d’évaluation restent cachés.</p>
           </div>
           <Link style={s.link} to="/pilotage-actions">Retour pilotage</Link>
         </header>
@@ -571,59 +371,45 @@ export function DossierPersonnePage() {
         {message && <section style={s.compactCard}><p style={s.message}>{message}</p></section>}
 
         <section style={s.compactCard}>
-          <p style={s.label}>Cadre rapide</p>
+          <p style={s.label}>Repères rapides</p>
           <div style={s.grid}>
-            <p style={s.info}><strong>Numéro Insertis :</strong><br />{valeur(row, ["Numéro Insertis", "Numero Insertis"]) || "à préciser"}</p>
-            <p style={s.info}><strong>Ville :</strong><br />{valeur(row, ["Ville", "Commune"]) || "à préciser"}</p>
-            <p style={s.info}><strong>CLI :</strong><br />{row.CLI || "à préciser"}</p>
-            <p style={s.info}><strong>Accompagnement :</strong><br />{valeur(row, ["Type d'accompagnement", "Type d’accompagnement"]) || "à préciser"}</p>
-          </div>
-        </section>
-
-        <section style={s.card}>
-          <p style={s.label}>1. Journal du dossier</p>
-          <h2 style={s.h2}>Reprendre vite ce qui s’est passé</h2>
-          {derniereNote ? (
-            <article style={s.scoreBox}>
-              <p style={{ ...s.info, margin: 0 }}><strong>Dernière note : {derniereNote.date} — {derniereNote.type}</strong></p>
-              <p style={{ ...s.info, marginBottom: 0 }}>{derniereNote.texte}</p>
-            </article>
-          ) : (
-            <p style={s.info}>Aucune note journalisée pour le moment.</p>
-          )}
-
-          <div style={{ ...s.grid, marginTop: "12px" }}>
-            <label style={s.field}>Date<input style={s.input} type="date" value={dateNote} onChange={(event) => setDateNote(event.target.value)} /></label>
-            <label style={s.field}>Type de note<select style={s.input} value={typeNote} onChange={(event) => setTypeNote(event.target.value)}><option>Contact</option><option>Administratif</option><option>Échéance</option><option>Vigilance</option><option>Partenaire</option><option>À reprendre</option></select></label>
-          </div>
-          <label style={{ ...s.field, marginTop: "12px" }}>Nouvelle note<textarea style={s.textarea} value={nouvelleNote} onChange={(event) => setNouvelleNote(event.target.value)} placeholder="Noter l’essentiel tout de suite : ce qui est dit, ce qui est fait, ce qui est à reprendre." /></label>
-          <button style={s.mainButton} type="button" onClick={ajouterJournal}>Ajouter au journal</button>
-
-          <details style={{ marginTop: "14px" }}>
-            <summary style={s.summary}>Voir tout le journal<span style={s.summaryHelp}>Notes classées de la plus récente à la plus ancienne.</span></summary>
-            <div style={{ marginTop: "12px" }}>
-              {journal.length === 0 ? <p style={s.info}>Aucune note journalisée pour le moment.</p> : journal.map((item) => <article key={item.id} style={{ ...s.card, marginBottom: "10px", padding: "12px" }}><p style={{ ...s.info, margin: 0 }}><strong>{item.date} — {item.type}</strong></p><p style={{ ...s.info, marginBottom: 0 }}>{item.texte}</p></article>)}
-            </div>
-          </details>
-        </section>
-
-        <section style={s.card}>
-          <p style={s.label}>2. Action du moment</p>
-          <h2 style={s.h2}>Ce qu’il faut faire maintenant</h2>
-          <div style={s.grid}>
-            <p style={s.info}><strong>Priorité :</strong><br />{action.priorite}</p>
+            <p style={s.info}><strong>Insertis :</strong><br />{valeur(row, ["Numéro Insertis", "Numero Insertis"]) || "à préciser"}</p>
+            <p style={s.info}><strong>Ville / CLI :</strong><br />{valeur(row, ["Ville", "Commune"]) || "à préciser"} — {row.CLI || "CLI à préciser"}</p>
+            <p style={s.info}><strong>Priorité :</strong><br />{action.priorite} / {action.vigilance}</p>
             <p style={s.info}><strong>Échéance :</strong><br />{action.echeance || "à préciser"}</p>
-            <p style={s.info}><strong>Vigilance :</strong><br />{action.vigilance}</p>
-            <p style={s.info}><strong>Statut :</strong><br />{action.statut}</p>
           </div>
-          <label style={{ ...s.field, marginTop: "12px" }}>Prochaine action<textarea style={s.textarea} value={action.prochaineAction} onChange={(event) => updateAction("prochaineAction", event.target.value)} placeholder="La prochaine chose concrète à faire." /></label>
-          <select style={{ ...s.input, marginTop: "8px" }} value="" onChange={(event) => { ajouterTache(event.target.value); event.target.value = ""; }}><option value="">Ajouter une tâche rapide...</option>{TACHES.map((tache) => <option key={tache} value={tache}>{tache}</option>)}</select>
         </section>
 
         <section style={s.card}>
-          <p style={s.label}>3. Note du contact</p>
-          <h2 style={s.h2}>Préparer la trace et la note sociale</h2>
-          <p style={s.intro}>Cette partie reste ouverte parce qu’elle sert pendant l’échange. Les grilles d’évaluation sont plus bas, fermées.</p>
+          <p style={s.label}>1. Journal + action</p>
+          <h2 style={s.h2}>Reprendre, noter, décider la suite</h2>
+          <div style={s.twoColumns}>
+            <div>
+              <p style={s.info}><strong>Dernière note</strong></p>
+              {derniereNote ? <article style={s.scoreBox}><p style={{ ...s.info, margin: 0 }}><strong>{derniereNote.date} — {derniereNote.type}</strong></p><p style={{ ...s.info, marginBottom: 0 }}>{derniereNote.texte}</p></article> : <p style={s.info}>Aucune note journalisée pour le moment.</p>}
+              <details style={{ marginTop: "14px" }}>
+                <summary style={s.summary}>Voir le journal complet<span style={s.summaryHelp}>À ouvrir seulement quand il faut relire l’historique.</span></summary>
+                <div style={{ marginTop: "12px" }}>{journal.length === 0 ? <p style={s.info}>Aucune note journalisée pour le moment.</p> : journal.map((item) => <article key={item.id} style={{ ...s.card, marginBottom: "10px", padding: "12px" }}><p style={{ ...s.info, margin: 0 }}><strong>{item.date} — {item.type}</strong></p><p style={{ ...s.info, marginBottom: 0 }}>{item.texte}</p></article>)}</div>
+              </details>
+            </div>
+
+            <div>
+              <p style={s.info}><strong>Nouvelle note</strong></p>
+              <div style={s.grid}>
+                <label style={s.field}>Date<input style={s.input} type="date" value={dateNote} onChange={(event) => setDateNote(event.target.value)} /></label>
+                <label style={s.field}>Type<select style={s.input} value={typeNote} onChange={(event) => setTypeNote(event.target.value)}><option>Contact</option><option>Administratif</option><option>Échéance</option><option>Vigilance</option><option>Partenaire</option><option>À reprendre</option></select></label>
+              </div>
+              <label style={{ ...s.field, marginTop: "12px" }}>Note rapide<textarea style={s.textarea} value={nouvelleNote} onChange={(event) => setNouvelleNote(event.target.value)} placeholder="Noter l’essentiel tout de suite." /></label>
+              <button style={s.mainButton} type="button" onClick={ajouterJournal}>Ajouter au journal</button>
+              <label style={{ ...s.field, marginTop: "14px" }}>Prochaine action<textarea style={s.textarea} value={action.prochaineAction} onChange={(event) => updateAction("prochaineAction", event.target.value)} placeholder="La prochaine chose concrète à faire." /></label>
+              <select style={{ ...s.input, marginTop: "8px" }} value="" onChange={(event) => { ajouterTache(event.target.value); event.target.value = ""; }}><option value="">Ajouter une tâche rapide...</option>{TACHES.map((tache) => <option key={tache} value={tache}>{tache}</option>)}</select>
+            </div>
+          </div>
+        </section>
+
+        <section style={s.card}>
+          <p style={s.label}>2. Note du contact</p>
+          <h2 style={s.h2}>Préparer Insertis et Mon Suivi Social</h2>
           <div style={{ ...s.grid, marginTop: "12px" }}>
             <label style={s.field}>Faits / situation abordée<textarea style={s.textarea} value={intervention.faits} onChange={(event) => updateIntervention("faits", event.target.value)} /></label>
             <label style={s.field}>Parole de la personne<textarea style={s.textarea} value={intervention.parolePersonne} onChange={(event) => updateIntervention("parolePersonne", event.target.value)} /></label>
@@ -632,121 +418,43 @@ export function DossierPersonnePage() {
             <label style={s.field}>Vigilance<textarea style={s.textarea} value={intervention.vigilance} onChange={(event) => updateIntervention("vigilance", event.target.value)} /></label>
             <label style={s.field}>Suite prévue<textarea style={s.textarea} value={intervention.suitePrevue} onChange={(event) => updateIntervention("suitePrevue", event.target.value)} /></label>
           </div>
-          <div style={{ ...s.grid, marginTop: "12px" }}>
-            <label style={s.field}>Texte court pour Insertis<textarea style={{ ...s.textarea, minHeight: "150px" }} readOnly value={traceInsertis} /></label>
-            <label style={s.field}>Note pour Mon Suivi Social<textarea style={{ ...s.textarea, minHeight: "150px" }} readOnly value={noteMonSuiviSocial} /></label>
-          </div>
-          <div style={s.actions}>
-            <button style={s.mainButton} type="button" onClick={() => copierTexte(traceInsertis, "Texte Insertis")}>Copier pour Insertis</button>
-            <button style={s.mainButton} type="button" onClick={() => copierTexte(noteMonSuiviSocial, "Note Mon Suivi Social")}>Copier pour Mon Suivi Social</button>
-            <button style={s.button} type="button" onClick={ajouterInterventionAuJournal}>Ajouter au journal + marquer Insertis à faire</button>
-          </div>
+          <details style={{ marginTop: "14px" }}>
+            <summary style={s.summary}>Voir les textes prêts à copier<span style={s.summaryHelp}>Masqué pour alléger l’écran pendant la saisie.</span></summary>
+            <div style={{ ...s.grid, marginTop: "12px" }}>
+              <label style={s.field}>Texte court pour Insertis<textarea style={{ ...s.textarea, minHeight: "150px" }} readOnly value={traceInsertis} /></label>
+              <label style={s.field}>Note pour Mon Suivi Social<textarea style={{ ...s.textarea, minHeight: "150px" }} readOnly value={noteMonSuiviSocial} /></label>
+            </div>
+            <div style={s.actions}>
+              <button style={s.mainButton} type="button" onClick={() => copierTexte(traceInsertis, "Texte Insertis")}>Copier pour Insertis</button>
+              <button style={s.mainButton} type="button" onClick={() => copierTexte(noteMonSuiviSocial, "Note Mon Suivi Social")}>Copier pour Mon Suivi Social</button>
+              <button style={s.button} type="button" onClick={ajouterInterventionAuJournal}>Ajouter au journal + marquer Insertis à faire</button>
+            </div>
+          </details>
         </section>
 
         <details style={s.card}>
-          <summary style={s.summary}>Socle autonomie — ouvrir si besoin<span style={s.summaryHelp}>Les 8 questions validées du projet sont fermées par défaut.</span></summary>
-          <div style={s.scoreBox}>
-            <p style={s.info}><strong>Lecture :</strong> {bilanSocle.phrase}</p>
-            <p style={s.info}><strong>Domaines d’appui :</strong> {bilanSocle.pointsAppui.length ? bilanSocle.pointsAppui.join(", ") : "non repérés à ce stade"}</p>
-            <p style={s.info}><strong>Domaines ressources :</strong> {bilanSocle.pointsRessource.length ? bilanSocle.pointsRessource.join(", ") : "à préciser"}</p>
-          </div>
-
-          {QUESTIONS_AUTONOMIE.map((question, index) => (
-            <div style={s.questionGrid} key={question.id}>
-              <div>
-                <p style={s.label}>{index + 1}. {question.domaine}</p>
-                <p style={s.info}><strong>{question.question}</strong></p>
-                <p style={s.info}>{question.repere}</p>
-              </div>
-              <div style={s.field}>
-                <span>Niveau repéré</span>
-                <select style={s.input} value={autonomie[question.id]} onChange={(event) => updateAutonomie(question.id, event.target.value)}>
-                  {NIVEAUX_AUTONOMIE.map((niveau) => <option key={niveau}>{niveau}</option>)}
-                </select>
-                <span>Réponse / observation courte</span>
-                <textarea style={s.textarea} value={autonomie[`${question.id}Note`]} onChange={(event) => updateAutonomie(`${question.id}Note`, event.target.value)} placeholder="Noter la réponse de la personne ou ce qui est observé pendant l’échange..." />
-              </div>
-            </div>
-          ))}
-
-          <div style={{ ...s.grid, marginTop: "12px" }}>
-            <label style={s.field}>Synthèse rédigée pour le dossier écrit<textarea style={{ ...s.textarea, minHeight: "220px" }} readOnly value={syntheseAutonomieRedigee} /></label>
-            <label style={s.field}>Repères détaillés conservés<textarea style={{ ...s.textarea, minHeight: "220px" }} readOnly value={texteAutonomie} /></label>
-          </div>
-          <div style={s.actions}>
-            <button style={s.mainButton} type="button" onClick={() => copierTexte(syntheseAutonomieRedigee, "Synthèse autonomie")}>Copier synthèse autonomie</button>
-            <button style={s.mainButton} type="button" onClick={alimenterAnalyseAvecAutonomie}>Alimenter l’analyse professionnelle</button>
-            <button style={s.button} type="button" onClick={ajouterAutonomieAuJournal}>Ajouter au journal</button>
-          </div>
+          <summary style={s.summary}>3. Autonomie / parcours<span style={s.summaryHelp}>Socle, parcours et relecture institutionnelle sont regroupés ici.</span></summary>
+          <div style={s.scoreBox}><p style={s.info}><strong>Lecture actuelle :</strong> {bilanSocle.phrase}</p><p style={s.info}><strong>Domaines d’appui :</strong> {bilanSocle.pointsAppui.length ? bilanSocle.pointsAppui.join(", ") : "non repérés à ce stade"}</p><p style={s.info}><strong>Domaines ressources :</strong> {bilanSocle.pointsRessource.length ? bilanSocle.pointsRessource.join(", ") : "à préciser"}</p></div>
+          <details style={s.compactCard}><summary style={s.summary}>Socle autonomie — 8 questions validées</summary>{QUESTIONS_AUTONOMIE.map((question, index) => <div style={s.questionGrid} key={question.id}><div><p style={s.label}>{index + 1}. {question.domaine}</p><p style={s.info}><strong>{question.question}</strong></p><p style={s.info}>{question.repere}</p></div><div style={s.field}><span>Niveau repéré</span><select style={s.input} value={autonomie[question.id]} onChange={(event) => updateAutonomie(question.id, event.target.value)}>{NIVEAUX_AUTONOMIE.map((niveau) => <option key={niveau}>{niveau}</option>)}</select><span>Réponse / observation courte</span><textarea style={s.textarea} value={autonomie[`${question.id}Note`]} onChange={(event) => updateAutonomie(`${question.id}Note`, event.target.value)} placeholder="Noter uniquement l’utile." /></div></div>)}</details>
+          <details style={s.compactCard}><summary style={s.summary}>Parcours autonomie</summary><textarea style={{ ...s.textarea, minHeight: "220px", marginTop: "12px" }} readOnly value={parcoursAutonomie} /><div style={s.actions}><button style={s.mainButton} type="button" onClick={() => copierTexte(parcoursAutonomie, "Parcours autonomie")}>Copier parcours autonomie</button><button style={s.button} type="button" onClick={ajouterParcoursAuJournal}>Ajouter au journal</button></div></details>
+          <details style={s.compactCard}><summary style={s.summary}>Relecture institutionnelle Métropole / Insertis</summary><div style={s.grid}>{GRILLE_COMPLEMENTAIRE.map((item) => <article key={item.domaine} style={s.scoreBox}><p style={s.label}>{item.domaine}</p><p style={s.info}><strong>{item.question}</strong></p></article>)}</div></details>
+          <details style={s.compactCard}><summary style={s.summary}>Synthèse autonomie détaillée</summary><div style={{ ...s.grid, marginTop: "12px" }}><label style={s.field}>Synthèse rédigée<textarea style={{ ...s.textarea, minHeight: "220px" }} readOnly value={syntheseAutonomieRedigee} /></label><label style={s.field}>Repères détaillés<textarea style={{ ...s.textarea, minHeight: "220px" }} readOnly value={texteAutonomie} /></label></div><div style={s.actions}><button style={s.mainButton} type="button" onClick={() => copierTexte(syntheseAutonomieRedigee, "Synthèse autonomie")}>Copier synthèse autonomie</button><button style={s.mainButton} type="button" onClick={alimenterAnalyseAvecAutonomie}>Alimenter l’analyse professionnelle</button><button style={s.button} type="button" onClick={ajouterAutonomieAuJournal}>Ajouter synthèse au journal</button></div></details>
         </details>
 
         <details style={s.card}>
-          <summary style={s.summary}>Parcours autonomie — ouvrir après le socle<span style={s.summaryHelp}>Transformer les repères en étapes simples et réalistes.</span></summary>
-          <textarea style={{ ...s.textarea, minHeight: "220px", marginTop: "12px" }} readOnly value={parcoursAutonomie} />
-          <div style={s.actions}>
-            <button style={s.mainButton} type="button" onClick={() => copierTexte(parcoursAutonomie, "Parcours autonomie")}>Copier parcours autonomie</button>
-            <button style={s.button} type="button" onClick={ajouterParcoursAuJournal}>Ajouter au journal</button>
-          </div>
-        </details>
-
-        <details style={s.card}>
-          <summary style={s.summary}>Relecture institutionnelle Métropole / Insertis — ouvrir si besoin<span style={s.summaryHelp}>Grille complémentaire retrouvée dans Git, fermée par défaut.</span></summary>
-          <p style={s.intro}>Cette grille complète le socle. Elle sert à relire la situation et préparer la formalisation dans Insertis, sans remplacer l’échange principal.</p>
-          <div style={s.grid}>
-            {GRILLE_COMPLEMENTAIRE.map((item) => (
-              <article key={item.domaine} style={s.scoreBox}>
-                <p style={s.label}>{item.domaine}</p>
-                <p style={s.info}><strong>{item.question}</strong></p>
-              </article>
-            ))}
-          </div>
-        </details>
-
-        <details style={s.card}>
-          <summary style={s.summary}>Évaluation de priorité complète — ouvrir si besoin<span style={s.summaryHelp}>À utiliser quand il faut recalculer ou justifier la priorité.</span></summary>
-          <p style={s.intro}>Coche ce qui est vrai. L’outil propose une priorité, mais tu gardes la main.</p>
-          <div style={s.grid}>
-            {[
-              ["critereDateLimite", "Date limite proche", "RDV, recours, DTR, justificatif, dette, convocation."],
-              ["critereRisqueDroits", "Risque de rupture de droit ou d’aggravation", "RSA, CAF, radiation, dette, expulsion, situation qui se dégrade."],
-              ["criterePersonneBloquee", "Personne bloquée sans appui", "Elle attend un retour ou ne peut pas avancer seule."],
-              ["criterePartenaireAttend", "Partenaire en attente", "Métropole, CAF, MDM, DGFIP, bailleur, autre service."],
-              ["critereTraceRapide", "Trace Insertis à faire rapidement", "Entretien réalisé, action engagée, vigilance ou décision à tracer."],
-            ].map(([champ, titre, aide]) => (
-              <label style={s.checkboxLine} key={champ}>
-                <input type="checkbox" checked={Boolean(action[champ])} onChange={(event) => updateAction(champ, event.target.checked)} />
-                <span>{titre}<span style={s.checkboxText}>{aide}</span></span>
-              </label>
-            ))}
-          </div>
-          <div style={s.scoreBox}>
-            <p style={s.scoreNumber}>Score : {suggestion.score}/5</p>
-            <p style={s.info}><strong>Priorité conseillée :</strong> {suggestion.priorite}</p>
-            <p style={s.info}><strong>Vigilance conseillée :</strong> {suggestion.vigilance}</p>
-            <p style={s.info}>{suggestion.phrase}</p>
-            <button style={s.mainButton} type="button" onClick={appliquerSuggestion}>Appliquer la suggestion</button>
-          </div>
-        </details>
-
-        <details style={s.card}>
-          <summary style={s.summary}>Pilotage détaillé — ouvrir pour modifier les champs<span style={s.summaryHelp}>Les champs techniques sont cachés pour alléger la fiche.</span></summary>
+          <summary style={s.summary}>4. Réglages / synthèse<span style={s.summaryHelp}>Priorité complète, champs techniques et synthèse dossier.</span></summary>
           <div style={s.grid}>
             <label style={s.field}>Priorité retenue<select style={s.input} value={action.priorite} onChange={(event) => updateAction("priorite", event.target.value)}><option>À qualifier</option><option>Priorité 1</option><option>Priorité 2</option><option>Priorité 3</option><option>À reporter</option></select></label>
             <label style={s.field}>Échéance<input style={s.input} type="date" value={action.echeance} onChange={(event) => updateAction("echeance", event.target.value)} /></label>
-            <label style={s.field}>Vigilance retenue<select style={s.input} value={action.vigilance} onChange={(event) => updateAction("vigilance", event.target.value)}><option>Faible</option><option>À suivre</option><option>Importante</option><option>Urgente</option></select></label>
+            <label style={s.field}>Vigilance<select style={s.input} value={action.vigilance} onChange={(event) => updateAction("vigilance", event.target.value)}><option>Faible</option><option>À suivre</option><option>Importante</option><option>Urgente</option></select></label>
             <label style={s.field}>Statut<select style={s.input} value={action.statut} onChange={(event) => updateAction("statut", event.target.value)}><option>À faire</option><option>En cours</option><option>En attente</option><option>Fait</option><option>Reporté</option></select></label>
             <label style={s.field}>Trace Insertis<select style={s.input} value={action.traceInsertis} onChange={(event) => updateAction("traceInsertis", event.target.value)}><option>À prévoir</option><option>À faire</option><option>Faite</option><option>Pas nécessaire</option></select></label>
           </div>
+          <details style={s.compactCard}><summary style={s.summary}>Évaluation rapide de priorité</summary><div style={s.grid}>{[["critereDateLimite", "Date limite proche", "RDV, recours, DTR, justificatif, dette, convocation."], ["critereRisqueDroits", "Risque de rupture de droit ou d’aggravation", "RSA, CAF, radiation, dette, expulsion, situation qui se dégrade."], ["criterePersonneBloquee", "Personne bloquée sans appui", "Elle attend un retour ou ne peut pas avancer seule."], ["criterePartenaireAttend", "Partenaire en attente", "Métropole, CAF, MDM, DGFIP, bailleur, autre service."], ["critereTraceRapide", "Trace Insertis à faire rapidement", "Entretien réalisé, action engagée, vigilance ou décision à tracer."]].map(([champ, titre, aide]) => <label style={s.checkboxLine} key={champ}><input type="checkbox" checked={Boolean(action[champ])} onChange={(event) => updateAction(champ, event.target.checked)} /><span>{titre}<span style={s.checkboxText}>{aide}</span></span></label>)}</div><div style={s.scoreBox}><p style={s.scoreNumber}>Score : {suggestion.score}/5</p><p style={s.info}><strong>Priorité conseillée :</strong> {suggestion.priorite}</p><p style={s.info}><strong>Vigilance conseillée :</strong> {suggestion.vigilance}</p><p style={s.info}>{suggestion.phrase}</p><button style={s.mainButton} type="button" onClick={appliquerSuggestion}>Appliquer la suggestion</button></div></details>
           <label style={{ ...s.field, marginTop: "12px" }}>Note de suivi<textarea style={s.textarea} value={action.note} onChange={(event) => updateAction("note", event.target.value)} /></label>
+          <label style={{ ...s.field, marginTop: "12px" }}>Synthèse dossier<textarea style={{ ...s.textarea, minHeight: "230px" }} readOnly value={synthese} /></label>
+          <div style={s.actions}><button style={s.mainButton} type="button" onClick={() => copierTexte(synthese, "Synthèse dossier")}>Copier la synthèse</button></div>
         </details>
-
-        <section style={s.card}>
-          <p style={s.label}>Synthèse dossier</p>
-          <textarea style={{ ...s.textarea, minHeight: "230px" }} readOnly value={synthese} />
-          <div style={s.actions}>
-            <button style={s.mainButton} type="button" onClick={() => copierTexte(synthese, "Synthèse dossier")}>Copier la synthèse</button>
-          </div>
-        </section>
       </div>
     </main>
   );
