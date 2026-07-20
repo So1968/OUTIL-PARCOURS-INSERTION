@@ -143,6 +143,14 @@ function texteCourt(valeurTexte, remplacement = "à compléter") {
   return String(valeurTexte || "").trim() || remplacement;
 }
 
+function reponsesAutonomie(autonomie) {
+  return QUESTIONS_AUTONOMIE.map((question) => ({
+    ...question,
+    niveau: autonomie[question.id] || "Non évalué",
+    note: texteCourt(autonomie[`${question.id}Note`], ""),
+  })).filter((question) => question.niveau !== "Non évalué" || question.note);
+}
+
 function scorePriorite(action) {
   return [
     action.critereDateLimite,
@@ -194,6 +202,50 @@ function bilanAutonomie(autonomie) {
   return { phrase, pointsAppui, pointsRessource };
 }
 
+function phraseNiveau(question) {
+  if (question.niveau === "Autonome") return `Sur le plan ${question.domaine.toLowerCase()}, la personne apparaît autonome.`;
+  if (question.niveau === "Autonomie partielle") return `Sur le plan ${question.domaine.toLowerCase()}, la personne dispose d’une autonomie partielle.`;
+  if (question.niveau === "Besoin d'appui régulier") return `Sur le plan ${question.domaine.toLowerCase()}, un appui régulier semble nécessaire.`;
+  if (question.niveau === "Besoin d'appui renforcé") return `Sur le plan ${question.domaine.toLowerCase()}, un appui renforcé est à prévoir.`;
+  return `Sur le plan ${question.domaine.toLowerCase()}, l’autonomie reste à évaluer.`;
+}
+
+function genererSyntheseAutonomieRedigee(autonomie) {
+  const reponses = reponsesAutonomie(autonomie);
+  const bilan = bilanAutonomie(autonomie);
+
+  if (!reponses.length) {
+    return "L’autonomie n’est pas encore évaluée. Le socle pourra être repris avec la personne afin d’identifier les démarches qu’elle réalise seule, les domaines où un appui est nécessaire et les points à approfondir.";
+  }
+
+  const lignes = [
+    "Synthèse autonomie — dossier écrit",
+    "",
+    bilan.phrase,
+    "",
+  ];
+
+  if (bilan.pointsRessource.length) {
+    lignes.push(`Les domaines ressources repérés sont : ${bilan.pointsRessource.join(", ")}.`);
+  }
+  if (bilan.pointsAppui.length) {
+    lignes.push(`Les domaines nécessitant un appui sont : ${bilan.pointsAppui.join(", ")}.`);
+  }
+
+  lignes.push("");
+  lignes.push("Éléments issus des réponses :");
+
+  reponses.forEach((question) => {
+    const observation = question.note ? ` ${question.note}` : "";
+    lignes.push(`- ${phraseNiveau(question)}${observation}`);
+  });
+
+  lignes.push("");
+  lignes.push("Cette lecture reste à ajuster avec la personne et ne remplace pas l’approfondissement de la situation. Elle sert à orienter la suite de l’accompagnement et à éviter de renforcer inutilement ce qui peut déjà être fait seul.");
+
+  return lignes.join("\n");
+}
+
 function genererBilanAutonomie(autonomie) {
   const bilan = bilanAutonomie(autonomie);
   const lignes = [
@@ -232,9 +284,11 @@ const TACHES = [
   "Autre action à préciser",
 ];
 
-function genererTraceInsertis(row, rows, intervention, action) {
+function genererTraceInsertis(row, rows, intervention, action, autonomie) {
+  const bilan = bilanAutonomie(autonomie);
   return [
     `Éléments abordés : ${texteCourt(intervention.faits)}.`,
+    bilan.pointsAppui.length || bilan.pointsRessource.length ? `Autonomie : ${bilan.phrase}` : "",
     intervention.parolePersonne ? `Parole de la personne : ${intervention.parolePersonne}.` : "",
     intervention.analyse ? `Analyse professionnelle : ${intervention.analyse}.` : "",
     intervention.demarches ? `Démarches réalisées : ${intervention.demarches}.` : "",
@@ -244,9 +298,11 @@ function genererTraceInsertis(row, rows, intervention, action) {
   ].filter(Boolean).join("\n");
 }
 
-function genererMonSuiviSocial(intervention, action) {
+function genererMonSuiviSocial(intervention, action, syntheseAutonomie) {
   return [
     `Faits / situation abordée :\n${texteCourt(intervention.faits)}`,
+    "",
+    `Évaluation de l’autonomie :\n${texteCourt(syntheseAutonomie, "à compléter après le socle autonomie")}`,
     "",
     `Parole de la personne :\n${texteCourt(intervention.parolePersonne, "non renseigné")}`,
     "",
@@ -263,6 +319,7 @@ function genererMonSuiviSocial(intervention, action) {
 function syntheseDossier(row, rows, action, journal, autonomie) {
   const suggestion = suggestionPriorite(action);
   const bilan = bilanAutonomie(autonomie);
+  const syntheseAutonomie = genererSyntheseAutonomieRedigee(autonomie);
   return [
     `Dossier — ${affichageDossier(row, rows)}`,
     "",
@@ -277,6 +334,8 @@ function syntheseDossier(row, rows, action, journal, autonomie) {
     `- Lecture : ${bilan.phrase}`,
     `- Domaines d'appui : ${bilan.pointsAppui.length ? bilan.pointsAppui.join(", ") : "non repérés à ce stade"}`,
     `- Domaines ressources : ${bilan.pointsRessource.length ? bilan.pointsRessource.join(", ") : "à préciser"}`,
+    "",
+    syntheseAutonomie,
     "",
     "Évaluation priorité :",
     `- Score : ${suggestion.score}/5`,
@@ -346,9 +405,10 @@ export function DossierPersonnePage() {
     ? [...(journaux[idCourant] || [])].sort((a, b) => `${b.date || ""} ${b.createdAt || ""}`.localeCompare(`${a.date || ""} ${a.createdAt || ""}`))
     : [];
   const suggestion = suggestionPriorite(action);
+  const syntheseAutonomieRedigee = useMemo(() => genererSyntheseAutonomieRedigee(autonomie), [autonomie]);
   const synthese = useMemo(() => (row ? syntheseDossier(row, rows, action, journal, autonomie) : ""), [row, rows, action, journal, autonomie]);
-  const traceInsertis = useMemo(() => (row ? genererTraceInsertis(row, rows, intervention, action) : ""), [row, rows, intervention, action]);
-  const noteMonSuiviSocial = useMemo(() => genererMonSuiviSocial(intervention, action), [intervention, action]);
+  const traceInsertis = useMemo(() => (row ? genererTraceInsertis(row, rows, intervention, action, autonomie) : ""), [row, rows, intervention, action, autonomie]);
+  const noteMonSuiviSocial = useMemo(() => genererMonSuiviSocial(intervention, action, syntheseAutonomieRedigee), [intervention, action, syntheseAutonomieRedigee]);
   const texteAutonomie = useMemo(() => genererBilanAutonomie(autonomie), [autonomie]);
   const bilanSocle = useMemo(() => bilanAutonomie(autonomie), [autonomie]);
 
@@ -409,8 +469,16 @@ export function DossierPersonnePage() {
   }
 
   function ajouterAutonomieAuJournal() {
-    ajouterEntreeJournal("Repères autonomie", texteAutonomie, new Date().toISOString().slice(0, 10));
-    setMessage("Repères autonomie ajoutés au journal.");
+    ajouterEntreeJournal("Synthèse autonomie", syntheseAutonomieRedigee, new Date().toISOString().slice(0, 10));
+    setMessage("Synthèse autonomie ajoutée au journal.");
+  }
+
+  function alimenterAnalyseAvecAutonomie() {
+    const base = texteCourt(intervention.analyse, "");
+    const ajout = syntheseAutonomieRedigee.trim();
+    const prochaineAnalyse = base ? `${base}\n\n${ajout}` : ajout;
+    updateIntervention("analyse", prochaineAnalyse);
+    setMessage("Synthèse autonomie ajoutée dans l’analyse professionnelle du dossier écrit.");
   }
 
   function ajouterInterventionAuJournal() {
@@ -466,7 +534,7 @@ export function DossierPersonnePage() {
         <section style={s.card}>
           <p style={s.label}>Socle autonomie</p>
           <h2 style={s.h2}>8 questions repères liées au référentiel</h2>
-          <p style={s.intro}>Question à gauche, réponse à droite. L’objectif est de repérer vite les domaines d’autonomie, sans transformer l’entretien en questionnaire lourd.</p>
+          <p style={s.intro}>Les réponses alimentent automatiquement une synthèse rédigée pour le dossier écrit, sans avoir à tout reformuler à la main.</p>
           <div style={s.scoreBox}>
             <p style={s.info}><strong>Lecture :</strong> {bilanSocle.phrase}</p>
             <p style={s.info}><strong>Domaines d’appui :</strong> {bilanSocle.pointsAppui.length ? bilanSocle.pointsAppui.join(", ") : "non repérés à ce stade"}</p>
@@ -485,15 +553,19 @@ export function DossierPersonnePage() {
                 <select style={s.input} value={autonomie[question.id]} onChange={(event) => updateAutonomie(question.id, event.target.value)}>
                   {NIVEAUX_AUTONOMIE.map((niveau) => <option key={niveau}>{niveau}</option>)}
                 </select>
-                <span>Observation courte</span>
-                <textarea style={s.textarea} value={autonomie[`${question.id}Note`]} onChange={(event) => updateAutonomie(`${question.id}Note`, event.target.value)} placeholder="Ce que la personne fait seule, ce qui bloque, appui utile..." />
+                <span>Réponse / observation courte</span>
+                <textarea style={s.textarea} value={autonomie[`${question.id}Note`]} onChange={(event) => updateAutonomie(`${question.id}Note`, event.target.value)} placeholder="Noter la réponse de la personne ou ce qui est observé pendant l’échange..." />
               </div>
             </div>
           ))}
 
-          <label style={{ ...s.field, marginTop: "12px" }}>Bilan autonomie prêt à copier<textarea style={{ ...s.textarea, minHeight: "220px" }} readOnly value={texteAutonomie} /></label>
+          <div style={{ ...s.grid, marginTop: "12px" }}>
+            <label style={s.field}>Synthèse rédigée pour le dossier écrit<textarea style={{ ...s.textarea, minHeight: "260px" }} readOnly value={syntheseAutonomieRedigee} /></label>
+            <label style={s.field}>Repères détaillés conservés<textarea style={{ ...s.textarea, minHeight: "260px" }} readOnly value={texteAutonomie} /></label>
+          </div>
           <div style={s.actions}>
-            <button style={s.mainButton} type="button" onClick={() => copierTexte(texteAutonomie, "Bilan autonomie")}>Copier bilan autonomie</button>
+            <button style={s.mainButton} type="button" onClick={() => copierTexte(syntheseAutonomieRedigee, "Synthèse autonomie")}>Copier synthèse autonomie</button>
+            <button style={s.mainButton} type="button" onClick={alimenterAnalyseAvecAutonomie}>Alimenter l’analyse professionnelle</button>
             <button style={s.button} type="button" onClick={ajouterAutonomieAuJournal}>Ajouter au journal</button>
           </div>
         </section>
@@ -542,7 +614,7 @@ export function DossierPersonnePage() {
         <section style={s.card}>
           <p style={s.label}>Saisie sociale unique</p>
           <h2 style={s.h2}>Contenu libre à copier dans Insertis et Mon Suivi Social</h2>
-          <p style={s.intro}>On ne ressaisit pas les cases techniques déjà prévues dans les logiciels. Ici : faits, parole, analyse, démarches, vigilance et suite.</p>
+          <p style={s.intro}>La note Mon Suivi Social reprend maintenant aussi la synthèse autonomie issue des réponses au socle.</p>
           <div style={{ ...s.grid, marginTop: "12px" }}>
             <label style={s.field}>Faits / situation abordée<textarea style={s.textarea} value={intervention.faits} onChange={(event) => updateIntervention("faits", event.target.value)} /></label>
             <label style={s.field}>Parole de la personne<textarea style={s.textarea} value={intervention.parolePersonne} onChange={(event) => updateIntervention("parolePersonne", event.target.value)} /></label>
