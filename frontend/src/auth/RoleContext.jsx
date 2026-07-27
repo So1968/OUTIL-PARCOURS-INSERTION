@@ -1,13 +1,14 @@
-﻿import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
+import { ROLE_PROFESSIONNELLE } from "./roles";
 
 const RoleContext = createContext(null);
 const STORAGE_KEY = "artag-prototype-current-role";
 
 function getInitialRole() {
   try {
-    return localStorage.getItem(STORAGE_KEY);
+    return localStorage.getItem(STORAGE_KEY) || ROLE_PROFESSIONNELLE;
   } catch {
-    return null;
+    return ROLE_PROFESSIONNELLE;
   }
 }
 
@@ -15,14 +16,11 @@ export function RoleProvider({ children }) {
   const [currentRole, setCurrentRoleState] = useState(getInitialRole);
 
   function setCurrentRole(role) {
-    setCurrentRoleState(role);
+    const nextRole = role || ROLE_PROFESSIONNELLE;
+    setCurrentRoleState(nextRole);
 
     try {
-      if (role) {
-        localStorage.setItem(STORAGE_KEY, role);
-      } else {
-        localStorage.removeItem(STORAGE_KEY);
-      }
+      localStorage.setItem(STORAGE_KEY, nextRole);
     } catch {
       // Le prototype continue même si localStorage est indisponible.
     }
