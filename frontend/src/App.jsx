@@ -5,6 +5,7 @@ import { RoleProvider } from "./auth/RoleContext";
 import { ROLE_APPUI_TNS, ROLE_PROFESSIONNELLE } from "./auth/roles";
 import { DossierPersonnePage } from "./pages/DossierPersonnePage";
 import { EcheancesVigilancesPage } from "./pages/EcheancesVigilancesPage";
+import { EvaluationPersonnePage } from "./pages/EvaluationPersonnePage";
 import { PilotageActionsPage } from "./pages/PilotageActionsPage";
 import { SasInsertisPage } from "./pages/SasInsertisPage";
 
@@ -18,6 +19,10 @@ function PilotageProtege() {
   );
 }
 
+function PageProtegee({ children }) {
+  return <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>{children}</RequireRole>;
+}
+
 export default function App() {
   return (
     <RoleProvider>
@@ -25,9 +30,11 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/pilotage-actions" replace />} />
         <Route path="/pilotage-actions" element={<PilotageProtege />} />
-        <Route path="/pilotage-actions/dossier/:dossierId" element={<RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}><DossierPersonnePage /></RequireRole>} />
-        <Route path="/sas-insertis" element={<RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}><SasInsertisPage /></RequireRole>} />
-        <Route path="/accompagnement-global/echeances-vigilances" element={<RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}><EcheancesVigilancesPage /></RequireRole>} />
+        <Route path="/pilotage-actions/dossier/:dossierId" element={<PageProtegee><DossierPersonnePage /></PageProtegee>} />
+        <Route path="/evaluation-personne" element={<PageProtegee><EvaluationPersonnePage /></PageProtegee>} />
+        <Route path="/evaluation-personne/:dossierId" element={<PageProtegee><EvaluationPersonnePage /></PageProtegee>} />
+        <Route path="/sas-insertis" element={<PageProtegee><SasInsertisPage /></PageProtegee>} />
+        <Route path="/accompagnement-global/echeances-vigilances" element={<PageProtegee><EcheancesVigilancesPage /></PageProtegee>} />
 
         <Route path="/accompagnement-global" element={<Navigate to="/pilotage-actions" replace />} />
         <Route path="/accompagnement-global/fiche-minute" element={<Navigate to="/pilotage-actions" replace />} />
