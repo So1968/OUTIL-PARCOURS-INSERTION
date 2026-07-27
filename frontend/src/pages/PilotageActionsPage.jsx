@@ -229,25 +229,87 @@ function dejaTravaille(action) {
   );
 }
 
-function niveauPriorite(action) {
+function infosUrgence(action) {
+  const raisons = [];
   let score = 0;
-  if (action.vigilance === "Urgente") score += 100;
-  if (action.vigilance === "Importante") score += 70;
-  if (action.priorite === "Priorité 1") score += 90;
-  if (action.priorite === "Priorité 2") score += 60;
-  if (action.priorite === "Priorité 3") score += 30;
-  if (action.statut === "À faire") score += 25;
-  if (action.statut === "En cours") score += 15;
-  if (["À faire", "À prévoir"].includes(action.traceInsertis)) score += 8;
+
+  if (action.statut === "Fait") {
+    return { score: -100, categorie: "Terminé / sorti de la file", couleur: "sorti", raisons: ["Action marquée comme faite"] };
+  }
+  if (action.statut === "Reporté") {
+    return { score: -50, categorie: "En attente / reporté", couleur: "attente", raisons: ["Dossier reporté"] };
+  }
+
+  if (action.priorite === "Priorité 1") {
+    score += 80;
+    raisons.push("priorité 1");
+  } else if (action.priorite === "Priorité 2") {
+    score += 50;
+    raisons.push("priorité 2");
+  } else if (action.priorite === "Priorité 3") {
+    score += 25;
+    raisons.push("priorité 3");
+  } else {
+    score += 10;
+    raisons.push("priorité à qualifier");
+  }
+
+  if (action.vigilance === "Urgente") {
+    score += 90;
+    raisons.push("vigilance urgente");
+  } else if (action.vigilance === "Importante") {
+    score += 55;
+    raisons.push("vigilance importante");
+  } else if (action.vigilance === "À suivre") {
+    score += 20;
+    raisons.push("vigilance à suivre");
+  }
 
   const jours = joursAvant(action.echeance);
-  if (jours < 0) score += 90;
-  else if (jours === 0) score += 80;
-  else if (jours <= 2) score += 65;
-  else if (jours <= 7) score += 35;
-  else if (jours <= 14) score += 12;
+  if (jours < 0) {
+    score += 100;
+    raisons.push("échéance dépassée");
+  } else if (jours === 0) {
+    score += 85;
+    raisons.push("échéance aujourd’hui");
+  } else if (jours === 1) {
+    score += 70;
+    raisons.push("échéance demain");
+  } else if (jours <= 3) {
+    score += 55;
+    raisons.push("échéance sous 3 jours");
+  } else if (jours <= 7) {
+    score += 35;
+    raisons.push("échéance cette semaine");
+  } else if (jours <= 14) {
+    score += 15;
+    raisons.push("échéance à 15 jours");
+  }
 
-  return score;
+  if (action.statut === "À faire") {
+    score += 25;
+    raisons.push("action à faire");
+  }
+  if (action.statut === "En cours") {
+    score += 15;
+    raisons.push("action en cours");
+  }
+  if (action.statut === "En attente") {
+    score += 5;
+    raisons.push("en attente");
+  }
+  if (action.traceInsertis === "À faire") {
+    score += 20;
+    raisons.push("trace Insertis à faire");
+  } else if (action.traceInsertis === "À prévoir") {
+    score += 10;
+    raisons.push("trace Insertis à prévoir");
+  }
+
+  if (score >= 165) return { score, categorie: "À traiter en premier", couleur: "urgent", raisons };
+  if (score >= 110) return { score, categorie: "À traiter rapidement", couleur: "important", raisons };
+  if (score >= 60) return { score, categorie: "À suivre cette semaine", couleur: "semaine", raisons };
+  return { score, categorie: "À garder dans le radar", couleur: "suivi", raisons };
 }
 
 function libelleDelai(echeance) {
@@ -268,27 +330,26 @@ function premierElementAction(texte) {
   return ligne || "Action à préciser";
 }
 
-function categoriePilotage(action) {
-  const jours = joursAvant(action.echeance);
-  if (action.statut === "Fait" || action.statut === "Reporté") return "Archive";
-  if (action.vigilance === "Urgente" || action.priorite === "Priorité 1" || jours <= 0) return "À faire maintenant";
-  if (action.vigilance === "Importante" || action.priorite === "Priorité 2" || jours <= 7) return "Cette semaine";
-  return "À suivre";
-}
-
 function synthese(rows, actions) {
-  const lignes = ["Pilotage actions — file active Insertis", "", `Nombre de dossiers : ${rows.length}`, ""];
-
-  rows.forEach((row, index) => {
+  const entrees = rows.map((row, index) => {
     const id = idDossier(row, index);
     const action = { ...actionVide(), ...(actions[id] || {}) };
+    return { row, id, action, urgence: infosUrgence(action) };
+  }).sort((a, b) => b.urgence.score - a.urgence.score);
 
-    lignes.push(`${affichageDossier(row, rows)} — ${valeur(row, ["Numéro Insertis", "Numero Insertis"]) || "sans numéro"}`);
+  const lignes = ["Pilotage actions — file active dynamique", "", `Nombre de dossiers : ${rows.length}`, ""];
+
+  entrees.forEach((entree, rang) => {
+    const { row, action, urgence } = entree;
+    lignes.push(`${rang + 1}. ${affichageDossier(row, rows)} — ${valeur(row, ["Numéro Insertis", "Numero Insertis"]) || "sans numéro"}`);
+    lignes.push(`- Rang dans la file : ${rang + 1} / Score urgence : ${urgence.score}`);
+    lignes.push(`- Catégorie : ${urgence.categorie}`);
     lignes.push(`- Ville : ${valeur(row, ["Ville", "Commune"]) || "à préciser"} / CLI : ${row.CLI || "à préciser"}`);
     lignes.push(`- Priorité : ${action.priorite}`);
     lignes.push(`- Échéance : ${action.echeance || "à préciser"} / Vigilance : ${action.vigilance}`);
     lignes.push(`- Statut : ${action.statut} / Trace Insertis : ${action.traceInsertis}`);
     lignes.push(`- Action utile : ${premierElementAction(action.prochaineAction)}`);
+    lignes.push(`- Pourquoi ce rang : ${urgence.raisons.join(", ") || "à qualifier"}`);
     if (action.note) lignes.push(`- Note : ${action.note}`);
     lignes.push("");
   });
@@ -298,15 +359,17 @@ function synthese(rows, actions) {
 
 const s = {
   page: { minHeight: "100vh", background: "#111827", color: "#E5E7EB", padding: "24px 22px 56px", fontFamily: "Arial, system-ui, sans-serif" },
-  wrap: { maxWidth: "1380px", margin: "0 auto" },
+  wrap: { maxWidth: "1420px", margin: "0 auto" },
   header: { display: "flex", justifyContent: "space-between", gap: "20px", alignItems: "flex-start", marginBottom: "18px" },
   label: { margin: "0 0 6px", color: "#A7F3D0", fontSize: "11px", fontWeight: 900, letterSpacing: "0.12em", textTransform: "uppercase" },
   h1: { margin: 0, color: "#F9FAFB", fontSize: "30px", lineHeight: 1.1 },
   h2: { margin: "0 0 10px", color: "#F9FAFB", fontSize: "20px", lineHeight: 1.2 },
-  intro: { margin: "8px 0 0", color: "#CBD5E1", fontSize: "15px", lineHeight: 1.45, maxWidth: "920px" },
+  h3: { margin: "0 0 8px", color: "#F9FAFB", fontSize: "17px", lineHeight: 1.2 },
+  intro: { margin: "8px 0 0", color: "#CBD5E1", fontSize: "15px", lineHeight: 1.45, maxWidth: "980px" },
   card: { background: "#1F2937", border: "1px solid #374151", borderRadius: "18px", padding: "18px", marginBottom: "14px", boxShadow: "0 10px 24px rgba(0,0,0,0.24)" },
   board: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "14px", marginBottom: "14px" },
   grid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "12px" },
+  lane: { background: "#0F172A", border: "1px solid #374151", borderRadius: "18px", padding: "14px", minHeight: "180px" },
   kpi: { background: "#111827", border: "1px solid #374151", borderRadius: "16px", padding: "13px", color: "#E5E7EB" },
   kpiActif: { outline: "3px solid #34D399" },
   kpiNumber: { margin: 0, fontSize: "25px", fontWeight: 900, color: "#F9FAFB" },
@@ -321,26 +384,30 @@ const s = {
   table: { width: "100%", borderCollapse: "separate", borderSpacing: "0 9px" },
   th: { textAlign: "left", fontSize: "11px", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.08em", padding: "0 8px" },
   td: { background: "#111827", borderTop: "1px solid #374151", borderBottom: "1px solid #374151", padding: "9px 8px", verticalAlign: "top", fontSize: "13px", color: "#E5E7EB" },
-  tdFirst: { background: "#111827", borderTop: "1px solid #374151", borderBottom: "1px solid #374151", borderLeft: "1px solid #374151", borderTopLeftRadius: "14px", borderBottomLeftRadius: "14px", padding: "9px 8px", verticalAlign: "top", fontSize: "13px", minWidth: "160px", color: "#E5E7EB" },
+  tdFirst: { background: "#111827", borderTop: "1px solid #374151", borderBottom: "1px solid #374151", borderLeft: "1px solid #374151", borderTopLeftRadius: "14px", borderBottomLeftRadius: "14px", padding: "9px 8px", verticalAlign: "top", fontSize: "13px", minWidth: "180px", color: "#E5E7EB" },
   tdLast: { background: "#111827", borderTop: "1px solid #374151", borderBottom: "1px solid #374151", borderRight: "1px solid #374151", borderTopRightRadius: "14px", borderBottomRightRadius: "14px", padding: "9px 8px", verticalAlign: "top", fontSize: "13px", minWidth: "140px", color: "#E5E7EB" },
   small: { display: "block", color: "#94A3B8", fontSize: "12px", lineHeight: 1.35, marginTop: "4px" },
   message: { color: "#A7F3D0", fontWeight: 900 },
   badge: { display: "inline-flex", alignItems: "center", borderRadius: "999px", padding: "4px 8px", fontSize: "11px", fontWeight: 900, background: "#064E3B", color: "#A7F3D0", marginRight: "6px", marginBottom: "5px" },
   urgent: { background: "#7F1D1D", color: "#FECACA" },
   important: { background: "#78350F", color: "#FDE68A" },
-  follow: { background: "#1E3A8A", color: "#BFDBFE" },
+  semaine: { background: "#1E3A8A", color: "#BFDBFE" },
+  suivi: { background: "#064E3B", color: "#A7F3D0" },
+  attente: { background: "#374151", color: "#CBD5E1" },
+  rank: { display: "inline-flex", alignItems: "center", justifyContent: "center", width: "34px", height: "34px", borderRadius: "999px", background: "#10B981", color: "#062015", fontWeight: 900, marginRight: "10px" },
 };
 
 function libelleFiltre(filtre) {
+  if (filtre === "Urgence") return "File active classée par urgence";
   if (filtre === "Actions") return "Actions à faire";
-  if (filtre === "Urgentes") return "Vigilences urgentes";
+  if (filtre === "Urgentes") return "Vigilances urgentes";
   if (filtre === "Importantes") return "Vigilances importantes";
   if (filtre === "Traces") return "Traces Insertis à faire ou à prévoir";
   return "Tous les dossiers";
 }
 
 function Badge({ children, type }) {
-  const style = type === "urgent" ? s.urgent : type === "important" ? s.important : type === "follow" ? s.follow : {};
+  const style = type === "urgent" ? s.urgent : type === "important" ? s.important : type === "semaine" ? s.semaine : type === "attente" ? s.attente : type === "suivi" ? s.suivi : {};
   return <span style={{ ...s.badge, ...style }}>{children}</span>;
 }
 
@@ -350,28 +417,36 @@ export function PilotageActionsPage() {
   const [actions, setActions] = useState(() => lireJson(STORAGE_ACTIONS, {}));
   const [recherche, setRecherche] = useState("");
   const [filtreVigilance, setFiltreVigilance] = useState("Toutes");
-  const [filtreRapide, setFiltreRapide] = useState("Tous");
+  const [filtreRapide, setFiltreRapide] = useState("Urgence");
   const [message, setMessage] = useState("");
 
   const entrees = useMemo(
-    () => rows.map((row, index) => ({ row, index, id: idDossier(row, index), action: { ...actionVide(), ...(actions[idDossier(row, index)] || {}) } })),
+    () => rows.map((row, index) => {
+      const id = idDossier(row, index);
+      const action = { ...actionVide(), ...(actions[id] || {}) };
+      return { row, index, id, action, urgence: infosUrgence(action) };
+    }),
     [rows, actions],
   );
 
   const entreesTriees = useMemo(
-    () => [...entrees].sort((a, b) => niveauPriorite(b.action) - niveauPriorite(a.action)),
-    [entrees],
+    () => [...entrees].sort((a, b) => {
+      if (b.urgence.score !== a.urgence.score) return b.urgence.score - a.urgence.score;
+      return affichageDossier(a.row, rows).localeCompare(affichageDossier(b.row, rows));
+    }),
+    [entrees, rows],
   );
 
   const entreesFiltrees = useMemo(() => {
-    return entreesTriees.filter(({ row, action }) => {
+    return entreesTriees.filter(({ row, action, urgence }) => {
       const texte = `${affichageDossier(row, rows)} ${valeur(row, ["Numéro Insertis", "Numero Insertis"])} ${row.Ville || ""} ${row.CLI || ""}`.toLowerCase();
       const okRecherche = texte.includes(recherche.toLowerCase());
       const okVigilance = filtreVigilance === "Toutes" || action.vigilance === filtreVigilance;
       const okRapide =
         filtreRapide === "Tous" ||
+        filtreRapide === "Urgence" ||
         (filtreRapide === "Actions" && action.statut === "À faire") ||
-        (filtreRapide === "Urgentes" && action.vigilance === "Urgente") ||
+        (filtreRapide === "Urgentes" && (action.vigilance === "Urgente" || urgence.couleur === "urgent")) ||
         (filtreRapide === "Importantes" && action.vigilance === "Importante") ||
         (filtreRapide === "Traces" && ["À faire", "À prévoir"].includes(action.traceInsertis));
 
@@ -381,13 +456,13 @@ export function PilotageActionsPage() {
 
   const groupes = useMemo(() => {
     const base = {
-      "À faire maintenant": [],
-      "Cette semaine": [],
-      "À suivre": [],
+      "À traiter en premier": [],
+      "À traiter rapidement": [],
+      "À suivre cette semaine": [],
+      "À garder dans le radar": [],
     };
     entreesTriees.forEach((entree) => {
-      const categorie = categoriePilotage(entree.action);
-      if (base[categorie]) base[categorie].push(entree);
+      if (base[entree.urgence.categorie]) base[entree.urgence.categorie].push(entree);
     });
     return base;
   }, [entreesTriees]);
@@ -396,8 +471,8 @@ export function PilotageActionsPage() {
     const valeurs = entrees.map((entree) => entree.action);
     return {
       total: entrees.length,
-      maintenant: groupes["À faire maintenant"].length,
-      semaine: groupes["Cette semaine"].length,
+      premier: groupes["À traiter en premier"].length,
+      rapide: groupes["À traiter rapidement"].length,
       aFaire: valeurs.filter((action) => action.statut === "À faire").length,
       insertis: valeurs.filter((action) => ["À faire", "À prévoir"].includes(action.traceInsertis)).length,
     };
@@ -437,7 +512,7 @@ export function PilotageActionsPage() {
       });
 
       enregistrerRows(lignes, nextActions);
-      setMessage(`${lignes.length} dossiers importés. Les priorités sont visibles tout de suite ci-dessous.`);
+      setMessage(`${lignes.length} dossiers importés. La file active est classée automatiquement par urgence.`);
     };
 
     reader.readAsText(fichier, "windows-1252");
@@ -475,7 +550,7 @@ export function PilotageActionsPage() {
       },
     };
     enregistrer(next);
-    setMessage("Modification enregistrée.");
+    setMessage("Modification enregistrée : la place dans la file se recalcule automatiquement.");
   }
 
   function ajouterTache(id, tache) {
@@ -503,7 +578,7 @@ export function PilotageActionsPage() {
       if (!dejaTravaille(actuelle) || !actuelle.prochaineAction) next[id] = { ...actuelle, ...propositionAutomatique(row) };
     });
     enregistrer(next);
-    setMessage("Les lignes vides ont été préremplies automatiquement.");
+    setMessage("Les lignes vides ont été préremplies. La file se reclasse automatiquement.");
   }
 
   function recalculerTouteLaFile() {
@@ -517,7 +592,7 @@ export function PilotageActionsPage() {
       next[idDossier(row, index)] = { ...actionVide(), ...propositionAutomatique(row) };
     });
     enregistrer(next);
-    setMessage("Toute la file a été recalculée automatiquement.");
+    setMessage("Toute la file a été recalculée et reclassée automatiquement.");
   }
 
   function copierSynthese() {
@@ -547,31 +622,31 @@ export function PilotageActionsPage() {
     setMessage("Données locales effacées.");
   }
 
-  function CarteAction({ entree }) {
-    const { row, id, action } = entree;
-    const categorie = categoriePilotage(action);
-    const badgeType = categorie === "À faire maintenant" ? "urgent" : categorie === "Cette semaine" ? "important" : "follow";
-
+  function CarteFile({ entree, rang }) {
+    const { row, id, action, urgence } = entree;
     return (
       <article style={{ ...s.kpi, padding: "14px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", alignItems: "flex-start" }}>
-          <div>
-            <strong style={{ fontSize: "16px", color: "#F9FAFB" }}>{affichageDossier(row, rows)}</strong>
-            <span style={s.small}>{valeur(row, ["Ville", "Commune"]) || "Ville ?"} · {row.CLI || "CLI ?"}</span>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
+          <span style={s.rank}>{rang + 1}</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", alignItems: "flex-start" }}>
+              <div>
+                <strong style={{ fontSize: "16px", color: "#F9FAFB" }}>{affichageDossier(row, rows)}</strong>
+                <span style={s.small}>{valeur(row, ["Ville", "Commune"]) || "Ville ?"} · {row.CLI || "CLI ?"}</span>
+              </div>
+              <Badge type={urgence.couleur}>{libelleDelai(action.echeance)}</Badge>
+            </div>
+            <div style={{ marginTop: "10px" }}>
+              <Badge type={urgence.couleur}>{urgence.categorie}</Badge>
+              <Badge>score {urgence.score}</Badge>
+            </div>
+            <p style={{ margin: "10px 0 0", color: "#E5E7EB", lineHeight: 1.35, fontWeight: 800 }}>{premierElementAction(action.prochaineAction)}</p>
+            <span style={s.small}>Remonte ici parce que : {urgence.raisons.slice(0, 3).join(", ") || "à qualifier"}</span>
+            <div style={s.actions}>
+              <Link style={s.link} to={`/pilotage-actions/dossier/${encodeURIComponent(id)}`}>Ouvrir</Link>
+              <button type="button" style={s.button} onClick={() => marquerFait(id)}>{action.statut === "Fait" ? "Remettre à faire" : "Marquer fait"}</button>
+            </div>
           </div>
-          <Badge type={badgeType}>{libelleDelai(action.echeance)}</Badge>
-        </div>
-        <div style={{ marginTop: "10px" }}>
-          <Badge type={action.vigilance === "Urgente" ? "urgent" : action.vigilance === "Importante" ? "important" : "follow"}>{action.vigilance}</Badge>
-          <Badge>{action.priorite}</Badge>
-          <Badge>{action.statut}</Badge>
-        </div>
-        <p style={{ margin: "10px 0 0", color: "#E5E7EB", lineHeight: 1.35, fontWeight: 800 }}>
-          {premierElementAction(action.prochaineAction)}
-        </p>
-        <div style={s.actions}>
-          <Link style={s.link} to={`/pilotage-actions/dossier/${encodeURIComponent(id)}`}>Ouvrir</Link>
-          <button type="button" style={s.button} onClick={() => marquerFait(id)}>{action.statut === "Fait" ? "Remettre à faire" : "Marquer fait"}</button>
         </div>
       </article>
     );
@@ -583,9 +658,9 @@ export function PilotageActionsPage() {
         <header style={s.header}>
           <div>
             <p style={s.label}>Poste de pilotage</p>
-            <h1 style={s.h1}>Ce qui est à faire</h1>
+            <h1 style={s.h1}>File active dynamique</h1>
             <p style={s.intro}>
-              Vue priorisée de la file active : l’action utile, l’échéance, la vigilance et l’accès au dossier sont visibles sans ouvrir chaque fiche.
+              Les personnes changent automatiquement de place selon l’urgence de traitement du dossier : priorité, vigilance, échéance, statut et trace Insertis.
             </p>
           </div>
         </header>
@@ -618,7 +693,7 @@ export function PilotageActionsPage() {
             </div>
           </div>
           <p style={{ margin: "10px 0 0", color: "#94A3B8", fontSize: "13px" }}>
-            Les données restent dans ce navigateur. Ne pas pousser les exports usagers sur GitHub.
+            La file se reclasse dès qu’un champ change. Les données restent dans ce navigateur. Ne pas pousser les exports usagers sur GitHub.
           </p>
           {message && <p style={s.message}>{message}</p>}
         </section>
@@ -626,15 +701,15 @@ export function PilotageActionsPage() {
         {rows.length === 0 ? (
           <section style={s.card}>
             <h2 style={s.h2}>Pour démarrer</h2>
-            <p style={s.intro}>Importer la file active Insertis en CSV ou créer un dossier manuel de test. Dès qu’un dossier existe, les priorités apparaissent ici.</p>
+            <p style={s.intro}>Importer la file active Insertis en CSV ou créer un dossier manuel de test. Dès qu’un dossier existe, il est placé dans la file selon son urgence.</p>
           </section>
         ) : (
           <>
             <section style={s.grid}>
               {[
-                ["Tous", kpis.total, "Dossiers"],
-                ["Urgentes", kpis.maintenant, "À faire maintenant"],
-                ["Importantes", kpis.semaine, "Cette semaine"],
+                ["Urgence", kpis.total, "File active classée"],
+                ["Urgentes", kpis.premier, "À traiter en premier"],
+                ["Importantes", kpis.rapide, "À traiter rapidement"],
                 ["Actions", kpis.aFaire, "Actions à faire"],
                 ["Traces", kpis.insertis, "Traces Insertis"],
               ].map(([filtre, nombre, libelle]) => (
@@ -650,13 +725,20 @@ export function PilotageActionsPage() {
               ))}
             </section>
 
-            <section style={s.board}>
-              {Object.entries(groupes).map(([titre, liste]) => (
-                <div key={titre} style={s.card}>
-                  <h2 style={s.h2}>{titre}</h2>
-                  {liste.length ? liste.slice(0, 5).map((entree) => <CarteAction key={entree.id} entree={entree} />) : <p style={s.intro}>Rien dans cette catégorie.</p>}
-                </div>
-              ))}
+            <section style={s.card}>
+              <p style={s.label}>Vision de la file active</p>
+              <h2 style={s.h2}>Les dossiers montent ou descendent selon le degré d’urgence</h2>
+              <p style={s.intro}>Le rang 1 est le dossier à regarder en premier. Quand tu modifies une échéance, une vigilance, une priorité ou un statut, la file se réorganise seule.</p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "12px", marginTop: "14px" }}>
+                {Object.entries(groupes).map(([titre, liste]) => (
+                  <div key={titre} style={s.lane}>
+                    <h3 style={s.h3}>{titre}</h3>
+                    {liste.length ? liste.slice(0, 6).map((entree) => (
+                      <CarteFile key={entree.id} entree={entree} rang={entreesTriees.findIndex((item) => item.id === entree.id)} />
+                    )) : <p style={s.intro}>Aucun dossier ici.</p>}
+                  </div>
+                ))}
+              </div>
             </section>
 
             <section style={s.card}>
@@ -682,12 +764,14 @@ export function PilotageActionsPage() {
             </section>
 
             <section style={s.card}>
-              <h2 style={s.h2}>File active priorisée</h2>
+              <h2 style={s.h2}>Classement complet de la file</h2>
               <div style={s.tableWrap}>
                 <table style={s.table}>
                   <thead>
                     <tr>
+                      <th style={s.th}>Rang</th>
                       <th style={s.th}>Dossier</th>
+                      <th style={s.th}>Pourquoi ici</th>
                       <th style={s.th}>À faire</th>
                       <th style={s.th}>Échéance</th>
                       <th style={s.th}>Priorité</th>
@@ -698,64 +782,72 @@ export function PilotageActionsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {entreesFiltrees.map(({ row, id, action }) => (
-                      <tr key={id}>
-                        <td style={s.tdFirst}>
-                          <strong>{affichageDossier(row, rows)}</strong>
-                          <span style={s.small}>{valeur(row, ["Numéro Insertis", "Numero Insertis"])}</span>
-                          <span style={s.small}>{valeur(row, ["Ville", "Commune"]) || "Ville ?"} · {row.CLI || "CLI ?"}</span>
-                        </td>
-                        <td style={s.td}>
-                          <textarea style={s.textarea} value={action.prochaineAction} onChange={(event) => updateAction(id, "prochaineAction", event.target.value)} />
-                          <select style={{ ...s.input, marginTop: "8px" }} value="" onChange={(event) => { ajouterTache(id, event.target.value); event.target.value = ""; }}>
-                            <option value="">Ajouter une tâche...</option>
-                            {tachesTypes(row).map((tache) => <option key={tache} value={tache}>{tache}</option>)}
-                          </select>
-                        </td>
-                        <td style={s.td}>
-                          <strong>{libelleDelai(action.echeance)}</strong>
-                          <input style={{ ...s.input, marginTop: "8px" }} type="date" value={action.echeance} onChange={(event) => updateAction(id, "echeance", event.target.value)} />
-                        </td>
-                        <td style={s.td}>
-                          <select style={s.input} value={action.priorite} onChange={(event) => updateAction(id, "priorite", event.target.value)}>
-                            <option>À qualifier</option>
-                            <option>Priorité 1</option>
-                            <option>Priorité 2</option>
-                            <option>Priorité 3</option>
-                            <option>À reporter</option>
-                          </select>
-                        </td>
-                        <td style={s.td}>
-                          <select style={s.input} value={action.vigilance} onChange={(event) => updateAction(id, "vigilance", event.target.value)}>
-                            <option>Faible</option>
-                            <option>À suivre</option>
-                            <option>Importante</option>
-                            <option>Urgente</option>
-                          </select>
-                        </td>
-                        <td style={s.td}>
-                          <select style={s.input} value={action.statut} onChange={(event) => updateAction(id, "statut", event.target.value)}>
-                            <option>À faire</option>
-                            <option>En cours</option>
-                            <option>En attente</option>
-                            <option>Fait</option>
-                            <option>Reporté</option>
-                          </select>
-                        </td>
-                        <td style={s.td}>
-                          <select style={s.input} value={action.traceInsertis} onChange={(event) => updateAction(id, "traceInsertis", event.target.value)}>
-                            <option>À prévoir</option>
-                            <option>À faire</option>
-                            <option>Faite</option>
-                            <option>Pas nécessaire</option>
-                          </select>
-                        </td>
-                        <td style={s.tdLast}>
-                          <Link style={s.link} to={`/pilotage-actions/dossier/${encodeURIComponent(id)}`}>Ouvrir dossier</Link>
-                          <button type="button" style={{ ...s.button, marginTop: "8px" }} onClick={() => marquerFait(id)}>{action.statut === "Fait" ? "À refaire" : "Fait"}</button>
-                        </td>
-                      </tr>
-                    ))}
+                    {entreesFiltrees.map(({ row, id, action, urgence }) => {
+                      const rang = entreesTriees.findIndex((entree) => entree.id === id) + 1;
+                      return (
+                        <tr key={id}>
+                          <td style={s.tdFirst}><span style={s.rank}>{rang}</span><span style={s.small}>score {urgence.score}</span></td>
+                          <td style={s.td}>
+                            <strong>{affichageDossier(row, rows)}</strong>
+                            <span style={s.small}>{valeur(row, ["Numéro Insertis", "Numero Insertis"])}</span>
+                            <span style={s.small}>{valeur(row, ["Ville", "Commune"]) || "Ville ?"} · {row.CLI || "CLI ?"}</span>
+                          </td>
+                          <td style={s.td}>
+                            <Badge type={urgence.couleur}>{urgence.categorie}</Badge>
+                            <span style={s.small}>{urgence.raisons.join(", ") || "à qualifier"}</span>
+                          </td>
+                          <td style={s.td}>
+                            <textarea style={s.textarea} value={action.prochaineAction} onChange={(event) => updateAction(id, "prochaineAction", event.target.value)} />
+                            <select style={{ ...s.input, marginTop: "8px" }} value="" onChange={(event) => { ajouterTache(id, event.target.value); event.target.value = ""; }}>
+                              <option value="">Ajouter une tâche...</option>
+                              {tachesTypes(row).map((tache) => <option key={tache} value={tache}>{tache}</option>)}
+                            </select>
+                          </td>
+                          <td style={s.td}>
+                            <strong>{libelleDelai(action.echeance)}</strong>
+                            <input style={{ ...s.input, marginTop: "8px" }} type="date" value={action.echeance} onChange={(event) => updateAction(id, "echeance", event.target.value)} />
+                          </td>
+                          <td style={s.td}>
+                            <select style={s.input} value={action.priorite} onChange={(event) => updateAction(id, "priorite", event.target.value)}>
+                              <option>À qualifier</option>
+                              <option>Priorité 1</option>
+                              <option>Priorité 2</option>
+                              <option>Priorité 3</option>
+                              <option>À reporter</option>
+                            </select>
+                          </td>
+                          <td style={s.td}>
+                            <select style={s.input} value={action.vigilance} onChange={(event) => updateAction(id, "vigilance", event.target.value)}>
+                              <option>Faible</option>
+                              <option>À suivre</option>
+                              <option>Importante</option>
+                              <option>Urgente</option>
+                            </select>
+                          </td>
+                          <td style={s.td}>
+                            <select style={s.input} value={action.statut} onChange={(event) => updateAction(id, "statut", event.target.value)}>
+                              <option>À faire</option>
+                              <option>En cours</option>
+                              <option>En attente</option>
+                              <option>Fait</option>
+                              <option>Reporté</option>
+                            </select>
+                          </td>
+                          <td style={s.td}>
+                            <select style={s.input} value={action.traceInsertis} onChange={(event) => updateAction(id, "traceInsertis", event.target.value)}>
+                              <option>À prévoir</option>
+                              <option>À faire</option>
+                              <option>Faite</option>
+                              <option>Pas nécessaire</option>
+                            </select>
+                          </td>
+                          <td style={s.tdLast}>
+                            <Link style={s.link} to={`/pilotage-actions/dossier/${encodeURIComponent(id)}`}>Ouvrir dossier</Link>
+                            <button type="button" style={{ ...s.button, marginTop: "8px" }} onClick={() => marquerFait(id)}>{action.statut === "Fait" ? "À refaire" : "Fait"}</button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
