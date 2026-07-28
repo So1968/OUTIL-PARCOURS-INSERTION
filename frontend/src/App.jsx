@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { PrototypeProfileBanner } from "./auth/PrototypeProfileBanner";
 import { RequireRole } from "./auth/RequireRole";
 import { RoleProvider } from "./auth/RoleContext";
@@ -23,10 +23,43 @@ function PageProtegee({ children }) {
   return <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>{children}</RequireRole>;
 }
 
+function MenuPrincipal() {
+  const styleNav = {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+    padding: "12px 22px",
+    background: "#101418",
+    borderBottom: "1px solid #2f3a46",
+  };
+  const styleLien = {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "34px",
+    padding: "8px 14px",
+    borderRadius: "999px",
+    border: "1px solid #5f745f",
+    background: "#1f2a1f",
+    color: "#f5f1e8",
+    textDecoration: "none",
+    fontWeight: 900,
+    fontSize: "14px",
+  };
+
+  return (
+    <nav style={styleNav} aria-label="Navigation principale de l’outil">
+      <Link style={styleLien} to="/pilotage-actions">File active dynamique</Link>
+      <Link style={styleLien} to="/evaluation-personne">Évaluation avec la personne</Link>
+    </nav>
+  );
+}
+
 export default function App() {
   return (
     <RoleProvider>
       <PrototypeProfileBanner />
+      <MenuPrincipal />
       <Routes>
         <Route path="/" element={<Navigate to="/pilotage-actions" replace />} />
         <Route path="/pilotage-actions" element={<PilotageProtege />} />
