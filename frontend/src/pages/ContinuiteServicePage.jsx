@@ -1,6 +1,6 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useRole } from "../auth/RoleContext";
+import { useRole } from "../auth/useRole";
 import { ROLE_PROFESSIONNELLE } from "../auth/roles";
 import {
   champsSuiviContinuite,
@@ -258,7 +258,6 @@ export function ContinuiteServicePage() {
     </main>
   );
 }
-
 
 
 

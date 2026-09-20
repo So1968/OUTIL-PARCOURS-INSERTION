@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { useRole } from "./RoleContext";
+import { useRole } from "./useRole";
 import { getRoleLabel } from "./roles";
 
 export function RequireRole({ allowedRoles, children }) {
@@ -9,7 +9,7 @@ export function RequireRole({ allowedRoles, children }) {
   if (!allowedRoles.includes(currentRole)) {
     return (
       <Navigate
-        to="/"
+        to="/acces-refuse"
         replace
         state={{
           deniedPath: location.pathname,

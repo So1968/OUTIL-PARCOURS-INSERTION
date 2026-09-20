@@ -1,17 +1,9 @@
 import { Link, useParams } from "react-router-dom";
 import { useMemo, useState } from "react";
+import { readStorageJson as lireJson, writeStorageJson } from "../lib/storage";
 
 const STORAGE_ROWS = "artag-pilotage-actions-rows-v1";
 const STORAGE_AUTONOMIE = "artag-pilotage-autonomie-socle-v1";
-
-function lireJson(cle, defaut) {
-  try {
-    const valeur = localStorage.getItem(cle);
-    return valeur ? JSON.parse(valeur) : defaut;
-  } catch {
-    return defaut;
-  }
-}
 
 function valeur(row, noms) {
   for (const nom of noms) {
@@ -139,14 +131,17 @@ export function EvaluationPersonnePage() {
 
   const index = rows.findIndex((row, i) => idDossier(row, i) === idCourant);
   const row = index >= 0 ? rows[index] : null;
-  const autonomie = row ? { ...autonomieVide(), ...(autonomies[idCourant] || {}) } : autonomieVide();
+  const autonomie = useMemo(
+    () => (row ? { ...autonomieVide(), ...(autonomies[idCourant] || {}) } : autonomieVide()),
+    [autonomies, idCourant, row],
+  );
   const renseignes = useMemo(() => QUESTIONS_AUTONOMIE.filter((question) => autonomie[question.id] && autonomie[question.id] !== "Non évalué").length, [autonomie]);
 
   function updateAutonomie(champ, v) {
     const nextAutonomie = { ...autonomie, [champ]: v };
     const next = { ...autonomies, [idCourant]: nextAutonomie };
     setAutonomies(next);
-    localStorage.setItem(STORAGE_AUTONOMIE, JSON.stringify(next));
+    writeStorageJson(STORAGE_AUTONOMIE, next);
     setMessage("Réponse enregistrée.");
   }
 

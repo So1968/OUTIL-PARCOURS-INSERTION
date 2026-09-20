@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { champsSuiviContinuite } from "../data/continuiteModele";
 import { referentielMetropoleLyon } from "../data/referentielMetropoleLyon";
@@ -6,6 +6,7 @@ import {
   logiqueModulesDomainesTravail,
   modulesDomainesTravail,
 } from "../data/modulesDomainesTravail";
+import { readStorageJson, writeStorageJson } from "../lib/storage";
 
 const STORAGE_KEY = "artag-dossier-parcours-brouillon";
 const REPERES_STORAGE_KEY = "artag-reperes-autonomie-brouillon";
@@ -87,21 +88,11 @@ const initialDossier = {
 };
 
 function getInitialDossier() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? { ...initialDossier, ...JSON.parse(saved) } : initialDossier;
-  } catch {
-    return initialDossier;
-  }
+  return { ...initialDossier, ...readStorageJson(STORAGE_KEY, {}) };
 }
 
 function getInitialReperes() {
-  try {
-    const saved = localStorage.getItem(REPERES_STORAGE_KEY);
-    return saved ? JSON.parse(saved) : { reponses: {}, derniereValidation: "" };
-  } catch {
-    return { reponses: {}, derniereValidation: "" };
-  }
+  return readStorageJson(REPERES_STORAGE_KEY, { reponses: {}, derniereValidation: "" });
 }
 
 function normaliserTexte(value) {
@@ -330,7 +321,7 @@ export function DossierPage({ mode = "complet" }) {
       derniereMiseAJour: dateDuJour,
     };
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(dossierValide));
+    writeStorageJson(STORAGE_KEY, dossierValide);
     setDossier(dossierValide);
     setMessageValidation("Parcours validé et conservé dans ce navigateur.");
   }

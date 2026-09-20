@@ -1,20 +1,12 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { readStorageJson as lireJson, writeStorageJson } from "../lib/storage";
 
 const STORAGE_ROWS = "artag-pilotage-actions-rows-v1";
 const STORAGE_ACTIONS = "artag-pilotage-actions-suivi-v1";
 const STORAGE_JOURNAL = "artag-pilotage-actions-journal-v1";
 const STORAGE_INTERVENTIONS = "artag-pilotage-interventions-brouillons-v2";
 const STORAGE_AUTONOMIE = "artag-pilotage-autonomie-socle-v1";
-
-function lireJson(cle, defaut) {
-  try {
-    const valeur = localStorage.getItem(cle);
-    return valeur ? JSON.parse(valeur) : defaut;
-  } catch {
-    return defaut;
-  }
-}
 
 function valeur(row, noms) {
   for (const nom of noms) {
@@ -413,12 +405,24 @@ export function DossierPersonnePage() {
 
   const index = rows.findIndex((row, i) => idDossier(row, i) === idCourant);
   const row = index >= 0 ? rows[index] : null;
-  const action = row ? { ...actionVide(), ...(actions[idCourant] || {}) } : actionVide();
-  const intervention = row ? { ...interventionVide(), ...(interventions[idCourant] || {}) } : interventionVide();
-  const autonomie = row ? { ...autonomieVide(), ...(autonomies[idCourant] || {}) } : autonomieVide();
-  const journal = row
-    ? [...(journaux[idCourant] || [])].sort((a, b) => `${b.date || ""} ${b.createdAt || ""}`.localeCompare(`${a.date || ""} ${a.createdAt || ""}`))
-    : [];
+  const action = useMemo(
+    () => (row ? { ...actionVide(), ...(actions[idCourant] || {}) } : actionVide()),
+    [actions, idCourant, row],
+  );
+  const intervention = useMemo(
+    () => (row ? { ...interventionVide(), ...(interventions[idCourant] || {}) } : interventionVide()),
+    [idCourant, interventions, row],
+  );
+  const autonomie = useMemo(
+    () => (row ? { ...autonomieVide(), ...(autonomies[idCourant] || {}) } : autonomieVide()),
+    [autonomies, idCourant, row],
+  );
+  const journal = useMemo(
+    () => (row
+      ? [...(journaux[idCourant] || [])].sort((a, b) => `${b.date || ""} ${b.createdAt || ""}`.localeCompare(`${a.date || ""} ${a.createdAt || ""}`))
+      : []),
+    [idCourant, journaux, row],
+  );
 
   const derniereNote = journal[0] || null;
   const notesRecentes = journal.slice(0, 4);
@@ -434,7 +438,7 @@ export function DossierPersonnePage() {
   function enregistrerAction(nextAction) {
     const next = { ...actions, [idCourant]: nextAction };
     setActions(next);
-    localStorage.setItem(STORAGE_ACTIONS, JSON.stringify(next));
+    writeStorageJson(STORAGE_ACTIONS, next);
     setMessage("Dossier mis à jour.");
   }
 
@@ -446,7 +450,7 @@ export function DossierPersonnePage() {
     const nextIntervention = { ...intervention, [champ]: v };
     const next = { ...interventions, [idCourant]: nextIntervention };
     setInterventions(next);
-    localStorage.setItem(STORAGE_INTERVENTIONS, JSON.stringify(next));
+    writeStorageJson(STORAGE_INTERVENTIONS, next);
     setMessage("Brouillon d’intervention enregistré.");
   }
 
@@ -454,7 +458,7 @@ export function DossierPersonnePage() {
     const nextAutonomie = { ...autonomie, [champ]: v };
     const next = { ...autonomies, [idCourant]: nextAutonomie };
     setAutonomies(next);
-    localStorage.setItem(STORAGE_AUTONOMIE, JSON.stringify(next));
+    writeStorageJson(STORAGE_AUTONOMIE, next);
     setMessage("Repères autonomie enregistrés.");
   }
 
@@ -476,7 +480,7 @@ export function DossierPersonnePage() {
     const entree = { id: String(Date.now()), date, type, texte: contenu, createdAt: new Date().toISOString() };
     const next = { ...journaux, [idCourant]: [entree, ...(journaux[idCourant] || [])] };
     setJournaux(next);
-    localStorage.setItem(STORAGE_JOURNAL, JSON.stringify(next));
+    writeStorageJson(STORAGE_JOURNAL, next);
   }
 
   function ajouterJournal() {

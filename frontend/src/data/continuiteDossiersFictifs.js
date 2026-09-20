@@ -1,4 +1,4 @@
-﻿export const colleguesContinuiteFictifs = [
+export const colleguesContinuiteFictifs = [
   {
     id: "referente-parcours",
     nom: "Référente de parcours",

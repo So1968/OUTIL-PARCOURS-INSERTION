@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { referentielMetropoleLyon } from "../data/referentielMetropoleLyon";
+import { readStorageJson, writeStorageJson } from "../lib/storage";
 
 const STORAGE_KEY = "artag-reperes-autonomie-brouillon";
 
@@ -63,12 +64,7 @@ const initialReperes = {
 };
 
 function getInitialReperes() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? { ...initialReperes, ...JSON.parse(saved) } : initialReperes;
-  } catch {
-    return initialReperes;
-  }
+  return { ...initialReperes, ...readStorageJson(STORAGE_KEY, {}) };
 }
 
 function getMessagePositif(reponses) {
@@ -155,7 +151,7 @@ export function SocleAutonomiePage() {
         },
       };
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      writeStorageJson(STORAGE_KEY, updated);
       return updated;
     });
 
@@ -168,7 +164,7 @@ export function SocleAutonomiePage() {
       derniereValidation: dateDuJour,
     };
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    writeStorageJson(STORAGE_KEY, updated);
     setReperes(updated);
     setMessage("Les repères ont été enregistrés.");
   }

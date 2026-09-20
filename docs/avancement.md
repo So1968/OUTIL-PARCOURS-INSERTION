@@ -199,234 +199,292 @@ CrÃ©er lâ€™ossature technique du projet :
 - Les Ã©lÃ©ments produits restent une lecture professionnelle prudente, non diagnostique et ajustable.
 - Les formulations doivent rester compatibles avec les attendus institutionnels, les rÃ©fÃ©rentiels de parcours et les bonnes pratiques dâ€™accompagnement.
 
-## Accueil — bureau quotidien
+## Accueil â€” bureau quotidien
 
-Décision validée :
-- L’accueil devient un bureau quotidien professionnel, et non une page vitrine.
-- Chaque professionnelle doit retrouver son espace de travail : dossiers à reprendre, alertes, actions, brouillons.
-- La continuité de service devient une fonction métier centrale.
-- La Direction / CA reste un accès séparé.
+DÃ©cision validÃ©e :
+- Lâ€™accueil devient un bureau quotidien professionnel, et non une page vitrine.
+- Chaque professionnelle doit retrouver son espace de travail : dossiers Ã  reprendre, alertes, actions, brouillons.
+- La continuitÃ© de service devient une fonction mÃ©tier centrale.
+- La Direction / CA reste un accÃ¨s sÃ©parÃ©.
 - Le logo ARTAG doit rester visible et lisible.
-- L’interface doit être adaptée au confort visuel de l’utilisatrice.
+- Lâ€™interface doit Ãªtre adaptÃ©e au confort visuel de lâ€™utilisatrice.
 
-État actuel :
+Ã‰tat actuel :
 - HomePage refondue en bureau quotidien.
-- Trois blocs principaux posés : Mon bureau, Mes accès métier, Continuité de service.
+- Trois blocs principaux posÃ©s : Mon bureau, Mes accÃ¨s mÃ©tier, ContinuitÃ© de service.
 - Bouton central : Reprendre un dossier.
-- Direction / CA déplacée en bas à droite.
-- Lisibilité augmentée sur l’accueil.
+- Direction / CA dÃ©placÃ©e en bas Ã  droite.
+- LisibilitÃ© augmentÃ©e sur lâ€™accueil.
 
 Point de vigilance :
-- Ne pas transformer l’accueil en tableau administratif froid.
-- Garder une logique de travail quotidien : quoi reprendre, quoi suivre, quoi sécuriser.
-- Adapter plus tard le contenu selon le profil connecté et les droits réels.
+- Ne pas transformer lâ€™accueil en tableau administratif froid.
+- Garder une logique de travail quotidien : quoi reprendre, quoi suivre, quoi sÃ©curiser.
+- Adapter plus tard le contenu selon le profil connectÃ© et les droits rÃ©els.
 
 
-## Continuité de service
+## ContinuitÃ© de service
 
-Décision validée :
-- La continuité de service devient une fonction métier centrale de l’outil.
-- Elle permet de reprendre temporairement les dossiers d’une collègue ou d’un collègue sans rupture pour la personne accompagnée.
-- Elle ne donne pas accès automatiquement à tout l’espace professionnel privé de la collègue.
-- Elle doit afficher uniquement les éléments nécessaires à la continuité : synthèse courte, note de continuité, prochaine action, échéances, documents attendus, relais mobilisés.
+DÃ©cision validÃ©e :
+- La continuitÃ© de service devient une fonction mÃ©tier centrale de lâ€™outil.
+- Elle permet de reprendre temporairement les dossiers dâ€™une collÃ¨gue ou dâ€™un collÃ¨gue sans rupture pour la personne accompagnÃ©e.
+- Elle ne donne pas accÃ¨s automatiquement Ã  tout lâ€™espace professionnel privÃ© de la collÃ¨gue.
+- Elle doit afficher uniquement les Ã©lÃ©ments nÃ©cessaires Ã  la continuitÃ© : synthÃ¨se courte, note de continuitÃ©, prochaine action, Ã©chÃ©ances, documents attendus, relais mobilisÃ©s.
 
-État actuel :
-- Une page `ContinuiteServicePage.jsx` a été créée.
-- La route `/continuite-service` a été ajoutée.
-- L’accueil contient un bouton vers la continuité de service.
-- Les données affichées sont fictives et servent uniquement à valider le modèle fonctionnel.
-
-Point de vigilance :
-- Ne pas mélanger continuité de service et surveillance.
-- Ne pas ouvrir automatiquement les brouillons personnels, hypothèses sensibles ou notes privées.
-- Plus tard, relier cette page aux droits réels, aux rôles et aux dossiers effectivement rattachés aux professionnelles.
-
-
-## Continuité de service
-
-Décision validée :
-- La continuité de service devient une fonction métier centrale de l’outil.
-- Elle permet de reprendre temporairement les dossiers d’une collègue ou d’un collègue sans rupture pour la personne accompagnée.
-- Elle ne donne pas accès automatiquement à tout l’espace professionnel privé de la collègue.
-- Elle doit afficher uniquement les éléments nécessaires à la continuité : synthèse courte, note de continuité, prochaine action, échéances, documents attendus, relais mobilisés.
-
-État actuel :
-- Une page `ContinuiteServicePage.jsx` a été créée.
-- La route `/continuite-service` a été ajoutée.
-- L’accueil contient un bouton vers la continuité de service.
-- Les données affichées sont fictives et servent uniquement à valider le modèle fonctionnel.
+Ã‰tat actuel :
+- Une page `ContinuiteServicePage.jsx` a Ã©tÃ© crÃ©Ã©e.
+- La route `/continuite-service` a Ã©tÃ© ajoutÃ©e.
+- Lâ€™accueil contient un bouton vers la continuitÃ© de service.
+- Les donnÃ©es affichÃ©es sont fictives et servent uniquement Ã  valider le modÃ¨le fonctionnel.
 
 Point de vigilance :
-- Ne pas mélanger continuité de service et surveillance.
-- Ne pas ouvrir automatiquement les brouillons personnels, hypothèses sensibles ou notes privées.
-- Plus tard, relier cette page aux droits réels, aux rôles et aux dossiers effectivement rattachés aux professionnelles.
+- Ne pas mÃ©langer continuitÃ© de service et surveillance.
+- Ne pas ouvrir automatiquement les brouillons personnels, hypothÃ¨ses sensibles ou notes privÃ©es.
+- Plus tard, relier cette page aux droits rÃ©els, aux rÃ´les et aux dossiers effectivement rattachÃ©s aux professionnelles.
 
 
-## Vue limitée — continuité de service
+## ContinuitÃ© de service
 
-Décision validée :
-- La continuité de service ne doit pas ouvrir le dossier complet.
-- Une route spécifique permet d’ouvrir une vue limitée du dossier : `/parcours-social-socio-professionnel/dossier/continuite`.
-- Cette vue masque les espaces professionnels réservés, les brouillons, les hypothèses sensibles, les modules internes à valider et la synthèse transférable Insertis.
-- Elle affiche uniquement les éléments nécessaires à la reprise temporaire du suivi.
+DÃ©cision validÃ©e :
+- La continuitÃ© de service devient une fonction mÃ©tier centrale de lâ€™outil.
+- Elle permet de reprendre temporairement les dossiers dâ€™une collÃ¨gue ou dâ€™un collÃ¨gue sans rupture pour la personne accompagnÃ©e.
+- Elle ne donne pas accÃ¨s automatiquement Ã  tout lâ€™espace professionnel privÃ© de la collÃ¨gue.
+- Elle doit afficher uniquement les Ã©lÃ©ments nÃ©cessaires Ã  la continuitÃ© : synthÃ¨se courte, note de continuitÃ©, prochaine action, Ã©chÃ©ances, documents attendus, relais mobilisÃ©s.
 
-État actuel :
-- Rôle prototype rendu persistant via le navigateur.
-- Bouton “Reprendre les éléments utiles” relié à la vue limitée.
-- Dossier complet conservé pour la professionnelle référente.
-- Vue relais limitée ajoutée dans la colonne latérale du dossier en mode continuité.
+Ã‰tat actuel :
+- Une page `ContinuiteServicePage.jsx` a Ã©tÃ© crÃ©Ã©e.
+- La route `/continuite-service` a Ã©tÃ© ajoutÃ©e.
+- Lâ€™accueil contient un bouton vers la continuitÃ© de service.
+- Les donnÃ©es affichÃ©es sont fictives et servent uniquement Ã  valider le modÃ¨le fonctionnel.
 
 Point de vigilance :
-- La vue limitée doit rester un outil de continuité, pas un outil de contrôle ou de surveillance.
-- Les éléments visibles doivent rester nécessaires, proportionnés et utiles à la reprise du parcours.
+- Ne pas mÃ©langer continuitÃ© de service et surveillance.
+- Ne pas ouvrir automatiquement les brouillons personnels, hypothÃ¨ses sensibles ou notes privÃ©es.
+- Plus tard, relier cette page aux droits rÃ©els, aux rÃ´les et aux dossiers effectivement rattachÃ©s aux professionnelles.
 
 
-## Modèle de suivi partagé — continuité
+## Vue limitÃ©e â€” continuitÃ© de service
 
-Décision validée :
-- La page Continuité de service et le dossier partagé doivent utiliser les mêmes repères métier.
-- Les éléments visibles en reprise doivent être structurés autour de champs simples et opérationnels :
-  - dernière action connue ;
+DÃ©cision validÃ©e :
+- La continuitÃ© de service ne doit pas ouvrir le dossier complet.
+- Une route spÃ©cifique permet dâ€™ouvrir une vue limitÃ©e du dossier : `/parcours-social-socio-professionnel/dossier/continuite`.
+- Cette vue masque les espaces professionnels rÃ©servÃ©s, les brouillons, les hypothÃ¨ses sensibles, les modules internes Ã  valider et la synthÃ¨se transfÃ©rable Insertis.
+- Elle affiche uniquement les Ã©lÃ©ments nÃ©cessaires Ã  la reprise temporaire du suivi.
+
+Ã‰tat actuel :
+- RÃ´le prototype rendu persistant via le navigateur.
+- Bouton â€œReprendre les Ã©lÃ©ments utilesâ€ reliÃ© Ã  la vue limitÃ©e.
+- Dossier complet conservÃ© pour la professionnelle rÃ©fÃ©rente.
+- Vue relais limitÃ©e ajoutÃ©e dans la colonne latÃ©rale du dossier en mode continuitÃ©.
+
+Point de vigilance :
+- La vue limitÃ©e doit rester un outil de continuitÃ©, pas un outil de contrÃ´le ou de surveillance.
+- Les Ã©lÃ©ments visibles doivent rester nÃ©cessaires, proportionnÃ©s et utiles Ã  la reprise du parcours.
+
+
+## ModÃ¨le de suivi partagÃ© â€” continuitÃ©
+
+DÃ©cision validÃ©e :
+- La page ContinuitÃ© de service et le dossier partagÃ© doivent utiliser les mÃªmes repÃ¨res mÃ©tier.
+- Les Ã©lÃ©ments visibles en reprise doivent Ãªtre structurÃ©s autour de champs simples et opÃ©rationnels :
+  - derniÃ¨re action connue ;
   - prochaine action utile ;
   - document attendu ;
-  - relais mobilisé ;
+  - relais mobilisÃ© ;
   - niveau de vigilance ;
-  - date de mise à jour.
+  - date de mise Ã  jour.
 
-État actuel :
-- La page Continuité de service affiche désormais ces champs dans les dossiers fictifs.
-- La vue limitée du dossier conserve la logique : accès uniquement aux éléments utiles à la reprise.
-- Les espaces professionnels réservés restent masqués en mode continuité.
+Ã‰tat actuel :
+- La page ContinuitÃ© de service affiche dÃ©sormais ces champs dans les dossiers fictifs.
+- La vue limitÃ©e du dossier conserve la logique : accÃ¨s uniquement aux Ã©lÃ©ments utiles Ã  la reprise.
+- Les espaces professionnels rÃ©servÃ©s restent masquÃ©s en mode continuitÃ©.
 
 Point de vigilance :
-- Ce modèle devra ensuite devenir une source commune, pour éviter de dupliquer les mêmes champs entre plusieurs pages.
-- À terme, ces champs devront être reliés aux vraies données du dossier et non rester saisis en dur dans les composants.
+- Ce modÃ¨le devra ensuite devenir une source commune, pour Ã©viter de dupliquer les mÃªmes champs entre plusieurs pages.
+- Ã€ terme, ces champs devront Ãªtre reliÃ©s aux vraies donnÃ©es du dossier et non rester saisis en dur dans les composants.
 
 
-## Mise au propre des sources communes — continuité
+## Mise au propre des sources communes â€” continuitÃ©
 
-Décision validée :
-- Les champs métier de continuité ne doivent pas être dupliqués dans plusieurs composants.
-- Les dossiers fictifs de continuité ne doivent pas rester enfermés directement dans la page Continuité de service.
-- Le dossier parcours et la page Continuité de service doivent s’appuyer progressivement sur des sources communes.
+DÃ©cision validÃ©e :
+- Les champs mÃ©tier de continuitÃ© ne doivent pas Ãªtre dupliquÃ©s dans plusieurs composants.
+- Les dossiers fictifs de continuitÃ© ne doivent pas rester enfermÃ©s directement dans la page ContinuitÃ© de service.
+- Le dossier parcours et la page ContinuitÃ© de service doivent sâ€™appuyer progressivement sur des sources communes.
 
-État actuel :
+Ã‰tat actuel :
 - Le fichier `frontend/src/data/continuiteModele.js` contient la liste commune des champs de suivi :
-  - dernière action connue ;
+  - derniÃ¨re action connue ;
   - prochaine action utile ;
   - document attendu ;
-  - relais mobilisé ;
+  - relais mobilisÃ© ;
   - niveau de vigilance ;
-  - date de mise à jour.
-- Le fichier `frontend/src/data/continuiteDossiersFictifs.js` contient les données fictives de continuité.
-- `DossierPage.jsx` utilise le modèle commun de continuité.
-- `ContinuiteServicePage.jsx` utilise le modèle commun et les données fictives communes.
+  - date de mise Ã  jour.
+- Le fichier `frontend/src/data/continuiteDossiersFictifs.js` contient les donnÃ©es fictives de continuitÃ©.
+- `DossierPage.jsx` utilise le modÃ¨le commun de continuitÃ©.
+- `ContinuiteServicePage.jsx` utilise le modÃ¨le commun et les donnÃ©es fictives communes.
 
 Point de vigilance :
-- Les données restent fictives pour le moment.
-- L’objectif suivant sera de transformer ces champs en vrai modèle de suivi exploitable, puis de préparer leur future connexion à des données réelles.
+- Les donnÃ©es restent fictives pour le moment.
+- Lâ€™objectif suivant sera de transformer ces champs en vrai modÃ¨le de suivi exploitable, puis de prÃ©parer leur future connexion Ã  des donnÃ©es rÃ©elles.
 
 
-## Niveaux de vigilance — continuité
+## Niveaux de vigilance â€” continuitÃ©
 
-Décision validée :
-- Le niveau de vigilance ne doit plus être un texte libre isolé.
-- Il est structuré dans le modèle commun de continuité.
-- Chaque niveau possède :
+DÃ©cision validÃ©e :
+- Le niveau de vigilance ne doit plus Ãªtre un texte libre isolÃ©.
+- Il est structurÃ© dans le modÃ¨le commun de continuitÃ©.
+- Chaque niveau possÃ¨de :
   - un identifiant technique ;
-  - un libellé lisible ;
+  - un libellÃ© lisible ;
   - une description ;
-  - une conséquence métier.
+  - une consÃ©quence mÃ©tier.
 
 Niveaux retenus :
-- Faible : suivi à planifier, sans risque immédiat repéré.
-- Moyen : échéance proche, document attendu ou action à ne pas laisser tomber.
+- Faible : suivi Ã  planifier, sans risque immÃ©diat repÃ©rÃ©.
+- Moyen : Ã©chÃ©ance proche, document attendu ou action Ã  ne pas laisser tomber.
 - Fort : risque de rupture du parcours, situation sensible ou absence de relais clair.
-- Urgent : risque immédiat, échéance critique ou situation nécessitant une action rapide.
+- Urgent : risque immÃ©diat, Ã©chÃ©ance critique ou situation nÃ©cessitant une action rapide.
 
-Règle d’usage :
-- Le niveau de vigilance sert à aider la reprise du suivi.
-- Il ne doit pas servir à étiqueter la personne.
-- Il indique le degré d’attention nécessaire pour éviter une rupture de parcours.
+RÃ¨gle dâ€™usage :
+- Le niveau de vigilance sert Ã  aider la reprise du suivi.
+- Il ne doit pas servir Ã  Ã©tiqueter la personne.
+- Il indique le degrÃ© dâ€™attention nÃ©cessaire pour Ã©viter une rupture de parcours.
 
-État actuel :
-- Les niveaux sont définis dans `frontend/src/data/continuiteModele.js`.
-- Les dossiers fictifs utilisent maintenant des identifiants structurés : `faible`, `moyen`, `fort`, `urgent`.
-- La page Continuité de service affiche le niveau et sa conséquence métier.
+Ã‰tat actuel :
+- Les niveaux sont dÃ©finis dans `frontend/src/data/continuiteModele.js`.
+- Les dossiers fictifs utilisent maintenant des identifiants structurÃ©s : `faible`, `moyen`, `fort`, `urgent`.
+- La page ContinuitÃ© de service affiche le niveau et sa consÃ©quence mÃ©tier.
 
 
-## Relances de continuité
+## Relances de continuitÃ©
 
-Décision validée :
-- La continuité de service doit permettre de voir rapidement ce qui doit être repris, quand, et avec quel niveau de priorité.
+DÃ©cision validÃ©e :
+- La continuitÃ© de service doit permettre de voir rapidement ce qui doit Ãªtre repris, quand, et avec quel niveau de prioritÃ©.
 - Les relances ne doivent pas remplacer le jugement professionnel.
-- Elles servent à éviter qu’un dossier reste sans suite pendant une absence, un relais ponctuel ou une période de flou.
+- Elles servent Ã  Ã©viter quâ€™un dossier reste sans suite pendant une absence, un relais ponctuel ou une pÃ©riode de flou.
 
-Champs ajoutés aux dossiers fictifs :
-- échéance de reprise ;
-- fréquence de relance ;
+Champs ajoutÃ©s aux dossiers fictifs :
+- Ã©chÃ©ance de reprise ;
+- frÃ©quence de relance ;
 - statut de relance ;
 - prochaine relance.
 
-Référentiels communs :
-- Les statuts de relance sont définis dans `frontend/src/data/continuiteModele.js`.
-- Les fréquences de relance sont définies dans `frontend/src/data/continuiteModele.js`.
+RÃ©fÃ©rentiels communs :
+- Les statuts de relance sont dÃ©finis dans `frontend/src/data/continuiteModele.js`.
+- Les frÃ©quences de relance sont dÃ©finies dans `frontend/src/data/continuiteModele.js`.
 - Les dossiers fictifs utilisent maintenant ces identifiants dans `frontend/src/data/continuiteDossiersFictifs.js`.
 
-Règle métier :
-- Une relance indique une action à ne pas perdre.
-- Elle ne doit pas devenir un outil de pression sur la personne accompagnée.
-- Elle sert à organiser la continuité entre professionnelles, avec une transmission proportionnée et utile.
+RÃ¨gle mÃ©tier :
+- Une relance indique une action Ã  ne pas perdre.
+- Elle ne doit pas devenir un outil de pression sur la personne accompagnÃ©e.
+- Elle sert Ã  organiser la continuitÃ© entre professionnelles, avec une transmission proportionnÃ©e et utile.
 
-État actuel :
-- La page Continuité de service affiche les informations de relance dans chaque carte dossier.
+Ã‰tat actuel :
+- La page ContinuitÃ© de service affiche les informations de relance dans chaque carte dossier.
 - Les champs sont encore fictifs.
-- Prochaine étape possible : préparer une lecture plus synthétique des dossiers à reprendre, par priorité.
+- Prochaine Ã©tape possible : prÃ©parer une lecture plus synthÃ©tique des dossiers Ã  reprendre, par prioritÃ©.
 
 
-## Tri des dossiers de continuité par priorité
+## Tri des dossiers de continuitÃ© par prioritÃ©
 
-Décision validée :
-- Les dossiers à reprendre ne doivent pas seulement être affichés dans l’ordre des données.
-- Ils doivent être triés selon une priorité métier pour aider la professionnelle à savoir quoi reprendre en premier.
+DÃ©cision validÃ©e :
+- Les dossiers Ã  reprendre ne doivent pas seulement Ãªtre affichÃ©s dans lâ€™ordre des donnÃ©es.
+- Ils doivent Ãªtre triÃ©s selon une prioritÃ© mÃ©tier pour aider la professionnelle Ã  savoir quoi reprendre en premier.
 
 Logique actuelle :
 - Le tri combine le niveau de vigilance et le statut de relance.
-- Les niveaux de vigilance les plus élevés remontent en priorité.
-- Les relances en retard ou à planifier remontent également.
+- Les niveaux de vigilance les plus Ã©levÃ©s remontent en prioritÃ©.
+- Les relances en retard ou Ã  planifier remontent Ã©galement.
 
-Objectif métier :
-- Repérer rapidement les dossiers à reprendre en premier.
-- Éviter qu’un dossier sensible reste noyé dans une liste.
-- Aider à organiser la continuité de service sans remplacer l’analyse professionnelle.
+Objectif mÃ©tier :
+- RepÃ©rer rapidement les dossiers Ã  reprendre en premier.
+- Ã‰viter quâ€™un dossier sensible reste noyÃ© dans une liste.
+- Aider Ã  organiser la continuitÃ© de service sans remplacer lâ€™analyse professionnelle.
 
-État actuel :
-- La page Continuité de service calcule un ordre de priorité pour les dossiers affichés.
-- Les données restent fictives.
-- Cette logique devra ensuite être reliée aux vraies données de suivi.
+Ã‰tat actuel :
+- La page ContinuitÃ© de service calcule un ordre de prioritÃ© pour les dossiers affichÃ©s.
+- Les donnÃ©es restent fictives.
+- Cette logique devra ensuite Ãªtre reliÃ©e aux vraies donnÃ©es de suivi.
 
 
-## Dossiers à reprendre en premier
+## Dossiers Ã  reprendre en premier
 
-Décision validée :
-- La page Continuité de service ne doit pas seulement afficher une liste de dossiers.
-- Elle doit aider à repérer immédiatement les dossiers à reprendre en priorité.
-- Un bloc “À reprendre en premier” remonte les dossiers les plus sensibles.
+DÃ©cision validÃ©e :
+- La page ContinuitÃ© de service ne doit pas seulement afficher une liste de dossiers.
+- Elle doit aider Ã  repÃ©rer immÃ©diatement les dossiers Ã  reprendre en prioritÃ©.
+- Un bloc â€œÃ€ reprendre en premierâ€ remonte les dossiers les plus sensibles.
 
 Logique actuelle :
-- Le score de priorité combine :
+- Le score de prioritÃ© combine :
   - le niveau de vigilance ;
   - le statut de relance.
-- Les dossiers avec vigilance forte ou urgente remontent en priorité.
-- Les dossiers avec relance en retard ou à planifier remontent également.
+- Les dossiers avec vigilance forte ou urgente remontent en prioritÃ©.
+- Les dossiers avec relance en retard ou Ã  planifier remontent Ã©galement.
 
-Objectif métier :
-- Aider la professionnelle à commencer par les situations les plus importantes.
-- Éviter qu’un dossier à risque soit noyé dans la liste complète.
-- Soutenir la continuité de service sans remplacer l’analyse professionnelle.
+Objectif mÃ©tier :
+- Aider la professionnelle Ã  commencer par les situations les plus importantes.
+- Ã‰viter quâ€™un dossier Ã  risque soit noyÃ© dans la liste complÃ¨te.
+- Soutenir la continuitÃ© de service sans remplacer lâ€™analyse professionnelle.
 
-État actuel :
-- La page Continuité de service calcule les dossiers à reprendre en premier.
-- Les données restent fictives.
-- La logique pourra ensuite être reliée à de vraies données de suivi.
+Ã‰tat actuel :
+- La page ContinuitÃ© de service calcule les dossiers Ã  reprendre en premier.
+- Les donnÃ©es restent fictives.
+- La logique pourra ensuite Ãªtre reliÃ©e Ã  de vraies donnÃ©es de suivi.
 
+
+## 2026-09-19 â€” Consolidation et fiabilisation technique
+
+### DÃ©cidÃ©
+- Conserver `main` comme branche de rÃ©fÃ©rence unique.
+- Rattacher Ã  son historique la branche `reprise-propre-pilotage-actions`, dont le contenu Ã©tait strictement identique Ã  une reprise dÃ©jÃ  intÃ©grÃ©e dans `main`.
+- Ne pas modifier les intitulÃ©s mÃ©tier ni les rÃ¨gles dâ€™accompagnement validÃ©es.
+- RÃ©activer les pages existantes par une navigation et des droits centralisÃ©s, sans recrÃ©er de fonctionnalitÃ©s parallÃ¨les.
+
+### CrÃ©Ã©
+- Commandes communes Ã  la racine : dÃ©veloppement, build, lint et tests.
+- RÃ¨gles dâ€™encodage UTF-8 et de fins de ligne.
+- ContrÃ´le continu GitHub Actions pour le frontend.
+- ContrÃ´le ESLint sans avertissement tolÃ©rÃ©.
+- Tests Vitest et Testing Library pour le stockage, lâ€™import CSV, la navigation et les droits du prototype.
+- Utilitaire commun de stockage local rÃ©sistant aux donnÃ©es invalides et aux erreurs dâ€™Ã©criture.
+- Matrice centralisÃ©e des profils autorisÃ©s.
+- Pages explicites dâ€™accÃ¨s refusÃ© et de chemin introuvable.
+
+### ModifiÃ©
+- Mise Ã  jour de Vite, React Router et des dÃ©pendances de contrÃ´le.
+- Chargement diffÃ©rÃ© des pages pour allÃ©ger le JavaScript initial.
+- Navigation principale adaptÃ©e au profil actif.
+- SÃ©lecteur de profil clairement identifiÃ© comme simulation du prototype.
+- Raccordement des parcours, du dossier, du tronc commun, de la continuitÃ© et des vues Direction dÃ©jÃ  prÃ©sentes.
+- Conservation des anciennes URL Appui TNS par redirection vers les nouvelles routes.
+- Centralisation et sÃ©curisation des lectures et Ã©critures du stockage local.
+- RÃ©paration de la documentation qui contenait un encodage non UTF-8.
+
+### SupprimÃ© sans perte dâ€™historique
+- Fichier de rÃ¨gle absolue vide en doublon.
+- Deux composants de page devenus des doublons non utilisÃ©s.
+- Feuilles de style devenues inaccessibles et non importÃ©es.
+- Fichiers dâ€™attente vides dans les dossiers `src/` et `public/` de la racine.
+
+### VÃ©rifications
+- audit npm : aucune vulnÃ©rabilitÃ© connue ;
+- lint : conforme ;
+- tests automatisÃ©s : conformes ;
+- build de production : conforme ;
+- serveur Vite : dÃ©marrage et rÃ©ponse HTTP conformes.
+
+### LaissÃ© inchangÃ© volontairement
+- Les contenus mÃ©tier et les questions validÃ©es.
+- Les donnÃ©es fictives de dÃ©monstration.
+- Le caractÃ¨re frontend du prototype actuel.
+- La sÃ©paration entre Ã©lÃ©ments partagÃ©s, continuitÃ© et espace professionnel rÃ©servÃ©.
+
+### Reste Ã  faire avant production
+- Backend Express et API mÃ©tier.
+- Base PostgreSQL et schÃ©ma Prisma.
+- Authentification nominative, sessions serveur et rÃ©cupÃ©ration de mot de passe.
+- Autorisations contrÃ´lÃ©es cÃ´tÃ© serveur, journal dâ€™audit et historique versionnÃ©.
+- Remplacement du stockage local et des donnÃ©es fictives par des donnÃ©es persistantes sÃ©curisÃ©es.
+- StratÃ©gie de migration, sauvegarde, hÃ©bergement privÃ© ARTAG et interfaÃ§age Insertis.
+
+### Limite de vÃ©rification
+- Le contrÃ´le visuel automatisÃ© par navigateur nâ€™a pas pu Ãªtre exÃ©cutÃ© dans lâ€™environnement de travail : aucun binaire Chrome nâ€™Ã©tait prÃ©sent et son tÃ©lÃ©chargement Ã©tait bloquÃ© par le certificat rÃ©seau. Les tests DOM, le build et les rÃ©ponses HTTP ont Ã©tÃ© utilisÃ©s comme contrÃ´les de repli.

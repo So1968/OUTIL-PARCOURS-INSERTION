@@ -1,4 +1,4 @@
-﻿export const champsSuiviContinuite = [
+export const champsSuiviContinuite = [
   {
     id: "derniere-action",
     libelle: "Dernière action connue",

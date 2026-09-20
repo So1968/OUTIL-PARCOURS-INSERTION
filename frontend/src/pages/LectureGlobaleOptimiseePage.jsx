@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { readStorageJson, removeStorageItem, writeStorageJson } from "../lib/storage";
 
 const STORAGE_KEY = "artag-lecture-globale-optimisee-v1";
 
@@ -89,12 +90,7 @@ const INITIAL = {
 };
 
 function lireSauvegarde() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? { ...INITIAL, ...JSON.parse(saved) } : INITIAL;
-  } catch {
-    return INITIAL;
-  }
+  return { ...INITIAL, ...readStorageJson(STORAGE_KEY, {}) };
 }
 
 function ajouterTexte(ancien, ajout) {
@@ -173,7 +169,7 @@ export function LectureGlobaleOptimiseePage() {
   }
 
   function sauvegarder(next = form) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    writeStorageJson(STORAGE_KEY, next);
     setMessage("Lecture globale enregistrée dans ce navigateur.");
   }
 
@@ -206,7 +202,7 @@ export function LectureGlobaleOptimiseePage() {
   }
 
   function vider() {
-    localStorage.removeItem(STORAGE_KEY);
+    removeStorageItem(STORAGE_KEY);
     setForm(INITIAL);
     setMessage("Lecture globale remise à zéro.");
   }

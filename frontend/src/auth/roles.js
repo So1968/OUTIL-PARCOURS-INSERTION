@@ -1,4 +1,4 @@
-﻿export const ROLE_PROFESSIONNELLE = "professionnelle";
+export const ROLE_PROFESSIONNELLE = "professionnelle";
 export const ROLE_APPUI_TNS = "professionnelle-appui-tns";
 export const ROLE_ACCUEIL = "accueil";
 export const ROLE_RELAIS_LOGEMENT = "relais-logement-habitat";

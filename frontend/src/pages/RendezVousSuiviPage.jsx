@@ -7,6 +7,7 @@ import {
   statutsRendezVous,
   typesRendezVous,
 } from "../data/troncCommunSuivi";
+import { readStorageJson, removeStorageItem, writeStorageJson } from "../lib/storage";
 
 const STORAGE_KEY = "artag-rendez-vous-suivi";
 
@@ -24,12 +25,7 @@ const rdvInitial = {
 };
 
 function getHistoriqueInitial() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  } catch {
-    return [];
-  }
+  return readStorageJson(STORAGE_KEY, []);
 }
 
 function formaterDateRdv(date) {
@@ -193,13 +189,13 @@ export function RendezVousSuiviPage() {
     };
     const updated = [nouveauRdv, ...historique];
     setHistorique(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    writeStorageJson(STORAGE_KEY, updated);
     setCopie("Rendez-vous enregistré dans l’historique.");
   }
 
   function effacerHistorique() {
     setHistorique([]);
-    localStorage.removeItem(STORAGE_KEY);
+    removeStorageItem(STORAGE_KEY);
     setCopie("Historique local effacé.");
   }
 

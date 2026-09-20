@@ -30,9 +30,29 @@ En cas de doute :
 - ne pas improviser
 
 ## Structure du projet
-- `src/` : code de l’application
-- `public/` : assets publics, dont le logo ARTAG
+- `frontend/src/` : interface React et logique du prototype
+- `frontend/public/` : assets propres au frontend
+- `public/` : assets publics de référence, dont le logo ARTAG utilisé au build
 - `docs/` : spécifications complètes et obligatoires du projet
+
+## Démarrage local
+
+Depuis la racine du dépôt :
+
+```bash
+npm install --prefix frontend
+npm run dev
+```
+
+Contrôles avant livraison :
+
+```bash
+npm run lint
+npm test
+npm run build
+```
+
+L’application reste actuellement un prototype frontend. Les droits visibles et le stockage local ne remplacent pas l’authentification, les autorisations serveur, la base de données et la traçabilité prévues dans l’architecture cible.
 
 ## Entrées principales validées
 - Parcours social / socio-professionnel

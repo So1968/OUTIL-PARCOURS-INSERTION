@@ -1,70 +1,10 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { parseCsv as parserCsv } from "../lib/csv";
+import { readStorageJson as lireJson, removeStorageItem, writeStorageJson } from "../lib/storage";
 
 const STORAGE_ROWS = "artag-pilotage-actions-rows-v1";
 const STORAGE_ACTIONS = "artag-pilotage-actions-suivi-v1";
-
-function lireJson(cle, defaut) {
-  try {
-    const valeur = localStorage.getItem(cle);
-    return valeur ? JSON.parse(valeur) : defaut;
-  } catch {
-    return defaut;
-  }
-}
-
-function detecterSeparateur(ligne) {
-  const candidats = [";", ",", "\t"];
-  return candidats
-    .map((separateur) => ({ separateur, score: ligne.split(separateur).length }))
-    .sort((a, b) => b.score - a.score)[0].separateur;
-}
-
-function parserCsv(texte) {
-  const premiereLigne = String(texte || "").split(/\r?\n/).find((ligne) => ligne.trim()) || "";
-  const separateur = detecterSeparateur(premiereLigne);
-  const lignes = [];
-  let ligne = [];
-  let valeur = "";
-  let guillemets = false;
-
-  for (let i = 0; i < texte.length; i += 1) {
-    const caractere = texte[i];
-    const suivant = texte[i + 1];
-
-    if (caractere === '"' && guillemets && suivant === '"') {
-      valeur += '"';
-      i += 1;
-    } else if (caractere === '"') {
-      guillemets = !guillemets;
-    } else if (caractere === separateur && !guillemets) {
-      ligne.push(valeur);
-      valeur = "";
-    } else if ((caractere === "\n" || caractere === "\r") && !guillemets) {
-      if (caractere === "\r" && suivant === "\n") i += 1;
-      ligne.push(valeur);
-      if (ligne.some((cellule) => cellule.trim())) lignes.push(ligne);
-      ligne = [];
-      valeur = "";
-    } else {
-      valeur += caractere;
-    }
-  }
-
-  ligne.push(valeur);
-  if (ligne.some((cellule) => cellule.trim())) lignes.push(ligne);
-  if (lignes.length < 2) return [];
-
-  const entetes = lignes[0].map((entete) => entete.trim().replace(/^\uFEFF/, ""));
-
-  return lignes.slice(1).map((cellules) => {
-    const item = {};
-    entetes.forEach((entete, index) => {
-      item[entete] = String(cellules[index] || "").trim();
-    });
-    return item;
-  });
-}
 
 function valeur(row, noms) {
   for (const nom of noms) {
@@ -482,14 +422,14 @@ export function PilotageActionsPage() {
 
   function enregistrer(nextActions) {
     setActions(nextActions);
-    localStorage.setItem(STORAGE_ACTIONS, JSON.stringify(nextActions));
+    writeStorageJson(STORAGE_ACTIONS, nextActions);
   }
 
   function enregistrerRows(nextRows, nextActions = actions) {
     setRows(nextRows);
     setActions(nextActions);
-    localStorage.setItem(STORAGE_ROWS, JSON.stringify(nextRows));
-    localStorage.setItem(STORAGE_ACTIONS, JSON.stringify(nextActions));
+    writeStorageJson(STORAGE_ROWS, nextRows);
+    writeStorageJson(STORAGE_ACTIONS, nextActions);
   }
 
   function importerCsv(event) {
@@ -615,8 +555,8 @@ export function PilotageActionsPage() {
 
   function effacerLocal() {
     if (!window.confirm("Effacer la liste importée et le suivi local ?")) return;
-    localStorage.removeItem(STORAGE_ROWS);
-    localStorage.removeItem(STORAGE_ACTIONS);
+    removeStorageItem(STORAGE_ROWS);
+    removeStorageItem(STORAGE_ACTIONS);
     setRows([]);
     setActions({});
     setMessage("Données locales effacées.");

@@ -1,4 +1,4 @@
-﻿# Identité du projet
+# Identité du projet
 
 ## Nom du projet
 OUTIL-PARCOURS-INSERTION / ARTAG

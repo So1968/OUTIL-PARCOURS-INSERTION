@@ -1,8 +1,8 @@
-﻿import { useRole } from "./RoleContext";
-import { getRoleLabel } from "./roles";
+import { useRole } from "./useRole";
+import { getRoleLabel, ROLE_OPTIONS } from "./roles";
 
 export function PrototypeProfileBanner() {
-  const { currentRole } = useRole();
+  const { currentRole, setCurrentRole } = useRole();
 
   if (!currentRole) {
     return null;
@@ -14,6 +14,14 @@ export function PrototypeProfileBanner() {
       <span>
         Profil actif : <strong>{getRoleLabel(currentRole)}</strong>
       </span>
+      <label className="prototype-profile-selector">
+        <span>Changer de profil</span>
+        <select value={currentRole} onChange={(event) => setCurrentRole(event.target.value)}>
+          {ROLE_OPTIONS.map((role) => (
+            <option key={role.id} value={role.id}>{role.label}</option>
+          ))}
+        </select>
+      </label>
       <span className="prototype-profile-note">
         Simulation des droits — ne remplace pas une authentification réelle.
       </span>

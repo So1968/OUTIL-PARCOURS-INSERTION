@@ -1,143 +1,92 @@
-import { Link, Navigate, Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import {
+  ACCOMPAGNEMENT_ROLES,
+  CONTINUITE_ROLES,
+  DIRECTION_ROLES,
+  GOUVERNANCE_ROLES,
+  PARCOURS_ROLES,
+  PORTE_DIRECTION_ROLES,
+} from "./auth/access";
 import { PrototypeProfileBanner } from "./auth/PrototypeProfileBanner";
 import { RequireRole } from "./auth/RequireRole";
 import { RoleProvider } from "./auth/RoleContext";
-import { ROLE_APPUI_TNS, ROLE_PROFESSIONNELLE } from "./auth/roles";
-import { DossierPersonnePage } from "./pages/DossierPersonnePage";
-import { EcheancesVigilancesPage } from "./pages/EcheancesVigilancesPage";
-import { EvaluationPersonnePage } from "./pages/EvaluationPersonnePage";
-import { PilotageActionsPage } from "./pages/PilotageActionsPage";
-import { SasInsertisPage } from "./pages/SasInsertisPage";
+import { AppErrorBoundary } from "./components/AppErrorBoundary";
+import { AppNavigation } from "./components/AppNavigation";
+import { AccessDeniedPage } from "./pages/AccessDeniedPage";
+import { AccueilPage } from "./pages/AccueilPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 
-const ACCOMPAGNEMENT_ROLES = [ROLE_PROFESSIONNELLE, ROLE_APPUI_TNS];
-
-function PilotageProtege() {
-  return (
-    <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>
-      <PilotageActionsPage />
-    </RequireRole>
-  );
+function lazyNamed(importer, exportName) {
+  return lazy(() => importer().then((module) => ({ default: module[exportName] })));
 }
 
-function PageProtegee({ children }) {
-  return <RequireRole allowedRoles={ACCOMPAGNEMENT_ROLES}>{children}</RequireRole>;
+const CadreOrientationPage = lazyNamed(() => import("./pages/CadreOrientationPage"), "CadreOrientationPage");
+const ContinuiteServicePage = lazyNamed(() => import("./pages/ContinuiteServicePage"), "ContinuiteServicePage");
+const DirectionPage = lazyNamed(() => import("./pages/DirectionPage"), "DirectionPage");
+const DirectionRegulationPage = lazyNamed(() => import("./pages/DirectionRegulationPage"), "DirectionRegulationPage");
+const DossierAvecRdvPage = lazyNamed(() => import("./pages/DossierAvecRdvPage"), "DossierAvecRdvPage");
+const DossierPage = lazyNamed(() => import("./pages/DossierPage"), "DossierPage");
+const DossierPersonnePage = lazyNamed(() => import("./pages/DossierPersonnePage"), "DossierPersonnePage");
+const EcheancesVigilancesPage = lazyNamed(() => import("./pages/EcheancesVigilancesPage"), "EcheancesVigilancesPage");
+const EvaluationPersonnePage = lazyNamed(() => import("./pages/EvaluationPersonnePage"), "EvaluationPersonnePage");
+const GouvernancePage = lazyNamed(() => import("./pages/GouvernancePage"), "GouvernancePage");
+const LectureGlobaleOptimiseePage = lazyNamed(
+  () => import("./pages/LectureGlobaleOptimiseePage"),
+  "LectureGlobaleOptimiseePage",
+);
+const ModuleDomainePage = lazyNamed(() => import("./pages/ModuleDomainePage"), "ModuleDomainePage");
+const ParcoursPage = lazyNamed(() => import("./pages/ParcoursPage"), "ParcoursPage");
+const PilotageActionsPage = lazyNamed(() => import("./pages/PilotageActionsPage"), "PilotageActionsPage");
+const RendezVousSuiviPage = lazyNamed(() => import("./pages/RendezVousSuiviPage"), "RendezVousSuiviPage");
+const SasInsertisPage = lazyNamed(() => import("./pages/SasInsertisPage"), "SasInsertisPage");
+const SocleAutonomiePage = lazyNamed(() => import("./pages/SocleAutonomiePage"), "SocleAutonomiePage");
+const TnsCoordinationPage = lazyNamed(() => import("./pages/TnsCoordinationPage"), "TnsCoordinationPage");
+const TnsFicheMinutePage = lazyNamed(() => import("./pages/TnsFicheMinutePage"), "TnsFicheMinutePage");
+const TnsPage = lazyNamed(() => import("./pages/TnsPage"), "TnsPage");
+
+function ProtectedPage({ allowedRoles, children }) {
+  return <RequireRole allowedRoles={allowedRoles}>{children}</RequireRole>;
 }
 
-function MenuPrincipal() {
-  const styleNav = {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "10px",
-    padding: "12px 22px",
-    background: "#101418",
-    borderBottom: "1px solid #2f3a46",
-  };
-  const styleLien = {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "34px",
-    padding: "8px 14px",
-    borderRadius: "999px",
-    border: "1px solid #5f745f",
-    background: "#1f2a1f",
-    color: "#f5f1e8",
-    textDecoration: "none",
-    fontWeight: 900,
-    fontSize: "14px",
-  };
-
+function AppRoutes() {
   return (
-    <nav style={styleNav} aria-label="Navigation principale de l’outil">
-      <Link style={styleLien} to="/">Accueil</Link>
-      <Link style={styleLien} to="/evaluation-personne">Travailler avec une personne</Link>
-      <Link style={styleLien} to="/pilotage-actions">Voir la file active</Link>
-    </nav>
-  );
-}
+    <Suspense fallback={<div className="route-loading" role="status">Ouverture de l’espace…</div>}>
+      <Routes>
+        <Route path="/" element={<AccueilPage />} />
+        <Route path="/acces-refuse" element={<AccessDeniedPage />} />
 
-function AccueilSimple() {
-  const s = {
-    page: {
-      minHeight: "100vh",
-      background: "#171a18",
-      color: "#f4efe6",
-      padding: "34px 22px 56px",
-      fontFamily: "Arial, system-ui, sans-serif",
-    },
-    wrap: { maxWidth: "980px", margin: "0 auto" },
-    label: {
-      margin: "0 0 8px",
-      color: "#b7c7a6",
-      fontSize: "12px",
-      fontWeight: 900,
-      letterSpacing: "0.12em",
-      textTransform: "uppercase",
-    },
-    h1: { margin: 0, color: "#fff8ea", fontSize: "34px", lineHeight: 1.1 },
-    intro: { margin: "12px 0 0", color: "#d7cfbf", fontSize: "17px", lineHeight: 1.5, maxWidth: "780px" },
-    grid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "18px", marginTop: "24px" },
-    card: {
-      display: "block",
-      minHeight: "190px",
-      background: "#242822",
-      border: "1px solid #59634f",
-      borderRadius: "22px",
-      padding: "22px",
-      color: "#f4efe6",
-      textDecoration: "none",
-      boxShadow: "0 12px 24px rgba(0,0,0,0.22)",
-    },
-    title: { margin: 0, color: "#fff8ea", fontSize: "25px", lineHeight: 1.2 },
-    text: { margin: "12px 0 0", color: "#d7cfbf", fontSize: "16px", lineHeight: 1.45 },
-    action: {
-      display: "inline-flex",
-      marginTop: "18px",
-      borderRadius: "999px",
-      padding: "9px 14px",
-      background: "#7f8a69",
-      color: "white",
-      fontWeight: 900,
-    },
-    aide: {
-      marginTop: "18px",
-      background: "#2c3029",
-      border: "1px solid #46513f",
-      borderRadius: "18px",
-      padding: "16px",
-      color: "#d7cfbf",
-      lineHeight: 1.45,
-    },
-  };
+        <Route path="/evaluation-personne" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><EvaluationPersonnePage /></ProtectedPage>} />
+        <Route path="/evaluation-personne/:dossierId" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><EvaluationPersonnePage /></ProtectedPage>} />
+        <Route path="/pilotage-actions" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><PilotageActionsPage /></ProtectedPage>} />
+        <Route path="/pilotage-actions/dossier/:dossierId" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><DossierPersonnePage /></ProtectedPage>} />
+        <Route path="/sas-insertis" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><SasInsertisPage /></ProtectedPage>} />
 
-  return (
-    <main style={s.page}>
-      <div style={s.wrap}>
-        <p style={s.label}>Outil insertion</p>
-        <h1 style={s.h1}>Qu’est-ce que je fais maintenant ?</h1>
-        <p style={s.intro}>
-          Choisis seulement ton point d’entrée. Le reste vient après. L’idée est de ne pas ouvrir tout l’atelier quand tu as juste besoin d’un marteau.
-        </p>
+        <Route path="/parcours-social-socio-professionnel" element={<ProtectedPage allowedRoles={PARCOURS_ROLES}><ParcoursPage /></ProtectedPage>} />
+        <Route path="/parcours-social-socio-professionnel/dossier" element={<ProtectedPage allowedRoles={PARCOURS_ROLES}><DossierAvecRdvPage /></ProtectedPage>} />
+        <Route path="/parcours-social-socio-professionnel/dossier/rendez-vous" element={<ProtectedPage allowedRoles={CONTINUITE_ROLES}><RendezVousSuiviPage /></ProtectedPage>} />
+        <Route path="/parcours-social-socio-professionnel/dossier/modules/:moduleId" element={<ProtectedPage allowedRoles={PARCOURS_ROLES}><ModuleDomainePage /></ProtectedPage>} />
+        <Route path="/parcours-social-socio-professionnel/dossier/continuite" element={<ProtectedPage allowedRoles={CONTINUITE_ROLES}><DossierPage mode="continuite" /></ProtectedPage>} />
+        <Route path="/parcours-social-socio-professionnel/socle" element={<ProtectedPage allowedRoles={PARCOURS_ROLES}><SocleAutonomiePage /></ProtectedPage>} />
+        <Route path="/continuite-service" element={<ProtectedPage allowedRoles={CONTINUITE_ROLES}><ContinuiteServicePage /></ProtectedPage>} />
 
-        <section style={s.grid}>
-          <Link style={s.card} to="/evaluation-personne">
-            <h2 style={s.title}>Je suis avec une personne</h2>
-            <p style={s.text}>Pour faire l’évaluation simplement, avec elle, sans afficher les notes professionnelles.</p>
-            <span style={s.action}>Ouvrir l’évaluation</span>
-          </Link>
+        <Route path="/accompagnement-global" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><TnsPage /></ProtectedPage>} />
+        <Route path="/accompagnement-global/fiche-minute" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><TnsFicheMinutePage /></ProtectedPage>} />
+        <Route path="/accompagnement-global/lecture-globale" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><LectureGlobaleOptimiseePage /></ProtectedPage>} />
+        <Route path="/accompagnement-global/echeances-vigilances" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><EcheancesVigilancesPage /></ProtectedPage>} />
+        <Route path="/accompagnement-global/orientation" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><CadreOrientationPage /></ProtectedPage>} />
+        <Route path="/appui-tns/coordination" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><TnsCoordinationPage /></ProtectedPage>} />
 
-          <Link style={s.card} to="/pilotage-actions">
-            <h2 style={s.title}>Je regarde ma file active</h2>
-            <p style={s.text}>Pour voir qui remonte en urgence, ce qui est à faire, les échéances et les traces Insertis.</p>
-            <span style={s.action}>Ouvrir la file active</span>
-          </Link>
-        </section>
+        <Route path="/direction" element={<ProtectedPage allowedRoles={PORTE_DIRECTION_ROLES}><DirectionPage /></ProtectedPage>} />
+        <Route path="/direction/regulation" element={<ProtectedPage allowedRoles={DIRECTION_ROLES}><DirectionRegulationPage /></ProtectedPage>} />
+        <Route path="/direction/gouvernance" element={<ProtectedPage allowedRoles={GOUVERNANCE_ROLES}><GouvernancePage /></ProtectedPage>} />
 
-        <section style={s.aide}>
-          <strong>Repère simple :</strong> la page personne sert à évaluer. La file active sert à prioriser. Le dossier pro sert à écrire, analyser et tracer.
-        </section>
-      </div>
-    </main>
+        <Route path="/appui-tns" element={<Navigate to="/accompagnement-global" replace />} />
+        <Route path="/appui-tns/fiche-minute" element={<Navigate to="/accompagnement-global/fiche-minute" replace />} />
+        <Route path="/appui-tns/analyse" element={<Navigate to="/accompagnement-global/lecture-globale" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Suspense>
   );
 }
 
@@ -145,24 +94,10 @@ export default function App() {
   return (
     <RoleProvider>
       <PrototypeProfileBanner />
-      <MenuPrincipal />
-      <Routes>
-        <Route path="/" element={<PageProtegee><AccueilSimple /></PageProtegee>} />
-        <Route path="/pilotage-actions" element={<PilotageProtege />} />
-        <Route path="/pilotage-actions/dossier/:dossierId" element={<PageProtegee><DossierPersonnePage /></PageProtegee>} />
-        <Route path="/evaluation-personne" element={<PageProtegee><EvaluationPersonnePage /></PageProtegee>} />
-        <Route path="/evaluation-personne/:dossierId" element={<PageProtegee><EvaluationPersonnePage /></PageProtegee>} />
-        <Route path="/sas-insertis" element={<PageProtegee><SasInsertisPage /></PageProtegee>} />
-        <Route path="/accompagnement-global/echeances-vigilances" element={<PageProtegee><EcheancesVigilancesPage /></PageProtegee>} />
-
-        <Route path="/accompagnement-global" element={<Navigate to="/" replace />} />
-        <Route path="/accompagnement-global/fiche-minute" element={<Navigate to="/" replace />} />
-        <Route path="/accompagnement-global/lecture-globale" element={<Navigate to="/" replace />} />
-        <Route path="/appui-tns" element={<Navigate to="/" replace />} />
-        <Route path="/appui-tns/fiche-minute" element={<Navigate to="/" replace />} />
-        <Route path="/appui-tns/analyse" element={<Navigate to="/" replace />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <AppNavigation />
+      <AppErrorBoundary>
+        <AppRoutes />
+      </AppErrorBoundary>
     </RoleProvider>
   );
 }

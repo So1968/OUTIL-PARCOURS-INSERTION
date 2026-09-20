@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { readStorageJson, removeStorageItem, writeStorageJson } from "../lib/storage";
 
 const STORAGE_KEY = "artag-accompagnement-global-fiche-minute-test";
 
@@ -14,12 +15,7 @@ const ficheVide = {
 };
 
 function getInitialFiche() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? { ...ficheVide, ...JSON.parse(saved) } : ficheVide;
-  } catch {
-    return ficheVide;
-  }
+  return { ...ficheVide, ...readStorageJson(STORAGE_KEY, {}) };
 }
 
 function propre(texte) {
@@ -126,7 +122,7 @@ export function TnsFicheMinutePage() {
   }
 
   function enregistrer() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(fiche));
+    writeStorageJson(STORAGE_KEY, fiche);
     setMessage("Fiche conservée dans ce navigateur.");
   }
 
@@ -136,7 +132,7 @@ export function TnsFicheMinutePage() {
   }
 
   function vider() {
-    localStorage.removeItem(STORAGE_KEY);
+    removeStorageItem(STORAGE_KEY);
     setFiche(ficheVide);
     setMessage("Fiche remise à zéro.");
   }

@@ -1,5 +1,5 @@
-﻿import { Link } from "react-router-dom";
-import { useRole } from "../auth/RoleContext";
+import { Link } from "react-router-dom";
+import { useRole } from "../auth/useRole";
 import { ROLE_DIRECTION, ROLE_GOUVERNANCE_CA } from "../auth/roles";
 
 export function DirectionPage() {
