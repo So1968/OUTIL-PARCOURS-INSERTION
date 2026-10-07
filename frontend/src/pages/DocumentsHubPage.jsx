@@ -478,7 +478,32 @@ export function DocumentsHubPage() {
         </section>
 
         <section style={s.card}>
-          <p style={s.label}>4. Index</p>
+          <p style={s.label}>4. File de rangement assistée</p>
+          <h2 style={s.h2}>Décider sans déplacer ni supprimer automatiquement</h2>
+          <p style={s.intro}>
+            Chaque fichier indexé peut être marqué « À garder ici », « À déplacer », « À archiver » ou « Doublon à vérifier ».
+            Tant qu’aucune décision n’est prise, il reste « À décider ».
+          </p>
+          <div style={s.actions}>
+            {["À décider", "À garder ici", "À déplacer", "À archiver", "Doublon à vérifier"].map((decision) => (
+              <button
+                key={decision}
+                type="button"
+                style={triageFilter === decision ? s.mainButton : s.button}
+                onClick={() => setTriageFilter(decision)}
+              >
+                {decision}
+              </button>
+            ))}
+            <button type="button" style={s.button} onClick={() => setTriageFilter("Tous")}>Voir tout</button>
+          </div>
+          <p style={{ ...s.small, marginTop: "10px" }}>
+            Important : ces choix sont des décisions de classement enregistrées dans le navigateur. Ils ne modifient pas encore les fichiers sur le disque.
+          </p>
+        </section>
+
+        <section style={s.card}>
+          <p style={s.label}>5. Index</p>
           <div style={{ ...s.top, marginBottom: "12px" }}>
             <div>
               <p style={s.count}>{documentStats.total}</p>
