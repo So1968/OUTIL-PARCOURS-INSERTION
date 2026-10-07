@@ -50,6 +50,15 @@ export function TnsPage() {
             Ouvrir les vigilances
           </Link>
         </article>
+
+        <article className="page-card">
+          <p className="referentiel-label">Documents · repérage</p>
+          <h2>Hub documentaire</h2>
+          <p>Retrouver rapidement le bon dossier Windows ou OneDrive sans déplacer les fichiers ni créer de doublons.</p>
+          <Link className="secondary-button" to="/accompagnement-global/documents">
+            Ouvrir les documents
+          </Link>
+        </article>
       </section>
 
       <Link className="back-link" to="/">
