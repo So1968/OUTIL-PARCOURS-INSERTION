@@ -7,6 +7,8 @@ const STORAGE_ACTIONS = "artag-pilotage-actions-suivi-v1";
 const STORAGE_JOURNAL = "artag-pilotage-actions-journal-v1";
 const STORAGE_INTERVENTIONS = "artag-pilotage-interventions-brouillons-v2";
 const STORAGE_AUTONOMIE = "artag-pilotage-autonomie-socle-v1";
+const STORAGE_DOCUMENTS = "artag-hub-documentaire-v1";
+const STORAGE_DOCUMENT_ROOTS = "artag-hub-documentaire-racines-v1";
 
 function valeur(row, noms) {
   for (const nom of noms) {
@@ -34,6 +36,15 @@ function affichageDossier(row, rows) {
   if (!p) return n.slice(0, 3);
   const doublons = rows.filter((item) => prenom(item).toLowerCase() === p.toLowerCase()).length;
   return doublons > 1 && n ? `${p} ${n.slice(0, 3)}` : p;
+}
+
+function nomCompletDossier(row) {
+  return [nom(row).toUpperCase(), prenom(row)].filter(Boolean).join(" ").trim() || "Dossier";
+}
+
+function cheminExplorer(chemin) {
+  const propre = String(chemin || "").trim().replace(/"/g, '""');
+  return propre ? `explorer.exe "${propre}"` : "";
 }
 
 function actionVide() {
@@ -398,6 +409,11 @@ export function DossierPersonnePage() {
   const [journaux, setJournaux] = useState(() => lireJson(STORAGE_JOURNAL, {}));
   const [interventions, setInterventions] = useState(() => lireJson(STORAGE_INTERVENTIONS, {}));
   const [autonomies, setAutonomies] = useState(() => lireJson(STORAGE_AUTONOMIE, {}));
+  const [documents, setDocuments] = useState(() => {
+    const value = lireJson(STORAGE_DOCUMENTS, []);
+    return Array.isArray(value) ? value : [];
+  });
+  const [documentRoots] = useState(() => ({ travail: "", tns: "", archives: "", ...lireJson(STORAGE_DOCUMENT_ROOTS, {}) }));
   const [dateNote, setDateNote] = useState(new Date().toISOString().slice(0, 10));
   const [typeNote, setTypeNote] = useState("Contact");
   const [nouvelleNote, setNouvelleNote] = useState("");
@@ -405,6 +421,17 @@ export function DossierPersonnePage() {
 
   const index = rows.findIndex((row, i) => idDossier(row, i) === idCourant);
   const row = index >= 0 ? rows[index] : null;
+  const documentExistant = row ? documents.find((item) => item.dossierId === idCourant) : null;
+  const cheminDocumentInitial = documentExistant?.chemin || (
+    row && documentRoots.tns
+      ? `${documentRoots.tns.replace(/[\\/]$/, "")}\\${nomCompletDossier(row)}`
+      : ""
+  );
+  const [documentDraft, setDocumentDraft] = useState(() => ({
+    chemin: cheminDocumentInitial,
+    note: documentExistant?.note || "",
+  }));
+
   const action = useMemo(
     () => (row ? { ...actionVide(), ...(actions[idCourant] || {}) } : actionVide()),
     [actions, idCourant, row],
@@ -522,6 +549,43 @@ export function DossierPersonnePage() {
     setMessage(`${libelle} copié.`);
   }
 
+  function enregistrerReferenceDocumentaire() {
+    const chemin = String(documentDraft.chemin || "").trim();
+    if (!chemin) {
+      setMessage("Renseigne le chemin du dossier documentaire.");
+      return;
+    }
+
+    const reference = {
+      id: documentExistant?.id || `dossier-${idCourant}`,
+      dossierId: idCourant,
+      libelle: `Dossier ${nomCompletDossier(row)}`,
+      personne: nomCompletDossier(row),
+      categorie: "Dossier personne",
+      chemin,
+      statut: documentExistant?.statut || "Actif",
+      note: String(documentDraft.note || "").trim(),
+    };
+
+    const next = documentExistant
+      ? documents.map((item) => (item.dossierId === idCourant ? reference : item))
+      : [...documents, reference];
+
+    setDocuments(next);
+    writeStorageJson(STORAGE_DOCUMENTS, next);
+    setMessage("Dossier documentaire relié à cette fiche.");
+  }
+
+  function proposerCheminTns() {
+    if (!documentRoots.tns) {
+      setMessage("Renseigne d’abord la racine TNS dans le Hub documentaire.");
+      return;
+    }
+    const base = documentRoots.tns.replace(/[\\/]$/, "");
+    setDocumentDraft((current) => ({ ...current, chemin: `${base}\\${nomCompletDossier(row)}` }));
+    setMessage("Chemin TNS proposé. Vérifie-le avant de l’enregistrer.");
+  }
+
   if (!row) {
     return (
       <main style={s.page}>
@@ -573,6 +637,40 @@ export function DossierPersonnePage() {
               <p style={s.info}><strong>Trace Insertis :</strong> {action.traceInsertis}</p>
             </div>
           </div>
+        </section>
+
+        <section style={s.card}>
+          <p style={s.label}>Documents</p>
+          <h2 style={s.h2}>Dossier documentaire associé</h2>
+          <p style={s.intro}>La fiche garde seulement le chemin vers Windows / OneDrive. Aucun document n’est stocké dans GitHub.</p>
+          <div style={{ ...s.grid, marginTop: "14px" }}>
+            <label style={s.field}>
+              Chemin du dossier
+              <input
+                style={s.input}
+                value={documentDraft.chemin}
+                onChange={(event) => setDocumentDraft((current) => ({ ...current, chemin: event.target.value }))}
+                placeholder="C:\\...\\NOM Prénom"
+              />
+            </label>
+            <label style={s.field}>
+              Repère documentaire
+              <textarea
+                style={s.textarea}
+                value={documentDraft.note}
+                onChange={(event) => setDocumentDraft((current) => ({ ...current, note: event.target.value }))}
+                placeholder="Ex. devis, formation, justificatifs attendus, dossier à reprendre..."
+              />
+            </label>
+          </div>
+          <div style={s.actions}>
+            <button style={s.mainButton} type="button" onClick={enregistrerReferenceDocumentaire}>Enregistrer le lien documentaire</button>
+            <button style={s.button} type="button" onClick={proposerCheminTns}>Proposer depuis la racine TNS</button>
+            <button style={s.button} type="button" onClick={() => copierTexte(documentDraft.chemin, "Chemin documentaire")}>Copier le chemin</button>
+            <button style={s.button} type="button" onClick={() => copierTexte(cheminExplorer(documentDraft.chemin), "Commande Explorer")}>Copier la commande Explorer</button>
+            <Link style={s.link} to="/accompagnement-global/documents">Ouvrir le Hub documentaire</Link>
+          </div>
+          {documentExistant && <p style={{ ...s.info, marginTop: "12px" }}><strong>Indexé :</strong> {documentExistant.statut} — {documentExistant.chemin}</p>}
         </section>
 
         <section style={s.card}>

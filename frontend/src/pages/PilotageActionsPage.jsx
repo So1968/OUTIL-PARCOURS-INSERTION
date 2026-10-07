@@ -5,6 +5,7 @@ import { readStorageJson as lireJson, removeStorageItem, writeStorageJson } from
 
 const STORAGE_ROWS = "artag-pilotage-actions-rows-v1";
 const STORAGE_ACTIONS = "artag-pilotage-actions-suivi-v1";
+const STORAGE_DOCUMENTS = "artag-hub-documentaire-v1";
 
 function valeur(row, noms) {
   for (const nom of noms) {
@@ -343,6 +344,7 @@ function libelleFiltre(filtre) {
   if (filtre === "Urgentes") return "Vigilances urgentes";
   if (filtre === "Importantes") return "Vigilances importantes";
   if (filtre === "Traces") return "Traces Insertis à faire ou à prévoir";
+  if (filtre === "Documents") return "Dossiers avec lien documentaire";
   return "Tous les dossiers";
 }
 
@@ -355,6 +357,10 @@ export function PilotageActionsPage() {
   const navigate = useNavigate();
   const [rows, setRows] = useState(() => lireJson(STORAGE_ROWS, []));
   const [actions, setActions] = useState(() => lireJson(STORAGE_ACTIONS, {}));
+  const [documents] = useState(() => {
+    const value = lireJson(STORAGE_DOCUMENTS, []);
+    return Array.isArray(value) ? value : [];
+  });
   const [recherche, setRecherche] = useState("");
   const [filtreVigilance, setFiltreVigilance] = useState("Toutes");
   const [filtreRapide, setFiltreRapide] = useState("Urgence");
@@ -378,7 +384,7 @@ export function PilotageActionsPage() {
   );
 
   const entreesFiltrees = useMemo(() => {
-    return entreesTriees.filter(({ row, action, urgence }) => {
+    return entreesTriees.filter(({ row, id, action, urgence }) => {
       const texte = `${affichageDossier(row, rows)} ${valeur(row, ["Numéro Insertis", "Numero Insertis"])} ${row.Ville || ""} ${row.CLI || ""}`.toLowerCase();
       const okRecherche = texte.includes(recherche.toLowerCase());
       const okVigilance = filtreVigilance === "Toutes" || action.vigilance === filtreVigilance;
@@ -388,11 +394,12 @@ export function PilotageActionsPage() {
         (filtreRapide === "Actions" && action.statut === "À faire") ||
         (filtreRapide === "Urgentes" && (action.vigilance === "Urgente" || urgence.couleur === "urgent")) ||
         (filtreRapide === "Importantes" && action.vigilance === "Importante") ||
-        (filtreRapide === "Traces" && ["À faire", "À prévoir"].includes(action.traceInsertis));
+        (filtreRapide === "Traces" && ["À faire", "À prévoir"].includes(action.traceInsertis)) ||
+        (filtreRapide === "Documents" && documents.some((doc) => doc.dossierId === id));
 
       return okRecherche && okVigilance && okRapide;
     });
-  }, [entreesTriees, rows, recherche, filtreVigilance, filtreRapide]);
+  }, [entreesTriees, rows, recherche, filtreVigilance, filtreRapide, documents]);
 
   const groupes = useMemo(() => {
     const base = {
@@ -415,8 +422,9 @@ export function PilotageActionsPage() {
       rapide: groupes["À traiter rapidement"].length,
       aFaire: valeurs.filter((action) => action.statut === "À faire").length,
       insertis: valeurs.filter((action) => ["À faire", "À prévoir"].includes(action.traceInsertis)).length,
+      documents: documents.filter((doc) => doc.dossierId && entrees.some((entree) => entree.id === doc.dossierId)).length,
     };
-  }, [entrees, groupes]);
+  }, [entrees, groupes, documents]);
 
   const texteSynthese = useMemo(() => synthese(rows, actions), [rows, actions]);
 
@@ -652,6 +660,7 @@ export function PilotageActionsPage() {
                 ["Importantes", kpis.rapide, "À traiter rapidement"],
                 ["Actions", kpis.aFaire, "Actions à faire"],
                 ["Traces", kpis.insertis, "Traces Insertis"],
+                ["Documents", kpis.documents, "Dossiers documentaires liés"],
               ].map(([filtre, nombre, libelle]) => (
                 <button
                   type="button"
@@ -783,6 +792,11 @@ export function PilotageActionsPage() {
                           </td>
                           <td style={s.tdLast}>
                             <Link style={s.link} to={`/pilotage-actions/dossier/${encodeURIComponent(id)}`}>Ouvrir dossier</Link>
+                            {documents.some((doc) => doc.dossierId === id) ? (
+                              <span style={{ ...s.badge, marginTop: "8px" }}>Documents liés</span>
+                            ) : (
+                              <span style={{ ...s.small, marginTop: "8px" }}>Documents à relier</span>
+                            )}
                             <button type="button" style={{ ...s.button, marginTop: "8px" }} onClick={() => marquerFait(id)}>{action.statut === "Fait" ? "À refaire" : "Fait"}</button>
                           </td>
                         </tr>
