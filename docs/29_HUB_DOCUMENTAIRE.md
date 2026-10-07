@@ -14,11 +14,16 @@ Il permet de :
 - mémoriser les racines de travail utiles ;
 - importer une première organisation documentaire déjà existante sur le poste en sélectionnant un dossier ;
 - indexer les sous-dossiers détectés sans téléverser les pièces ;
+- conserver localement un inventaire léger des noms de fichiers, extensions, tailles et dates de modification ;
+- limiter cet inventaire détaillé pour éviter de surcharger le navigateur tout en conservant les totaux ;
 - référencer un dossier ou un document par son libellé, la personne ou l’action concernée, sa catégorie, son chemin, son statut et une note ;
 - rapprocher automatiquement les sous-dossiers importés avec les dossiers de la file active quand le nom/prénom ou le numéro de dossier donnent une correspondance forte ;
 - laisser les correspondances ambiguës en « À rapprocher » pour validation manuelle ;
 - relancer le rapprochement plus tard si la file active est importée après les documents ;
 - rechercher et filtrer les références, notamment « Liés » et « À rapprocher » ;
+- retrouver un dossier à partir du nom d’un fichier déjà repéré ;
+- afficher dans la fiche personne une liste courte des documents repérés ;
+- signaler les doublons potentiels à partir du couple nom de fichier + taille ;
 - copier un chemin Windows ;
 - copier une commande `explorer.exe` prête à utiliser ;
 - faire évoluer le statut d’une référence : Actif, À classer, Clos, Archivé.
@@ -26,7 +31,8 @@ Il permet de :
 ## Sécurité et limites du prototype
 
 - Aucun fichier n’est téléversé dans GitHub.
-- L’import de dossier lit seulement les noms, chemins relatifs, tailles et regroupements nécessaires à l’index local ; les contenus des fichiers ne sont pas envoyés.
+- L’import de dossier lit seulement les noms, chemins relatifs, extensions, tailles, dates de modification et regroupements nécessaires à l’index local ; les contenus des fichiers ne sont pas envoyés.
+- L’inventaire détaillé mémorisé est volontairement limité afin de ne pas saturer le stockage local du navigateur.
 - Le rapprochement automatique ne valide que les correspondances fortes et non ambiguës. Un prénom seul ou une égalité de score entre plusieurs personnes ne déclenche pas de rattachement automatique.
 - Aucun document usager n’est stocké dans le code.
 - Les chemins enregistrés restent dans le `localStorage` du navigateur, comme les autres données de démonstration du prototype.
@@ -67,3 +73,18 @@ Ordre recommandé :
 5. filtrer « À rapprocher » et valider les cas restants manuellement.
 
 Si les documents ont été indexés avant la file active, le bouton **Rapprocher l’index avec la file active** permet de relancer l’analyse sans réimporter les fichiers.
+
+
+## Inventaire local des fichiers
+
+Lors de la sélection d’un dossier existant, l’outil calcule localement :
+- le nombre total de fichiers par sous-dossier ;
+- la taille totale ;
+- la répartition par extension ;
+- la date de modification la plus récente ;
+- une liste limitée de noms de fichiers et de chemins reconstruits ;
+- des doublons potentiels quand plusieurs fichiers ont le même nom et la même taille.
+
+La détection de doublon est un **signal de vérification**, pas une autorisation de suppression.
+
+Le contenu des fichiers n’est jamais lu ni transmis au dépôt GitHub.
