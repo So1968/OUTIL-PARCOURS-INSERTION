@@ -25,6 +25,7 @@ const CadreOrientationPage = lazyNamed(() => import("./pages/CadreOrientationPag
 const ContinuiteServicePage = lazyNamed(() => import("./pages/ContinuiteServicePage"), "ContinuiteServicePage");
 const DirectionPage = lazyNamed(() => import("./pages/DirectionPage"), "DirectionPage");
 const DirectionRegulationPage = lazyNamed(() => import("./pages/DirectionRegulationPage"), "DirectionRegulationPage");
+const DocumentsHubPage = lazyNamed(() => import("./pages/DocumentsHubPage"), "DocumentsHubPage");
 const DossierAvecRdvPage = lazyNamed(() => import("./pages/DossierAvecRdvPage"), "DossierAvecRdvPage");
 const DossierPage = lazyNamed(() => import("./pages/DossierPage"), "DossierPage");
 const DossierPersonnePage = lazyNamed(() => import("./pages/DossierPersonnePage"), "DossierPersonnePage");
@@ -74,6 +75,7 @@ function AppRoutes() {
         <Route path="/accompagnement-global/fiche-minute" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><TnsFicheMinutePage /></ProtectedPage>} />
         <Route path="/accompagnement-global/lecture-globale" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><LectureGlobaleOptimiseePage /></ProtectedPage>} />
         <Route path="/accompagnement-global/echeances-vigilances" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><EcheancesVigilancesPage /></ProtectedPage>} />
+        <Route path="/accompagnement-global/documents" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><DocumentsHubPage /></ProtectedPage>} />
         <Route path="/accompagnement-global/orientation" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><CadreOrientationPage /></ProtectedPage>} />
         <Route path="/appui-tns/coordination" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><TnsCoordinationPage /></ProtectedPage>} />
 
