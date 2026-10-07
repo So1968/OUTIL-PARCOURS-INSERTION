@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { readStorageJson, writeStorageJson } from "../lib/storage";
 import { documentDossierId, documentPersonLabel, findAutomaticDocumentMatch } from "../lib/documentMatching";
+import { buildFolderInventory, duplicateStats, humanFileSize } from "../lib/documentInventory";
 
 const STORAGE_KEY = "artag-hub-documentaire-v1";
 const ROOTS_KEY = "artag-hub-documentaire-racines-v1";
@@ -99,7 +100,8 @@ export function DocumentsHubPage() {
       })
       .filter((doc) => {
         if (!q) return true;
-        return `${doc.libelle} ${doc.personne} ${doc.categorie} ${doc.chemin} ${doc.note}`
+        const fileNames = (doc.indexedFiles || []).map((file) => file.name).join(" ");
+        return `${doc.libelle} ${doc.personne} ${doc.categorie} ${doc.chemin} ${doc.note} ${fileNames}`
           .toLowerCase()
           .includes(q);
       })
@@ -110,6 +112,8 @@ export function DocumentsHubPage() {
     total: documents.length,
     lies: documents.filter((doc) => Boolean(doc.dossierId)).length,
     aRapprocher: documents.filter((doc) => doc.categorie === "Dossier personne" && !doc.dossierId).length,
+    fichiers: documents.reduce((sum, doc) => sum + Number(doc.fileCount || 0), 0),
+    doublons: documents.reduce((sum, doc) => sum + Number(doc.duplicateFiles || 0), 0),
   }), [documents]);
 
   function updateDraft(field, value) {
@@ -239,10 +243,12 @@ export function DocumentsHubPage() {
       const parts = relative.split("/").filter(Boolean);
       const groupName = parts.length > 2 ? parts[1] : rootName;
       const item = groups.get(groupName) || { files: [], totalSize: 0 };
-      item.files.push(parts.slice(2).join("/") || file.name);
+      item.files.push(file);
       item.totalSize += Number(file.size || 0);
       groups.set(groupName, item);
     });
+
+    const globalDuplicates = duplicateStats(files);
 
     const baseRoot = safeText(roots.tns || roots.travail);
     const existingPaths = new Set(
@@ -258,6 +264,8 @@ export function DocumentsHubPage() {
       if (existingPaths.has(chemin.toLowerCase())) return;
 
       const isRootGroup = groupName === rootName;
+      const inventory = buildFolderInventory(files, rootName, groupName, baseRoot, 80);
+      const groupDuplicates = duplicateStats(group.files);
       const match = isRootGroup ? null : findAutomaticDocumentMatch(groupName, rows);
       const personne = match?.personne || groupName;
       const matchNote = match
@@ -274,10 +282,17 @@ export function DocumentsHubPage() {
         categorie: isRootGroup ? "Administratif" : "Dossier personne",
         chemin,
         statut: "Actif",
-        note: `Import initial : ${group.files.length} fichier(s) repéré(s). Aucun fichier n’a été téléversé.${matchNote}`,
+        note: `Import initial : ${inventory.fileCount} fichier(s) repéré(s). Aucun fichier n’a été téléversé.${matchNote}`,
         importSource: rootName,
-        fileCount: group.files.length,
+        fileCount: inventory.fileCount,
+        indexedFileCount: inventory.indexedFileCount,
+        indexedFiles: inventory.indexedFiles,
+        extensionCounts: inventory.extensionCounts,
+        latestModified: inventory.latestModified,
+        inventoryTruncated: inventory.truncated,
         totalSize: group.totalSize,
+        duplicateGroups: groupDuplicates.duplicateGroups,
+        duplicateFiles: groupDuplicates.duplicateFiles,
         matchConfidence: match?.confidence || "",
       });
     });
@@ -296,8 +311,10 @@ export function DocumentsHubPage() {
       fileCount: files.length,
       matchedCount,
       unmatchedCount: imported.filter((doc) => doc.categorie === "Dossier personne" && !doc.dossierId).length,
+      duplicateGroups: globalDuplicates.duplicateGroups,
+      duplicateFiles: globalDuplicates.duplicateFiles,
     });
-    setMessage(`${imported.length} référence(s) intégrée(s), dont ${matchedCount} rapprochée(s) automatiquement avec la file active. Les fichiers restent à leur emplacement d’origine.`);
+    setMessage(`${imported.length} référence(s) intégrée(s), dont ${matchedCount} rapprochée(s) automatiquement avec la file active. ${globalDuplicates.duplicateGroups} groupe(s) de doublons potentiels repéré(s). Les fichiers restent à leur emplacement d’origine.`);
     event.target.value = "";
   }
 
@@ -386,7 +403,7 @@ export function DocumentsHubPage() {
           </div>
           {lastImport && (
             <div style={{ ...s.notice, marginTop: "12px" }}>
-              <strong>Dernier import :</strong> {lastImport.rootName} — {lastImport.folderCount} référence(s) indexée(s), {lastImport.fileCount} fichier(s) repéré(s), {lastImport.matchedCount} rapprochement(s) automatique(s), {lastImport.unmatchedCount} à vérifier.
+              <strong>Dernier import :</strong> {lastImport.rootName} — {lastImport.folderCount} référence(s), {lastImport.fileCount} fichier(s), {lastImport.matchedCount} rapprochement(s), {lastImport.unmatchedCount} à vérifier, {lastImport.duplicateGroups} groupe(s) de doublons potentiels.
             </div>
           )}
         </section>
@@ -433,7 +450,7 @@ export function DocumentsHubPage() {
           <div style={{ ...s.top, marginBottom: "12px" }}>
             <div>
               <p style={s.count}>{documentStats.total}</p>
-              <span style={s.small}>référence(s) · {documentStats.lies} liée(s) · {documentStats.aRapprocher} à rapprocher</span>
+              <span style={s.small}>référence(s) · {documentStats.fichiers} fichier(s) repéré(s) · {documentStats.lies} liée(s) · {documentStats.aRapprocher} à rapprocher · {documentStats.doublons} fichier(s) en doublon potentiel</span>
             </div>
             <div style={{ ...s.actions, marginTop: 0 }}>
               <input style={{ ...s.input, minWidth: "240px" }} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher nom, dossier, chemin..." />
@@ -465,6 +482,32 @@ export function DocumentsHubPage() {
                 {doc.personne && <p style={{ ...s.intro, marginTop: 0 }}>{doc.personne}</p>}
                 <p style={s.path}>{doc.chemin}</p>
                 {doc.note && <p style={s.small}>{doc.note}</p>}
+                {doc.fileCount > 0 && (
+                  <details style={{ marginTop: "10px" }}>
+                    <summary style={{ cursor: "pointer", fontWeight: 900, color: "#334052" }}>
+                      {doc.fileCount} fichier(s) repéré(s) · {humanFileSize(doc.totalSize)}
+                      {doc.duplicateFiles ? ` · ${doc.duplicateFiles} doublon(s) potentiel(s)` : ""}
+                    </summary>
+                    <div style={{ marginTop: "9px" }}>
+                      <p style={s.small}>
+                        Types : {Object.entries(doc.extensionCounts || {}).map(([ext, count]) => `${ext} : ${count}`).join(" · ") || "à préciser"}
+                      </p>
+                      {doc.latestModified ? <p style={s.small}>Dernière modification repérée : {new Date(doc.latestModified).toLocaleDateString("fr-FR")}</p> : null}
+                      {(doc.indexedFiles || []).slice(0, 20).map((file) => (
+                        <div key={file.relativePath || file.chemin} style={{ ...s.item, padding: "8px 10px", marginTop: "7px" }}>
+                          <strong style={{ fontSize: "13px" }}>{file.name}</strong>
+                          <p style={{ ...s.path, marginBottom: 0 }}>{file.chemin}</p>
+                          <div style={s.actions}>
+                            <span style={s.badge}>{file.extension}</span>
+                            <span style={s.small}>{humanFileSize(file.size)}</span>
+                            <button style={s.button} type="button" onClick={() => copyText(file.chemin, "Chemin du fichier")}>Copier chemin</button>
+                          </div>
+                        </div>
+                      ))}
+                      {doc.inventoryTruncated && <p style={s.small}>Affichage limité aux premiers fichiers indexés pour garder l’outil léger. Le nombre total reste comptabilisé.</p>}
+                    </div>
+                  </details>
+                )}
                 {doc.categorie === "Dossier personne" && (
                   <label style={{ ...s.field, marginTop: "10px" }}>
                     Dossier de la file active

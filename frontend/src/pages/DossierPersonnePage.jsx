@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { readStorageJson as lireJson, writeStorageJson } from "../lib/storage";
+import { humanFileSize } from "../lib/documentInventory";
 
 const STORAGE_ROWS = "artag-pilotage-actions-rows-v1";
 const STORAGE_ACTIONS = "artag-pilotage-actions-suivi-v1";
@@ -557,6 +558,7 @@ export function DossierPersonnePage() {
     }
 
     const reference = {
+      ...(documentExistant || {}),
       id: documentExistant?.id || `dossier-${idCourant}`,
       dossierId: idCourant,
       libelle: `Dossier ${nomCompletDossier(row)}`,
@@ -670,7 +672,36 @@ export function DossierPersonnePage() {
             <button style={s.button} type="button" onClick={() => copierTexte(cheminExplorer(documentDraft.chemin), "Commande Explorer")}>Copier la commande Explorer</button>
             <Link style={s.link} to="/accompagnement-global/documents">Ouvrir le Hub documentaire</Link>
           </div>
-          {documentExistant && <p style={{ ...s.info, marginTop: "12px" }}><strong>Indexé :</strong> {documentExistant.statut} — {documentExistant.chemin}</p>}
+          {documentExistant && (
+            <div style={{ marginTop: "12px" }}>
+              <p style={s.info}><strong>Indexé :</strong> {documentExistant.statut} — {documentExistant.chemin}</p>
+              {documentExistant.fileCount > 0 && (
+                <details style={s.cardSoft}>
+                  <summary style={s.summary}>
+                    Documents repérés : {documentExistant.fileCount}
+                    <span style={s.summaryHelp}>
+                      {humanFileSize(documentExistant.totalSize)} au total
+                      {documentExistant.duplicateFiles ? ` · ${documentExistant.duplicateFiles} doublon(s) potentiel(s)` : ""}
+                    </span>
+                  </summary>
+                  <div style={s.timeline}>
+                    {(documentExistant.indexedFiles || []).slice(0, 12).map((file) => (
+                      <article key={file.relativePath || file.chemin} style={s.timelineItem}>
+                        <p style={{ ...s.info, margin: 0 }}><strong>{file.name}</strong></p>
+                        <p style={{ ...s.info, marginBottom: 0 }}>{file.extension} · {humanFileSize(file.size)}</p>
+                        <div style={s.actions}>
+                          <button style={s.button} type="button" onClick={() => copierTexte(file.chemin, "Chemin du fichier")}>Copier le chemin</button>
+                        </div>
+                      </article>
+                    ))}
+                    {documentExistant.inventoryTruncated && (
+                      <p style={s.info}>Inventaire allégé : le total est conservé, mais seuls les premiers noms de fichiers sont mémorisés dans le navigateur.</p>
+                    )}
+                  </div>
+                </details>
+              )}
+            </div>
+          )}
         </section>
 
         <section style={s.card}>
