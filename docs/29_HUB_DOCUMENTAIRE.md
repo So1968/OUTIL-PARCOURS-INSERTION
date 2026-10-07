@@ -24,6 +24,8 @@ Il permet de :
 - retrouver un dossier à partir du nom d’un fichier déjà repéré ;
 - afficher dans la fiche personne une liste courte des documents repérés ;
 - signaler les doublons potentiels à partir du couple nom de fichier + taille ;
+- alimenter une file de rangement assistée avec cinq états : « À décider », « À garder ici », « À déplacer », « À archiver », « Doublon à vérifier » ;
+- filtrer le Hub selon ces décisions de classement ;
 - copier un chemin Windows ;
 - copier une commande `explorer.exe` prête à utiliser ;
 - faire évoluer le statut d’une référence : Actif, À classer, Clos, Archivé.
@@ -88,3 +90,23 @@ Lors de la sélection d’un dossier existant, l’outil calcule localement :
 La détection de doublon est un **signal de vérification**, pas une autorisation de suppression.
 
 Le contenu des fichiers n’est jamais lu ni transmis au dépôt GitHub.
+
+
+## File de rangement assistée
+
+Le Hub ne déplace ni ne supprime automatiquement les fichiers.
+
+Pour chaque fichier indexé, l’utilisatrice peut enregistrer une décision :
+- **À décider** ;
+- **À garder ici** ;
+- **À déplacer** ;
+- **À archiver** ;
+- **Doublon à vérifier**.
+
+Par défaut :
+- un fichier repéré comme doublon potentiel est proposé en **Doublon à vérifier** ;
+- les autres fichiers restent en **À décider**.
+
+Ces décisions restent locales au navigateur et servent à préparer un rangement futur contrôlé.
+
+Aucune suppression ne doit être déclenchée sur la seule base d’un signal de doublon.
