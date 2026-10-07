@@ -26,6 +26,12 @@ export function buildFolderInventory(files, rootName, groupName, baseRoot, maxIn
     latestModified = Math.max(latestModified, Number(file.lastModified || 0));
   });
 
+  const fingerprintCounts = new Map();
+  relevant.forEach((file) => {
+    const key = fileFingerprint(file);
+    fingerprintCounts.set(key, (fingerprintCounts.get(key) || 0) + 1);
+  });
+
   const prefix = String(baseRoot || "").replace(/[\\/]$/, "");
   const indexedFiles = relevant.slice(0, maxIndexedFiles).map((file) => {
     const relative = file.webkitRelativePath || file.name || "";
@@ -42,6 +48,7 @@ export function buildFolderInventory(files, rootName, groupName, baseRoot, maxIn
       lastModified: Number(file.lastModified || 0),
       relativePath: relative,
       chemin,
+      duplicatePotential: (fingerprintCounts.get(fileFingerprint(file)) || 0) > 1,
     };
   });
 
@@ -81,4 +88,10 @@ export function humanFileSize(bytes) {
   if (value < 1024 ** 2) return `${(value / 1024).toFixed(1)} Ko`;
   if (value < 1024 ** 3) return `${(value / 1024 ** 2).toFixed(1)} Mo`;
   return `${(value / 1024 ** 3).toFixed(1)} Go`;
+}
+
+
+export function suggestedTriage(file) {
+  if (file?.duplicatePotential) return "Doublon à vérifier";
+  return "À décider";
 }
