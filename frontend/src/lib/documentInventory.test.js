@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildFolderInventory, duplicateStats, fileExtension, humanFileSize } from "./documentInventory";
+import { buildFolderInventory, duplicateStats, fileExtension, humanFileSize, suggestedTriage } from "./documentInventory";
 
 function fakeFile(name, relative, size = 10, lastModified = 1000) {
   return { name, webkitRelativePath: relative, size, lastModified };
@@ -23,6 +23,16 @@ describe("documentInventory", () => {
     expect(result.extensionCounts).toEqual({ pdf: 1, jpg: 1 });
     expect(result.latestModified).toBe(3000);
     expect(result.truncated).toBe(false);
+  });
+
+  it("marque les fichiers potentiellement dupliqués", () => {
+    const files = [
+      fakeFile("note.pdf", "ORGA/EXEMPLE Alpha/note.pdf", 100),
+      fakeFile("note.pdf", "ORGA/EXEMPLE Alpha/copie/note.pdf", 100),
+    ];
+    const result = buildFolderInventory(files, "ORGA", "EXEMPLE Alpha", "", 80);
+    expect(result.indexedFiles.every((file) => file.duplicatePotential)).toBe(true);
+    expect(suggestedTriage(result.indexedFiles[0])).toBe("Doublon à vérifier");
   });
 
   it("limite le nombre de noms mémorisés", () => {

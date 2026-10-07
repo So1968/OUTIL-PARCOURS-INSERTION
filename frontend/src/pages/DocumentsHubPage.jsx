@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { readStorageJson, writeStorageJson } from "../lib/storage";
 import { documentDossierId, documentPersonLabel, findAutomaticDocumentMatch } from "../lib/documentMatching";
-import { buildFolderInventory, duplicateStats, humanFileSize } from "../lib/documentInventory";
+import { buildFolderInventory, duplicateStats, humanFileSize, suggestedTriage } from "../lib/documentInventory";
 
 const STORAGE_KEY = "artag-hub-documentaire-v1";
 const ROOTS_KEY = "artag-hub-documentaire-racines-v1";
@@ -85,6 +85,7 @@ export function DocumentsHubPage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("Tous");
   const [linkFilter, setLinkFilter] = useState("Tous");
+  const [triageFilter, setTriageFilter] = useState("Tous");
   const [message, setMessage] = useState("");
   const [lastImport, setLastImport] = useState(null);
 
@@ -99,6 +100,15 @@ export function DocumentsHubPage() {
         return true;
       })
       .filter((doc) => {
+        if (triageFilter === "Tous") return true;
+        const decisions = doc.fileTriage || {};
+        return (doc.indexedFiles || []).some((file) => {
+          const key = file.relativePath || file.chemin || file.name;
+          const decision = decisions[key] || suggestedTriage(file);
+          return decision === triageFilter;
+        });
+      })
+      .filter((doc) => {
         if (!q) return true;
         const fileNames = (doc.indexedFiles || []).map((file) => file.name).join(" ");
         return `${doc.libelle} ${doc.personne} ${doc.categorie} ${doc.chemin} ${doc.note} ${fileNames}`
@@ -106,7 +116,7 @@ export function DocumentsHubPage() {
           .includes(q);
       })
       .sort((a, b) => String(a.personne || a.libelle).localeCompare(String(b.personne || b.libelle)));
-  }, [documents, query, statusFilter, linkFilter]);
+  }, [documents, query, statusFilter, linkFilter, triageFilter]);
 
   const documentStats = useMemo(() => ({
     total: documents.length,
@@ -114,6 +124,13 @@ export function DocumentsHubPage() {
     aRapprocher: documents.filter((doc) => doc.categorie === "Dossier personne" && !doc.dossierId).length,
     fichiers: documents.reduce((sum, doc) => sum + Number(doc.fileCount || 0), 0),
     doublons: documents.reduce((sum, doc) => sum + Number(doc.duplicateFiles || 0), 0),
+    aDecider: documents.reduce((sum, doc) => {
+      const decisions = doc.fileTriage || {};
+      return sum + (doc.indexedFiles || []).filter((file) => {
+        const key = file.relativePath || file.chemin || file.name;
+        return (decisions[key] || suggestedTriage(file)) === "À décider";
+      }).length;
+    }, 0),
   }), [documents]);
 
   function updateDraft(field, value) {
@@ -156,6 +173,21 @@ export function DocumentsHubPage() {
 
   function updateStatus(id, statut) {
     saveDocuments(documents.map((doc) => (doc.id === id ? { ...doc, statut } : doc)));
+  }
+
+  function updateFileTriage(documentId, file, decision) {
+    const key = file.relativePath || file.chemin || file.name;
+    saveDocuments(documents.map((doc) => {
+      if (doc.id !== documentId) return doc;
+      return {
+        ...doc,
+        fileTriage: {
+          ...(doc.fileTriage || {}),
+          [key]: decision,
+        },
+      };
+    }));
+    setMessage("Décision de classement enregistrée. Aucun fichier n’a été déplacé ni supprimé.");
   }
 
   function updateDocumentDossier(id, dossierId) {
@@ -446,11 +478,36 @@ export function DocumentsHubPage() {
         </section>
 
         <section style={s.card}>
-          <p style={s.label}>4. Index</p>
+          <p style={s.label}>4. File de rangement assistée</p>
+          <h2 style={s.h2}>Décider sans déplacer ni supprimer automatiquement</h2>
+          <p style={s.intro}>
+            Chaque fichier indexé peut être marqué « À garder ici », « À déplacer », « À archiver » ou « Doublon à vérifier ».
+            Tant qu’aucune décision n’est prise, il reste « À décider ».
+          </p>
+          <div style={s.actions}>
+            {["À décider", "À garder ici", "À déplacer", "À archiver", "Doublon à vérifier"].map((decision) => (
+              <button
+                key={decision}
+                type="button"
+                style={triageFilter === decision ? s.mainButton : s.button}
+                onClick={() => setTriageFilter(decision)}
+              >
+                {decision}
+              </button>
+            ))}
+            <button type="button" style={s.button} onClick={() => setTriageFilter("Tous")}>Voir tout</button>
+          </div>
+          <p style={{ ...s.small, marginTop: "10px" }}>
+            Important : ces choix sont des décisions de classement enregistrées dans le navigateur. Ils ne modifient pas encore les fichiers sur le disque.
+          </p>
+        </section>
+
+        <section style={s.card}>
+          <p style={s.label}>5. Index</p>
           <div style={{ ...s.top, marginBottom: "12px" }}>
             <div>
               <p style={s.count}>{documentStats.total}</p>
-              <span style={s.small}>référence(s) · {documentStats.fichiers} fichier(s) repéré(s) · {documentStats.lies} liée(s) · {documentStats.aRapprocher} à rapprocher · {documentStats.doublons} fichier(s) en doublon potentiel</span>
+              <span style={s.small}>référence(s) · {documentStats.fichiers} fichier(s) repéré(s) · {documentStats.lies} liée(s) · {documentStats.aRapprocher} à rapprocher · {documentStats.doublons} doublon(s) potentiel(s) · {documentStats.aDecider} à décider</span>
             </div>
             <div style={{ ...s.actions, marginTop: 0 }}>
               <input style={{ ...s.input, minWidth: "240px" }} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher nom, dossier, chemin..." />
@@ -466,6 +523,14 @@ export function DocumentsHubPage() {
                 <option>Liés</option>
                 <option>À rapprocher</option>
                 <option>Hors dossiers personnes</option>
+              </select>
+              <select style={s.input} value={triageFilter} onChange={(e) => setTriageFilter(e.target.value)}>
+                <option>Tous</option>
+                <option>À décider</option>
+                <option>À garder ici</option>
+                <option>À déplacer</option>
+                <option>À archiver</option>
+                <option>Doublon à vérifier</option>
               </select>
             </div>
           </div>
@@ -493,17 +558,33 @@ export function DocumentsHubPage() {
                         Types : {Object.entries(doc.extensionCounts || {}).map(([ext, count]) => `${ext} : ${count}`).join(" · ") || "à préciser"}
                       </p>
                       {doc.latestModified ? <p style={s.small}>Dernière modification repérée : {new Date(doc.latestModified).toLocaleDateString("fr-FR")}</p> : null}
-                      {(doc.indexedFiles || []).slice(0, 20).map((file) => (
-                        <div key={file.relativePath || file.chemin} style={{ ...s.item, padding: "8px 10px", marginTop: "7px" }}>
-                          <strong style={{ fontSize: "13px" }}>{file.name}</strong>
-                          <p style={{ ...s.path, marginBottom: 0 }}>{file.chemin}</p>
-                          <div style={s.actions}>
-                            <span style={s.badge}>{file.extension}</span>
-                            <span style={s.small}>{humanFileSize(file.size)}</span>
-                            <button style={s.button} type="button" onClick={() => copyText(file.chemin, "Chemin du fichier")}>Copier chemin</button>
+                      {(doc.indexedFiles || []).slice(0, 20).map((file) => {
+                        const fileKey = file.relativePath || file.chemin || file.name;
+                        const decision = (doc.fileTriage || {})[fileKey] || suggestedTriage(file);
+                        return (
+                          <div key={fileKey} style={{ ...s.item, padding: "8px 10px", marginTop: "7px" }}>
+                            <strong style={{ fontSize: "13px" }}>{file.name}</strong>
+                            <p style={{ ...s.path, marginBottom: 0 }}>{file.chemin}</p>
+                            <div style={s.actions}>
+                              <span style={s.badge}>{file.extension}</span>
+                              <span style={s.small}>{humanFileSize(file.size)}</span>
+                              {file.duplicatePotential && <span style={s.badge}>Doublon potentiel</span>}
+                              <select
+                                style={s.input}
+                                value={decision}
+                                onChange={(e) => updateFileTriage(doc.id, file, e.target.value)}
+                              >
+                                <option>À décider</option>
+                                <option>À garder ici</option>
+                                <option>À déplacer</option>
+                                <option>À archiver</option>
+                                <option>Doublon à vérifier</option>
+                              </select>
+                              <button style={s.button} type="button" onClick={() => copyText(file.chemin, "Chemin du fichier")}>Copier chemin</button>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       {doc.inventoryTruncated && <p style={s.small}>Affichage limité aux premiers fichiers indexés pour garder l’outil léger. Le nombre total reste comptabilisé.</p>}
                     </div>
                   </details>
