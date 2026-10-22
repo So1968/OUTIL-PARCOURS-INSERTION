@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { SecureTasksPanel } from "../components/SecureTasksPanel";
 import { readStorageJson, writeStorageJson } from "../lib/storage";
 import { repartitionTaches, rappelsProfessionnels, jourDeRappel } from "../lib/entretienTasks";
 import { calculerChargeJour, dureeLisible, minutesValides, TYPES_EVENEMENTS, isDate } from "../lib/workload";
@@ -343,6 +344,8 @@ export function BureauQuotidienPage() {
           </li>)}
         </ul>}
       </section>
+
+      <SecureTasksPanel />
 
       <section aria-label="Mes actions">
         <h2>{activeCount} tâche(s) non terminée(s)</h2>
