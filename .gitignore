@@ -48,3 +48,26 @@ beneficiaires/
 *.odt
 *.rtf
 *.pdf
+
+# Secrets, local databases, backups and sensitive exports
+.env.*
+!.env.example
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+*.sql
+*.dump
+*.bak
+*.zip
+*.7z
+*.rar
+*.tar
+*.gz
+*.jsonl
+*.ndjson

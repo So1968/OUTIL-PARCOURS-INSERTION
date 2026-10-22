@@ -31,8 +31,7 @@ En cas de doute :
 
 ## Structure du projet
 - `frontend/src/` : interface React et logique du prototype
-- `frontend/public/` : assets propres au frontend
-- `public/` : assets publics de référence, dont le logo ARTAG utilisé au build
+- `public/` : assets publiés par Vite (voir `frontend/vite.config.js`), dont le logo ARTAG utilisé au build
 - `docs/` : spécifications complètes et obligatoires du projet
 
 ## Démarrage local
@@ -50,6 +49,7 @@ Contrôles avant livraison :
 npm run lint
 npm test
 npm run build
+npm run privacy
 ```
 
 L’application reste actuellement un prototype frontend. Les droits visibles et le stockage local ne remplacent pas l’authentification, les autorisations serveur, la base de données et la traçabilité prévues dans l’architecture cible.
@@ -75,3 +75,12 @@ Toujours écrire :
 
 ## Règle finale
 Aucune partie du projet ne doit être modifiée hors des spécifications fournies dans `docs/`.
+
+## Entretien du dépôt et confidentialité
+
+- Navigation dans les spécifications : [index documentaire](docs/INDEX.md).
+- `main` contient le code consolidé. Les branches de fonctionnalités fusionnées sont des archives de développement, non des versions concurrentes à réintégrer.
+- Les contrôles automatiques vérifient lint, tests, build et les noms/extensions de fichiers à risque. Ils ne certifient pas l’absence de données personnelles dans le contenu textuel ou dans l’historique Git.
+- Ce dépôt est public à la date de l’état des lieux du 22 octobre 2026 : **aucune donnée réelle de bénéficiaire, document professionnel confidentiel ou secret d’accès ne doit y figurer**.
+- Le frontend reste un prototype : **ne pas y saisir de données réelles avant validation ARTAG**, authentification, droits serveur, stockage et sécurité conformes.
+- Les documents professionnels restent dans les espaces ARTAG autorisés, sans copie automatique vers GitHub. Toute connexion Outlook, OneDrive ou Insertis exige une validation préalable et un test effectif.
