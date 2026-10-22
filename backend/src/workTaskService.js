@@ -71,7 +71,9 @@ async function getOwner(db, cookieHeader) {
     throw new WorkTaskAccessDenied();
   }
   const userId = await resolveSessionUserId({ db, cookieHeader });
-  if (!userId || !UUID.test(userId)) throw new WorkTaskAccessDenied();
+  // La clé provient d'une session PostgreSQL liée au compte, pas d'une entrée
+  // cliente. Ne pas supposer un format externe pour l'ID institutionnel.
+  if (typeof userId !== "string" || !userId.trim()) throw new WorkTaskAccessDenied();
   return userId;
 }
 
