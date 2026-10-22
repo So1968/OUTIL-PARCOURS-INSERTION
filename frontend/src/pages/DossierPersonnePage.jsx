@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { readStorageJson as lireJson, writeStorageJson } from "../lib/storage";
 import { humanFileSize } from "../lib/documentInventory";
 import { preparerBrouillonMonSuiviSocial } from "../lib/monSuiviSocialDraft";
+import { TASKS_STORAGE_KEY, creerTachesEntretien } from "../lib/followupTasks";
 
 const STORAGE_ROWS = "artag-pilotage-actions-rows-v1";
 const STORAGE_ACTIONS = "artag-pilotage-actions-suivi-v1";
@@ -410,6 +411,10 @@ export function DossierPersonnePage() {
   const [actions, setActions] = useState(() => lireJson(STORAGE_ACTIONS, {}));
   const [journaux, setJournaux] = useState(() => lireJson(STORAGE_JOURNAL, {}));
   const [interventions, setInterventions] = useState(() => lireJson(STORAGE_INTERVENTIONS, {}));
+  const [tasks, setTasks] = useState(() => {
+    const value = lireJson(TASKS_STORAGE_KEY, []);
+    return Array.isArray(value) ? value : [];
+  });
   const [autonomies, setAutonomies] = useState(() => lireJson(STORAGE_AUTONOMIE, {}));
   const [documents, setDocuments] = useState(() => {
     const value = lireJson(STORAGE_DOCUMENTS, []);
@@ -536,7 +541,7 @@ export function DossierPersonnePage() {
       return false;
     }
     setJournaux(next);
-    return true;
+    return entree.id;
   }
 
   function ajouterJournal() {
@@ -571,12 +576,31 @@ export function DossierPersonnePage() {
   }
 
   function ajouterInterventionAuJournal() {
-    if (!ajouterEntreeJournal("Intervention / suivi social", noteInterneComplete, new Date().toISOString().slice(0, 10))) return;
-    if (!enregistrerAction({ ...action, traceInsertis: "À faire", prochaineAction: intervention.suitePrevue || action.prochaineAction })) {
+    const journalId = ajouterEntreeJournal(
+      "Intervention / suivi social", noteInterneComplete, new Date().toISOString().slice(0, 10),
+    );
+    if (!journalId) return;
+    if (!enregistrerAction({
+      ...action, traceInsertis: "À faire",
+      prochaineAction: intervention.suitePrevue || action.prochaineAction,
+    })) {
       setMessage("Intervention au journal, mais statut Insertis non enregistré. Vérifie le dossier.");
       return;
     }
-    setMessage("Intervention ajoutée au journal. Trace Insertis marquée à faire.");
+    const proposition = creerTachesEntretien({
+      dossierId: idCourant, journalId,
+      suitePrevue: intervention.suitePrevue,
+      prochaineAction: action.prochaineAction,
+      echeance: action.echeance,
+      traceInsertis: "À faire",
+      existingTasks: tasks,
+    });
+    if (!writeStorageJson(TASKS_STORAGE_KEY, proposition.tasks)) {
+      setMessage("Entretien journalisé, mais les tâches n'ont pas été sauvegardées. Reprends-les dans le bureau des tâches.");
+      return;
+    }
+    setTasks(proposition.tasks);
+    setMessage(`Entretien journalisé et ${proposition.added} tâche(s) de suivi ajoutée(s). Vérifie les dates proposées dans « Mes tâches ».`);
   }
 
   async function copierTexte(texte, libelle) {
@@ -823,7 +847,8 @@ export function DossierPersonnePage() {
             <div style={s.actions}>
               <button style={s.mainButton} type="button" onClick={() => copierTexte(traceInsertis, "Texte Insertis")}>Copier pour Insertis</button>
               <button style={s.mainButton} type="button" onClick={() => copierTexte(noteMonSuiviSocial, "Note Mon Suivi Social")}>Copier pour Mon Suivi Social</button>
-              <button style={s.button} type="button" onClick={ajouterInterventionAuJournal}>Ajouter au journal + marquer Insertis à faire</button>
+              <button style={s.button} type="button" onClick={ajouterInterventionAuJournal}>Terminer l'entretien : journal + tâches + trace Insertis</button>
+              <Link to="/mes-taches" style={{ ...s.button, textDecoration: "none" }}>Voir toutes mes tâches et rappels</Link>
             </div>
           </details>
         </section>
