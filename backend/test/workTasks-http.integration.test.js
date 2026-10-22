@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { once } from "node:events";
 import { randomUUID } from "node:crypto";
 import { createApp } from "../src/app.js";
+import { updateOwnTask, WorkTaskAccessDenied } from "../src/workTaskService.js";
 import { COOKIE_NAME, issueSession, revokeSession, resolveSessionUserId } from "../src/sessions.js";
 
 test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit", {
@@ -101,6 +102,11 @@ test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit
     })).status, 422);
 
     const updateUrl = path + "/" + first.id;
+    // Contrôle direct du service avant la couche HTTP (données fictives).
+    await assert.rejects(updateOwnTask({
+      db, cookieHeader: cookie(tnsToken), taskId: first.id,
+      expectedVersion: 0, changes: { status: "FAIT" },
+    }), WorkTaskAccessDenied);
     assert.equal((await write(updateUrl, tnsToken, csrfTns, "PATCH", {
       expectedVersion: 0, changes: { status: "FAIT" },
     })).status, 404);
