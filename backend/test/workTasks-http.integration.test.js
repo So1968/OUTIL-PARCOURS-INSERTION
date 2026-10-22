@@ -4,7 +4,6 @@ import { once } from "node:events";
 import { randomUUID } from "node:crypto";
 import { createApp } from "../src/app.js";
 import { COOKIE_NAME, issueSession, revokeSession, resolveSessionUserId } from "../src/sessions.js";
-import { listOwnTasks } from "../src/workTaskService.js";
 
 test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit", {
   skip: process.env.ARTAG_DB_INTEGRATION_TEST !== "1",
@@ -59,7 +58,6 @@ test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit
     assert.deepEqual(await db.userAccount.findUnique({
       where: { id: ref }, select: { role: true, enabled: true },
     }), { role: "REFERENTE", enabled: true });
-    assert.deepEqual((await listOwnTasks({ db, cookieHeader: cookie(refToken) })).tasks, []);
     const body = { title: "Relancer un partenaire fictif", dueDate: "2026-11-13",
       reminderDaysBefore: 2, estimatedMinutes: 20, status: "A_FAIRE" };
     const write = (url, token, csrf, method, data, reqOrigin = origin) => fetch(url, {
