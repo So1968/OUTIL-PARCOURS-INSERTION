@@ -38,3 +38,9 @@ Une future instance ARTAG devra obtenir validation du responsable de traitement,
 `src/caseAccessService.js` fournit `readCaseOverview` : il reçoit un futur fournisseur de sujet authentifié par le serveur, lit le rôle depuis PostgreSQL, vérifie l'affectation et journalise la lecture dans la même transaction. Son résultat ne contient que `id`, `version` et `updatedAt`, **jamais les notes professionnelles ou les données nominatives**. Les comptes et données d'essai sont exclusivement fictifs. Aucun endpoint ne l'appelle actuellement.
 
 La CI utilise un conteneur PostgreSQL éphémère et y applique le schéma par `prisma db push` uniquement dans ce contexte. Cela n'est **pas** une migration de production ni une procédure à lancer sur une base ARTAG.
+
+## Sessions HTTP : état de préparation
+
+Le backend prévoit des sessions de huit heures avec jeton aléatoire de 256 bits et hachage en base, jamais une identité ou un rôle provenant des requêtes. Un compte doit être actif en base. La route `GET /api/dossiers/:caseId/overview` n'existe que si une base privée est explicitement injectée côté serveur ; elle ne lit aucune note, ne renvoie aucune identité et journalise toute lecture. L'application lancée avec `npm run backend:dev` **ne branche pas** cette base et garde toutes les routes métier fermées. Les tests HTTP utilisent uniquement PostgreSQL fictif.
+
+Un futur callback OpenID Connect valide devra rattacher le sujet émis par un fournisseur autorisé au modèle `IdentityLink` pré-provisionné, puis appeler `issueSession`. **Ne jamais appeler cette fonction depuis une route qui accepterait un identifiant de compte envoyé par le navigateur.**
