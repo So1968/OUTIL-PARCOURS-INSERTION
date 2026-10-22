@@ -119,6 +119,25 @@ export function BureauQuotidienPage() {
     setMessage("Disponibilité du jour actualisée.");
   }
 
+  async function copierBilanAnonyme() {
+    const bilan = [
+      `Plan de charge ARTAG — ${dateLabel(day)}`,
+      `Charge chiffrée : ${dureeLisible(charge.totalKnown)} / ${dureeLisible(charge.capacity)} disponibles (estimations)`,
+      `Tâches en retard : ${charge.overdueCount} ; échéance aujourd'hui : ${charge.dueCount}`,
+      `Imprévus et événements effectués : ${dureeLisible(charge.doneMinutes)}`,
+      `Événements à venir : ${dureeLisible(charge.plannedMinutes)}`,
+      `Rendez-vous enregistrés : ${charge.appointmentsCount}`,
+      `Éléments sans durée : ${charge.missingEstimates}`,
+      "Récapitulatif sans nom, numéro de dossier ni note d'entretien.",
+    ].join("\\n");
+    try {
+      await navigator.clipboard.writeText(bilan);
+      setMessage("Bilan anonyme copié. Tu peux le coller dans ton point de charge ChatGPT.");
+    } catch {
+      setMessage("Copie impossible : autorise le presse-papiers ou utilise le tableau à l'écran.");
+    }
+  }
+
   const taskSection = (title, tasks, id) => (
     <section aria-labelledby={id} className="daily-section" key={id}>
       <h2 id={id}>{title} ({tasks.length})</h2>
@@ -195,6 +214,7 @@ export function BureauQuotidienPage() {
         {charge.missingEstimates > 0 && <p className="daily-alert">Attention : {charge.missingEstimates} élément(s) sans durée. La charge réelle peut être supérieure.</p>}
         {charge.overload && <p className="daily-alert">Charge supérieure au temps mobilisable : reporter ou réorganiser des actions.</p>}
         {charge.pendingWithoutDate > 0 && <p className="daily-alert">{charge.pendingWithoutDate} tâche(s) sans échéance restent à planifier.</p>}
+        <button type="button" onClick={copierBilanAnonyme}>Copier le bilan sans données personnelles</button>
       </section>
 
       <section className="daily-section" aria-labelledby="quick-header">
