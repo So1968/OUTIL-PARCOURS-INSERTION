@@ -91,7 +91,7 @@ export function BureauQuotidienPage() {
     // Il ne masque pas l'existence d'un retard passé.
     const tomorrow = new Date(`${day}T12:00:00.000Z`);
     tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
-    updateTask(task, { dueDate: tomorrow.toISOString().slice(0, 10) });
+    updateTask(task, { dueDate: tomorrow.toISOString().slice(0, 10), snoozedUntil: tomorrow.toISOString().slice(0, 10) });
   }
 
   function saveQuick(next, successMessage) {
@@ -185,7 +185,7 @@ export function BureauQuotidienPage() {
               </label>
               <label>Échéance
                 <input type="date" aria-label={`Échéance : ${task.title}`}
-                  value={task.dueDate || ""} onChange={e => updateTask(task, { dueDate: e.target.value })} />
+                  value={task.dueDate || ""} onChange={e => updateTask(task, { dueDate: e.target.value, snoozedUntil: "" })} />
               </label>
               <label>Rappel souhaité
                 <select aria-label={`Rappel : ${task.title}`}
