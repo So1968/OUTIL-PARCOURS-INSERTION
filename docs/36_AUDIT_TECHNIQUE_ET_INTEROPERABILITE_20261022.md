@@ -44,12 +44,14 @@
 | **Outlook / Microsoft 365** | Rendez-vous, calendrier, rappels | Non connecté | Tenant et consentements Microsoft 365 administrés par ARTAG ; autorisations minimales |
 | **OneDrive / SharePoint ARTAG** | Index de documents, chemins et ouverture contrôlée | Stockage de références textuelles locales uniquement | Accès organisationnel autorisé ; références sécurisées et sans duplication des pièces |
 
-**Mon Suivi Social** est un service public de l'ANCT pour les structures d'accompagnement social, y compris les associations. L'accès aux comptes utilise **ProConnect**. Le [code source public](https://github.com/inclusion-numerique/mon-suivi-social) ne constitue ni une autorisation d'accès aux dossiers, ni un contrat d'API publique pour un tiers. Aucune API partenaire officielle utilisable par ARTAG n'a été confirmée au 22/10/2026.
+**Mon Suivi Social** est un service public de l'ANCT pour les structures d'accompagnement social, y compris les associations. L'accès aux comptes utilise **ProConnect**. Le [dépôt GitHub historique](https://github.com/inclusion-numerique/mon-suivi-social) a été **archivé le 1er octobre 2026** ; il ne doit pas être considéré comme la seule référence technique actuelle. Le [projet « Mon Suivi Social - v2 » sur GitLab](https://gitlab.com/incubateur-territoires/startups/monsuivisocial/monsuivisocial-v2) constitue une piste de référence plus récente. Un [ancien serveur API Directus sur GitLab](https://gitlab.com/incubateur-territoires/startups/monsuivisocial/monsuivisocial-api) est lui aussi archivé ; la présence d'une API dans ce code historique ne prouve pas l'existence d'une API partenaire active ou autorisée. **Aucune API d'échange officielle accessible à ARTAG n'est confirmée au 22/10/2026.**
 
 Références publiques :
 - [Présentation officielle Mon Suivi Social](https://monsuivisocial.incubateur.anct.gouv.fr/)
 - [Connexion et support Mon Suivi Social](https://monsuivisocial.incubateur.anct.gouv.fr/se-connecter-%C3%A0-son-espace-de-travail/)
-- [Dépôt public du code source Mon Suivi Social](https://github.com/inclusion-numerique/mon-suivi-social)
+- [Dépôt GitLab Mon Suivi Social – v2](https://gitlab.com/incubateur-territoires/startups/monsuivisocial/monsuivisocial-v2)
+- [Ancien code GitHub, archivé le 01/10/2026](https://github.com/inclusion-numerique/mon-suivi-social)
+- [Ancien dépôt API Directus (archivé)](https://gitlab.com/incubateur-territoires/startups/monsuivisocial/monsuivisocial-api)
 
 ## 4. Frontière fonctionnelle obligatoire
 
