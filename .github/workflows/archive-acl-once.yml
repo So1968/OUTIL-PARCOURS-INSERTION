@@ -1,0 +1,47 @@
+name: Archivage ponctuel — lecture ACL PostgreSQL
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/archive-acl-once.yml'
+permissions:
+  contents: write
+  pull-requests: read
+jobs:
+  archive:
+    if: github.repository == 'So1968/OUTIL-PARCOURS-INSERTION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Archiver uniquement la branche vérifiée et fusionnée
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch='feat/backend-lecture-dossiers-acl-20261022'
+          sha='741bdd13fdd39232501cf9012d26c5eea48a1419'
+          tag='archive/20261022/backend-lecture-dossiers-acl'
+          merged="$(gh api "repos/$GITHUB_REPOSITORY/pulls/10" --jq '.merged')"
+          if [[ "$merged" != 'true' ]]; then
+            echo '::warning::PR non fusionnée ; branche conservée'
+            exit 0
+          fi
+          if ! actual="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$branch" --jq '.object.sha' 2>/dev/null)"; then
+            echo 'Branche déjà absente'
+            exit 0
+          fi
+          if [[ "$actual" != "$sha" ]]; then
+            echo '::warning::SHA modifié ; branche conservée'
+            exit 0
+          fi
+          if existing="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha' 2>/dev/null)"; then
+            if [[ "$existing" != "$sha" ]]; then
+              echo '::warning::Conflit de tag ; branche conservée'
+              exit 0
+            fi
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" -f "ref=refs/tags/$tag" -f "sha=$sha" > /dev/null
+          fi
+          gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$branch" > /dev/null
+          echo 'Branche ACL archivée puis retirée'
