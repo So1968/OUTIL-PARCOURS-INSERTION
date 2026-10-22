@@ -19,9 +19,9 @@ test("PostgreSQL : affectations, refus et journal de consultation", {
     await prisma.$connect();
     await prisma.userAccount.createMany({
       data: [
-        { id: ids.referent, email: `ref-${ids.referent}@example.invalid`, role: "REFERENTE", enabled: true },
-        { id: ids.tns, email: `tns-${ids.tns}@example.invalid`, role: "APPUI_TNS", enabled: true },
-        { id: ids.direction, email: `dir-${ids.direction}@example.invalid`, role: "DIRECTION", enabled: true },
+        { id: ids.referent, email: `ref-${ids.referent}@example.org`, role: "REFERENTE", enabled: true },
+        { id: ids.tns, email: `tns-${ids.tns}@example.org`, role: "APPUI_TNS", enabled: true },
+        { id: ids.direction, email: `dir-${ids.direction}@example.org`, role: "DIRECTION", enabled: true },
       ],
     });
     await prisma.caseFile.create({
