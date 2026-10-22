@@ -29,6 +29,20 @@ describe("documentMatching", () => {
     });
   });
 
+  it("n'associe pas le numéro 123 à un dossier 12345", () => {
+    const dossiers = [
+      { Nom: "EXEMPLE", Prénom: "Alpha", "Numéro Insertis": "123" },
+      { Nom: "FICTIF", Prénom: "Beta", "Numéro Insertis": "12345" },
+    ];
+    expect(findAutomaticDocumentMatch("Documents dossier 12345", dossiers)).toMatchObject({ dossierId: "12345" });
+    expect(findAutomaticDocumentMatch("Documents dossier 123456", dossiers)).toBeNull();
+  });
+
+  it("ne considère pas l'identifiant de repli par position comme un vrai numéro", () => {
+    const dossiers = [{ Nom: "EXEMPLE", Prénom: "Alpha" }];
+    expect(findAutomaticDocumentMatch("Dossier dossier-0 - pièces", dossiers)).toBeNull();
+  });
+
   it("ne rattache pas automatiquement un prénom seul", () => {
     expect(findAutomaticDocumentMatch("Alpha", rows)).toBeNull();
   });

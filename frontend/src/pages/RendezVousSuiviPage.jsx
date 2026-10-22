@@ -15,7 +15,7 @@ const rdvInitial = {
   prenom: "",
   telephone: "",
   canal: "SMS",
-  accordRappel: "Oui",
+  accordRappel: "À demander",
   type: "Rendez-vous social",
   motif: "Premier contact / accueil",
   date: "",
@@ -354,7 +354,11 @@ export function RendezVousSuiviPage() {
             </label>
             <div className="identity-actions">
               <button className="primary-button" type="button" onClick={() => copier(rappelSemaine, "Rappel J-7 copié.")}>Copier J-7</button>
-              <a className="secondary-button" href={lienSemaine}>Ouvrir {rdv.canal} J-7</a>
+              {accordOk ? (
+                <a className="secondary-button" href={lienSemaine}>Ouvrir {rdv.canal} J-7</a>
+              ) : (
+                <span className="secondary-button" aria-disabled="true">Accord requis pour l’envoi</span>
+              )}
             </div>
           </article>
 
@@ -366,7 +370,11 @@ export function RendezVousSuiviPage() {
             </label>
             <div className="identity-actions">
               <button className="primary-button" type="button" onClick={() => copier(rappelDeuxJours, "Rappel J-2 copié.")}>Copier J-2</button>
-              <a className="secondary-button" href={lienDeuxJours}>Ouvrir {rdv.canal} J-2</a>
+              {accordOk ? (
+                <a className="secondary-button" href={lienDeuxJours}>Ouvrir {rdv.canal} J-2</a>
+              ) : (
+                <span className="secondary-button" aria-disabled="true">Accord requis pour l’envoi</span>
+              )}
             </div>
           </article>
         </div>
