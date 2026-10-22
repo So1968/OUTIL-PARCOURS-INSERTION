@@ -64,6 +64,8 @@ describe("tâches après entretien", () => {
     ];
     expect(rappelsProfessionnels(tasks, "2026-10-23").map(t => t.id)).toEqual(["a"]);
     expect(rappelsProfessionnels(tasks, "2026-10-29").map(t => t.id)).toEqual(["a","b"]);
+    expect(rappelsProfessionnels([{ ...tasks[0], snoozedUntil:"2026-10-25" }], "2026-10-23")).toEqual([]);
+    expect(rappelsProfessionnels([{ ...tasks[0], snoozedUntil:"2026-10-25" }], "2026-10-25")).toHaveLength(1);
     expect(rappelsProfessionnels(tasks, "2026-02-30")).toEqual([]);
   });
 
