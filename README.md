@@ -80,7 +80,9 @@ Aucune partie du projet ne doit être modifiée hors des spécifications fournie
 
 - Navigation dans les spécifications : [index documentaire](docs/INDEX.md).
 - `main` contient le code consolidé. Les branches de fonctionnalités fusionnées sont des archives de développement, non des versions concurrentes à réintégrer.
-- Les contrôles automatiques vérifient lint, tests, build et les noms/extensions de fichiers à risque. Ils ne certifient pas l’absence de données personnelles dans le contenu textuel ou dans l’historique Git.
+- Les contrôles automatiques vérifient lint, tests, build et les chemins/extensions à risque ainsi que certains motifs sensibles dans les fichiers texte suivis par Git. Ils ne certifient pas l’absence de données personnelles non reconnaissables automatiquement ni la confidentialité de l’historique Git.
 - Ce dépôt est public à la date de l’état des lieux du 22 octobre 2026 : **aucune donnée réelle de bénéficiaire, document professionnel confidentiel ou secret d’accès ne doit y figurer**.
 - Le frontend reste un prototype : **ne pas y saisir de données réelles avant validation ARTAG**, authentification, droits serveur, stockage et sécurité conformes.
 - Les documents professionnels restent dans les espaces ARTAG autorisés, sans copie automatique vers GitHub. Toute connexion Outlook, OneDrive ou Insertis exige une validation préalable et un test effectif.
+
+- Les anciennes branches peuvent être archivées sous `archive/20261022/*` (tags Git) avant suppression : l’historique demeure accessible sans multiplier les branches de développement.
