@@ -1,6 +1,6 @@
 import { resolveSessionUserId } from "./sessions.js";
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const ROLES = new Set(["REFERENTE", "APPUI_TNS", "ACCUEIL", "RELAIS_LOGEMENT"]);
 const STATUSES = new Set(["A_FAIRE", "EN_COURS", "EN_ATTENTE", "FAIT"]);
@@ -73,7 +73,7 @@ async function getOwner(db, cookieHeader) {
   const userId = await resolveSessionUserId({ db, cookieHeader });
   // La clé provient d'une session PostgreSQL liée au compte, pas d'une entrée
   // cliente. Ne pas supposer un format externe pour l'ID institutionnel.
-  if (typeof userId !== "string" || !userId.trim()) throw new WorkTaskAccessDenied();
+  if (typeof userId !== "string" || !UUID.test(userId)) throw new WorkTaskAccessDenied();
   return userId;
 }
 
@@ -117,7 +117,7 @@ export async function createOwnTask({ db, cookieHeader, input } = {}) {
 }
 
 export async function updateOwnTask({ db, cookieHeader, taskId, expectedVersion, changes } = {}) {
-  if (typeof taskId !== "string" || !SAFE_ID.test(taskId)) throw new WorkTaskAccessDenied();
+  if (typeof taskId !== "string" || !UUID.test(taskId)) throw new WorkTaskAccessDenied();
   if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 0) throw new WorkTaskInvalid();
   const data = validFields(changes);
   const ownerId = await getOwner(db, cookieHeader);
