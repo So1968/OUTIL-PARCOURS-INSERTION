@@ -848,6 +848,12 @@ export function DossierPersonnePage() {
                   <label style={s.field}>Échéance
                     <input style={s.input} type="date" value={t.dueDate || ""} onChange={e => modifierTache(t.id, { dueDate:e.target.value })} />
                   </label>
+                  <label style={s.field}>Temps estimé pour cette tâche
+                    <select style={s.input} value={t.estimatedMinutes || ""} onChange={e => modifierTache(t.id, { estimatedMinutes:e.target.value ? Number(e.target.value) : "" })}>
+                      <option value="">À estimer</option>
+                      {[5, 10, 15, 20, 30, 45, 60, 90, 120].map(n => <option key={n} value={n}>{n} min</option>)}
+                    </select>
+                  </label>
                   <label style={s.field}>Rappel souhaité
                     <select style={s.input} value={t.reminderDaysBefore ?? 1} onChange={e => modifierTache(t.id, { reminderDaysBefore:Number(e.target.value) })}>
                       <option value={0}>Le jour même</option>
