@@ -157,3 +157,28 @@ export function creerTachesRendezVous(rdv, existingTasks = []) {
   }));
   return { tasks: [...existingTasks, ...proposed], added: proposed.length };
 }
+
+export const QUICK_EVENT_TYPES = Object.freeze([
+  ["imprevu", "Imprévu"],
+  ["appel", "Appel / message"],
+  ["rendez_vous", "Rendez-vous à organiser"],
+  ["relance", "Relance"],
+  ["action", "À faire"],
+]);
+
+export function creerCaptureRapide({
+  type = "action", title, date = todayLocal(), time = "", now = new Date(),
+} = {}) {
+  const clean = normaliseText(title);
+  if (!QUICK_EVENT_TYPES.some(([key]) => key === type) || !clean || clean.length > 240
+    || !/^\d{4}-\d{2}-\d{2}$/.test(date)
+    || (time && !/^([01]\d|2[0-3]):[0-5]\d$/.test(time))) return null;
+
+  const base = createManualTask({ title: clean, dueDate: date, now });
+  if (!base) return null;
+  return {
+    ...base, eventType: type, eventTime: time,
+    origin: "saisie_rapide", remindDate: date,
+    priority: type === "imprevu" ? "haute" : "normale",
+  };
+}
