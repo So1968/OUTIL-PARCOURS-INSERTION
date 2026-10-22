@@ -20,6 +20,15 @@ L'outil doit rester une aide à l'organisation et à la continuité, et non un o
 - Chaque tâche post-entretien dispose d'un champ « temps estimé », renseigné en un seul choix.
 - Possibilité de **copier un bilan chiffré anonymisé**, sans nom, numéro de dossier ni note d'entretien.
 
+## Consolidation du bureau quotidien — 23 octobre 2026
+
+- En clôturant un entretien, le dossier prépare **automatiquement les tâches explicitement formulées** dans « Suite prévue » et « Prochaine action », avec une action de traçabilité Insertis à vérifier ; aucune analyse professionnelle réservée ni parole personnelle ne sert à générer les tâches.
+- Le tableau de bord regroupe ces tâches pour le professionnel. Il affiche les **rappels arrivés à échéance** et les tâches sans date afin de ne rien masquer ; les rappels restent locaux, visibles à l'ouverture, et **ne sont pas des notifications système ni des événements Outlook**.
+- Saisie immédiate d'une tâche libre sans date inventée ; ensuite, le professionnel peut renseigner échéance, rappel, durée, cocher terminé ou reporter au lendemain.
+- Reporter une tâche décale aussi son signalement local : elle n'est pas immédiatement annoncée comme échue à nouveau.
+- Les opérations ne prétendent pas être sauvegardées lorsque l'écriture navigateur échoue. Chaque démarche professionnelle devra être reprise dans un stockage serveur avant usage réel.
+- La maquette ne peut **pas** garantir une exécution silencieuse de rappels pendant qu'elle est fermée ; le connecteur Outlook reste soumis à validation technique et institutionnelle.
+
 ## Confidentialité et limites
 
 - **Prototype public et local** : les données sont dans `localStorage`, donc **ne pas utiliser avec des cas réels**. Les contrôles de profils du navigateur ne suffisent pas.
