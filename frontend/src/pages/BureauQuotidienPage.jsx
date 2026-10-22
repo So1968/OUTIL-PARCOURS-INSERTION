@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { readStorageJson, writeStorageJson } from "../lib/storage";
-import { repartitionTaches } from "../lib/entretienTasks";
+import { repartitionTaches, rappelsProfessionnels, jourDeRappel } from "../lib/entretienTasks";
 import { calculerChargeJour, dureeLisible, minutesValides, TYPES_EVENEMENTS, isDate } from "../lib/workload";
 
 const TASKS_KEY = "artag-taches-entretien-demo-v1";
+const PERSONAL_KEY = "__mes_taches";
 const QUICK_KEY = "artag-evenements-express-demo-v1";
 const CAPACITY_KEY = "artag-capacite-journaliere-demo-v1";
 const RDV_KEY = "artag-rendez-vous-suivi";
@@ -34,10 +35,12 @@ export function BureauQuotidienPage() {
   const [captureStatus, setCaptureStatus] = useState("Fait");
   const [message, setMessage] = useState("");
   const [lastQuickId, setLastQuickId] = useState("");
+  const [freeTask, setFreeTask] = useState("");
 
   const items = useMemo(() => Object.entries(records).flatMap(([dossierId, list]) =>
     (Array.isArray(list) ? list : []).map(task => ({ ...task, dossierId }))), [records]);
   const sorted = useMemo(() => repartitionTaches(items, day), [items, day]);
+  const reminders = useMemo(() => rappelsProfessionnels(items, day), [items, day]);
   const capacity = capacities[day] ?? 360;
   const charge = useMemo(() => calculerChargeJour({
     day, tasks: items, events: quick, appointments, capacityMinutes: capacity,
@@ -48,10 +51,11 @@ export function BureauQuotidienPage() {
   function saveRecords(next, successMessage) {
     if (!writeStorageJson(TASKS_KEY, next)) {
       setMessage("Tâches non enregistrées : stockage du navigateur indisponible.");
-      return;
+      return false;
     }
     setRecords(next);
     setMessage(successMessage);
+    return true;
   }
 
   function updateTask(task, changes) {
@@ -60,6 +64,34 @@ export function BureauQuotidienPage() {
       [task.dossierId]: (records[task.dossierId] || []).map(entry =>
         entry.id === task.id ? { ...entry, ...changes } : entry),
     }, "Tâche mise à jour.");
+  }
+
+  function ajouterTacheLibre(event) {
+    event.preventDefault();
+    const title = freeTask.trim();
+    if (!title || title.length > 240) {
+      setMessage("Écris une tâche courte pour l'ajouter.");
+      return;
+    }
+    const current = Array.isArray(records[PERSONAL_KEY]) ? records[PERSONAL_KEY] : [];
+    const next = {
+      ...records, [PERSONAL_KEY]: [...current, {
+        id: crypto.randomUUID(), title, status: "À faire",
+        dueDate: "", reminderDaysBefore: 1, estimatedMinutes: "",
+        outlookStatus: "Non synchronisé", source: "saisie_express",
+      }],
+    };
+    if (saveRecords(next, "Tâche ajoutée. Choisis une date de reprise dans la liste ci-dessous.")) {
+      setFreeTask("");
+    }
+  }
+
+  function reporterTache(task) {
+    // « Reporter » signifie proposer le lendemain du jour consulté.
+    // Il ne masque pas l'existence d'un retard passé.
+    const tomorrow = new Date(`${day}T12:00:00.000Z`);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+    updateTask(task, { dueDate: tomorrow.toISOString().slice(0, 10) });
   }
 
   function saveQuick(next, successMessage) {
@@ -128,6 +160,7 @@ export function BureauQuotidienPage() {
       `Événements à venir : ${dureeLisible(charge.plannedMinutes)}`,
       `Rendez-vous enregistrés : ${charge.appointmentsCount}`,
       `Éléments sans durée : ${charge.missingEstimates}`,
+      `Rappels de tâches à traiter : ${reminders.length}`,
       "Récapitulatif sans nom, numéro de dossier ni note d'entretien.",
     ].join("\n");
     try {
@@ -150,7 +183,20 @@ export function BureauQuotidienPage() {
                   onChange={e => updateTask(task, { status: e.target.checked ? "Fait" : "À faire" })} />
                 <strong>{task.title}</strong>
               </label>
-              <span>Échéance : {dateLabel(task.dueDate)}</span>
+              <label>Échéance
+                <input type="date" aria-label={`Échéance : ${task.title}`}
+                  value={task.dueDate || ""} onChange={e => updateTask(task, { dueDate: e.target.value })} />
+              </label>
+              <label>Rappel souhaité
+                <select aria-label={`Rappel : ${task.title}`}
+                  value={task.reminderDaysBefore ?? 1}
+                  onChange={e => updateTask(task, { reminderDaysBefore: Number(e.target.value) })}>
+                  <option value={0}>Le jour même</option>
+                  <option value={1}>1 jour avant</option>
+                  <option value={2}>2 jours avant</option>
+                  <option value={7}>7 jours avant</option>
+                </select>
+              </label>
               <label>Durée estimée
                 <select aria-label={`Durée estimée : ${task.title}`}
                   value={task.estimatedMinutes || ""}
@@ -160,7 +206,8 @@ export function BureauQuotidienPage() {
                     <option key={n} value={n}>{dureeLisible(n)}</option>)}
                 </select>
               </label>
-              <Link to={`/pilotage-actions/dossier/${encodeURIComponent(task.dossierId)}`}>Ouvrir le dossier</Link>
+              {task.status !== "Fait" && <button type="button" onClick={() => reporterTache(task)}>Reporter au lendemain</button>}
+              {task.dossierId !== PERSONAL_KEY && <Link to={`/pilotage-actions/dossier/${encodeURIComponent(task.dossierId)}`}>Ouvrir le dossier</Link>}
             </li>
           ))}
         </ul>}
@@ -215,6 +262,39 @@ export function BureauQuotidienPage() {
         {charge.overload && <p className="daily-alert">Charge supérieure au temps mobilisable : reporter ou réorganiser des actions.</p>}
         {charge.pendingWithoutDate > 0 && <p className="daily-alert">{charge.pendingWithoutDate} tâche(s) sans échéance restent à planifier.</p>}
         <button type="button" onClick={copierBilanAnonyme}>Copier le bilan sans données personnelles</button>
+      </section>
+
+      <section className="daily-section" aria-labelledby="rappels-header">
+        <h2 id="rappels-header">Mes rappels à traiter ({reminders.length})</h2>
+        {reminders.length === 0
+          ? <p>Aucun rappel de tâche à échéance pour cette journée. Les tâches sans date sont à planifier plus bas.</p>
+          : <ul className="daily-tasks">
+            {reminders.map(task => (
+              <li key={task.dossierId + ":" + task.id} className="daily-task">
+                <label className="daily-task-title">
+                  <input type="checkbox" checked={false} aria-label={`Terminer : ${task.title}`}
+                    onChange={() => updateTask(task, { status: "Fait" })} />
+                  <strong>{task.title}</strong>
+                </label>
+                <span>Rappel : {dateLabel(jourDeRappel(task.dueDate, task.reminderDaysBefore ?? 1))}</span>
+                <span>Échéance : {dateLabel(task.dueDate)}</span>
+                <button type="button" onClick={() => reporterTache(task)}>Reporter au lendemain</button>
+              </li>
+            ))}
+          </ul>}
+        <p>Ces rappels apparaissent à l'ouverture de la page. Outlook n'envoie encore aucune notification.</p>
+      </section>
+
+      <section className="daily-section" aria-labelledby="new-task-header">
+        <h2 id="new-task-header">Noter une tâche en quelques secondes</h2>
+        <form onSubmit={ajouterTacheLibre} className="daily-controls">
+          <label style={{ flex:"1 1 280px" }}>Action à ne pas oublier
+            <input value={freeTask} maxLength={240} onChange={e => setFreeTask(e.target.value)}
+              placeholder="Ex. Relancer la réponse d'un partenaire" required />
+          </label>
+          <button type="submit">Ajouter à ma liste</button>
+        </form>
+        <p>Pas de date inventée : après l'ajout, choisis une échéance et une durée si tu les connais. Ne saisis aucune identité réelle dans cette maquette.</p>
       </section>
 
       <section className="daily-section" aria-labelledby="quick-header">
