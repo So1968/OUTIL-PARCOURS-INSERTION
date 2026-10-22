@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { readStorageJson as lireJson, writeStorageJson } from "../lib/storage";
 import { humanFileSize } from "../lib/documentInventory";
 import { preparerBrouillonMonSuiviSocial } from "../lib/monSuiviSocialDraft";
+import { preparerTachesEntretien, repartitionTaches, previsualiserRappelCalendrier } from "../lib/entretienTasks";
 
 const STORAGE_ROWS = "artag-pilotage-actions-rows-v1";
 const STORAGE_ACTIONS = "artag-pilotage-actions-suivi-v1";
@@ -11,6 +12,7 @@ const STORAGE_INTERVENTIONS = "artag-pilotage-interventions-brouillons-v2";
 const STORAGE_AUTONOMIE = "artag-pilotage-autonomie-socle-v1";
 const STORAGE_DOCUMENTS = "artag-hub-documentaire-v1";
 const STORAGE_DOCUMENT_ROOTS = "artag-hub-documentaire-racines-v1";
+const STORAGE_ENTRETIEN_TASKS = "artag-taches-entretien-demo-v1";
 
 function valeur(row, noms) {
   for (const nom of noms) {
@@ -411,6 +413,7 @@ export function DossierPersonnePage() {
   const [journaux, setJournaux] = useState(() => lireJson(STORAGE_JOURNAL, {}));
   const [interventions, setInterventions] = useState(() => lireJson(STORAGE_INTERVENTIONS, {}));
   const [autonomies, setAutonomies] = useState(() => lireJson(STORAGE_AUTONOMIE, {}));
+  const [entretienTasks, setEntretienTasks] = useState(() => lireJson(STORAGE_ENTRETIEN_TASKS, {}));
   const [documents, setDocuments] = useState(() => {
     const value = lireJson(STORAGE_DOCUMENTS, []);
     return Array.isArray(value) ? value : [];
@@ -568,6 +571,34 @@ export function DossierPersonnePage() {
     if (updateIntervention("analyse", prochaineAnalyse)) {
       setMessage("Synthèse autonomie ajoutée dans l’analyse professionnelle.");
     }
+  }
+
+  const tachesDossier = Array.isArray(entretienTasks[idCourant]) ? entretienTasks[idCourant] : [];
+  const tableauTaches = repartitionTaches(tachesDossier);
+
+  function enregistrerTaches(nextTasks) {
+    const next = { ...entretienTasks, [idCourant]: nextTasks };
+    if (!writeStorageJson(STORAGE_ENTRETIEN_TASKS, next)) {
+      setMessage("Tâches non sauvegardées dans ce navigateur : ne ferme pas le dossier.");
+      return false;
+    }
+    setEntretienTasks(next);
+    return true;
+  }
+
+  function preparerToutesLesTaches() {
+    const added = preparerTachesEntretien(intervention.suitePrevue, tachesDossier);
+    if (!added.length) {
+      setMessage("Aucune nouvelle action explicite à ajouter. Note chaque tâche sur une ligne dans « Suite prévue ».");
+      return;
+    }
+    if (enregistrerTaches([...tachesDossier, ...added])) {
+      setMessage(`${added.length} tâche(s) ajoutée(s). Fixe les échéances, puis valide les tâches effectuées.`);
+    }
+  }
+
+  function modifierTache(id, changes) {
+    enregistrerTaches(tachesDossier.map(t => t.id === id ? { ...t, ...changes } : t));
   }
 
   function ajouterInterventionAuJournal() {
@@ -798,6 +829,44 @@ export function DossierPersonnePage() {
               </div>
             </div>
           </div>
+        </section>
+
+        <section style={s.card}>
+          <p style={s.label}>Après l’entretien — mes tâches et mes rappels</p>
+          <h2 style={s.h2}>Tout ce qu’il reste à faire</h2>
+          <p style={s.intro}>Écris chaque action sur une ligne dans « Suite prévue », puis utilise le bouton ci-dessous. Les tâches restent séparées, avec leur propre échéance. Ce suivi est encore local à la maquette.</p>
+          <button style={s.mainButton} type="button" onClick={preparerToutesLesTaches}>Créer les tâches depuis la suite de l’entretien</button>
+          <p style={s.info}><strong>{tachesDossier.filter(t => t.status !== "Fait").length} tâche(s) en cours</strong> — {tableauTaches.overdue.length} en retard, {tableauTaches.today.length} aujourd’hui, {tableauTaches.done.length} terminée(s).</p>
+          <div style={s.timeline}>
+            {tachesDossier.length === 0 ? <p style={s.info}>Aucune tâche générée. Une liste sera créée après saisie de « Suite prévue ».</p> : tachesDossier.map(t => (
+              <article key={t.id} style={s.timelineItem}>
+                <label style={s.checkboxLine}>
+                  <input type="checkbox" checked={t.status === "Fait"} onChange={e => modifierTache(t.id, { status: e.target.checked ? "Fait" : "À faire" })} />
+                  <span>{t.title}</span>
+                </label>
+                <div style={s.grid}>
+                  <label style={s.field}>Échéance
+                    <input style={s.input} type="date" value={t.dueDate || ""} onChange={e => modifierTache(t.id, { dueDate:e.target.value })} />
+                  </label>
+                  <label style={s.field}>Rappel souhaité
+                    <select style={s.input} value={t.reminderDaysBefore ?? 1} onChange={e => modifierTache(t.id, { reminderDaysBefore:Number(e.target.value) })}>
+                      <option value={0}>Le jour même</option>
+                      <option value={1}>1 jour avant</option>
+                      <option value={2}>2 jours avant</option>
+                      <option value={7}>7 jours avant</option>
+                    </select>
+                  </label>
+                  <label style={s.field}>Statut
+                    <select style={s.input} value={t.status || "À faire"} onChange={e => modifierTache(t.id, { status:e.target.value })}>
+                      <option>À faire</option><option>En cours</option><option>En attente</option><option>Fait</option>
+                    </select>
+                  </label>
+                </div>
+                <p style={s.info}>Outlook : {t.outlookStatus || "Non synchronisé"}{previsualiserRappelCalendrier(t) ? " — rappel prêt à préparer après autorisation Microsoft 365" : " — ajouter une date pour prévoir un rappel"}</p>
+              </article>
+            ))}
+          </div>
+          <p style={s.info}>Les rappels Outlook seront automatiques uniquement après activation institutionnelle du connecteur. Aucune note privée ni nom de bénéficiaire ne sera transmis par défaut.</p>
         </section>
 
         <section style={s.card}>
