@@ -11,6 +11,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 5. [Architecture applicative](27_ARCHITECTURE_APPLICATIVE.md) — cible technique.
 6. [Confidentialité Git](30_CONFIDENTIALITE_GIT.md) — données qui ne doivent jamais être commitées.
 7. [Avancement](avancement.md) — mémoire de progression, à vérifier avec le code actuel.
+8. [Audit technique et interopérabilité du 22/10/2026](36_AUDIT_TECHNIQUE_ET_INTEROPERABILITE_20261022.md) — risques confirmés, correctifs, dépendances Insertis / Mon Suivi Social / Outlook / OneDrive.
 
 ## Grandes familles documentaires
 
