@@ -35,6 +35,17 @@
 - `frontend/src/pages/RendezVousSuiviPage.jsx` : « À demander » par défaut pour l'accord de rappel ; les liens d'envoi n'apparaissent qu'après sélection explicite de « Oui ».
 - Ajouter les tests associés. Ces mesures améliorent un **prototype** et ne constituent pas une validation d'usage avec des données réelles.
 
+## 2 bis. Correctifs de fiabilisation — suite du 22 octobre 2026
+
+Les changements de cette étape **réduisent le risque dans la maquette**, mais ne remplacent pas une base de données sécurisée :
+
+- **Import Insertis (CSV)** : vérification de l'identifiant métier obligatoire sur chaque ligne et refus des identifiants répétés, sans rapprochement par nom. Comptage des dossiers absents du nouvel export et confirmation explicite avant leur retrait de la liste affichée. Les anciennes actions locales sont préservées en cas de réimport.
+- **Enregistrement** : vérification des retours d'écriture de `localStorage` dans le pilotage, le journal de dossier, les notes d'intervention et le hub documentaire. Les messages de succès ne doivent plus masquer un échec connu ; les écritures de deux clés restent non transactionnelles.
+- **Mon Suivi Social** : un **brouillon manuel minimal** distinct de la note interne complète ne reprend que faits, démarches réalisées et suite prévue. Il ne copie pas automatiquement analyse réservée, repères d'autonomie, parole de la personne ou vigilance. Les trois champs retenus doivent eux-mêmes être relus, notamment pour les données sensibles. **Aucun appel réseau, envoi automatique ou accès aux comptes n'est activé.**
+- **Tests** : validation des imports (dossiers sans numéro, doublons, réimports incomplets), et liste positive des champs du brouillon Mon Suivi Social.
+
+Ces corrections ne permettent pas de saisir des données de bénéficiaires réels dans le prototype. Les contrôles d'accès serveur, l'infrastructure privée ARTAG et les contrats officiels d'échange restent bloquants.
+
 ## 3. Connexions demandées
 
 | Service | Usage souhaité | État vérifié | Condition préalable à l'échange de données |
