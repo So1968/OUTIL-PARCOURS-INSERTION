@@ -56,7 +56,8 @@ function validTemporaryGrant(actor, dossier, scope, now) {
   return dossier.grants.some((grant) => {
     if (grant.userId !== actor.id || grant.capability !== scope
       || grant.revokedAt || !grant.reason?.trim()
-      || typeof grant.approvedBy !== "string" || !grant.approvedBy.trim()) return false;
+      || typeof grant.approvedBy !== "string" || !grant.approvedBy.trim()
+      || grant.approvedBy === actor.id) return false;
     const from = new Date(grant.startsAt).getTime();
     const to = new Date(grant.expiresAt).getTime();
     return Number.isFinite(from) && Number.isFinite(to) && from <= timestamp && timestamp < to;
@@ -83,6 +84,12 @@ export function canAccessCase({ actor, dossier, capability, noteAuthorId, now = 
     return actor.role === ROLES.REFERENTE
       && noteAuthorId === actor.id
       && (isReferent || isAssigned);
+  }
+
+  // La direction ne peut pas élargir son accès par une affectation
+  // ordinaire : seul un accès ponctuel, motivé et approuvé est recevable.
+  if (actor.role === ROLES.DIRECTION) {
+    return capability === CAPABILITIES.SHARED_READ && hasGrant;
   }
 
   // L'appui TNS reste sur ses seuls dossiers et seuls champs explicitement affectés.
