@@ -30,6 +30,15 @@ Signature : **Outil conçu par Sofia de los Rios dans le cadre de sa mission**.
 - La synchronisation Outlook automatique envisagée requerra : accord ARTAG, authentification professionnelle vérifiée, autorisations Microsoft Graph minimales, tests de conflits/doublons, règles de fuseau horaire et politique de notifications. Les tâches doivent être confirmées par la professionnelle avant synchronisation.
 - Les tâches issues d'un compte rendu ne doivent jamais partir du principe qu'un mot isolé signifie une action ni imposer une échéance arbitraire.
 
+## Charge de travail quotidienne et saisie express
+
+- Le module **Mes tâches** affiche un plan de charge daté : tâches échues ou du jour, événements prévus et réalisés, rendez-vous avec durée explicite.
+- Saisie des imprévus et appels en un clic avec durées indicatives modifiables, formulaire court pour toute autre activité et fonction d'annulation de la dernière saisie.
+- Durée estimée à renseigner en un choix pour les tâches post-entretien ; marge calculée uniquement sur les éléments chiffrés et alerte si des durées manquent.
+- Le **temps mobilisable** est ajustable dans le prototype ; 360 minutes est une valeur de démonstration, pas une règle ARTAG ni une mesure de capacité.
+- Un bilan **sans données personnelles** peut être copié en un clic ; aucune transmission automatique à Outlook ou ChatGPT n'existe depuis le navigateur local.
+- Les vrais rendez-vous et les temps réels ne peuvent pas être certifiés sans un stockage métier centralisé, des imports Outlook autorisés et une gestion des doublons. La future interface devra faciliter les modifications et la planification des imprévus.
+
 ## Blocages institutionnels et techniques réels
 
 1. **Validation ARTAG (direction, métier, sécurité/RGPD)** : choix d'un responsable de traitement, périmètre, gestion des habilitations, politiques de conservation, exploitation et hébergement ; données réelles interdites avant décision.
