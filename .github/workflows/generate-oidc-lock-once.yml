@@ -1,0 +1,35 @@
+name: Génération ponctuelle du verrou OIDC
+on:
+  push:
+    branches: [feat/oidc-connexion-nominative-20261022]
+    paths:
+      - backend/package.json
+      - '.github/workflows/generate-oidc-lock-once.yml'
+permissions:
+  contents: write
+jobs:
+  lock:
+    if: github.repository == 'So1968/OUTIL-PARCOURS-INSERTION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: feat/oidc-connexion-nominative-20261022
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Update lockfile
+        run: npm install --prefix backend --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit lockfile only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add backend/package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Verrouille la dépendance OIDC'
+            git push origin HEAD:feat/oidc-connexion-nominative-20261022
+          fi
