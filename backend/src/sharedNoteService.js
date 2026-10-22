@@ -2,7 +2,7 @@ import { CAPABILITIES, canAccessCase } from "./policy.js";
 import { toPolicyDossier, CaseAccessDenied, SecurityProviderUnavailable } from "./caseAccessService.js";
 import { resolveSessionUserId } from "./sessions.js";
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export class DossierVersionConflict extends Error {
   constructor() {
