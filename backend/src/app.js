@@ -5,12 +5,14 @@ import { resolveSessionUserId } from "./sessions.js";
 import { createAuthRouter } from "./authRouter.js";
 import { issueCsrfToken, validCsrf } from "./csrf.js";
 import { createSharedNote, DossierVersionConflict, InvalidSharedNote } from "./sharedNoteService.js";
+import { listOwnTasks, createOwnTask, updateOwnTask, WorkTaskAccessDenied, WorkTaskInvalid, WorkTaskConflict } from "./workTaskService.js";
 
 export function createApp({
   privateDb = null,
   oidc = null,
   csrfSecret = null,
   enableSharedWrites = false,
+  enableWorkTasks = false,
 } = {}) {
   const app = express();
   app.disable("x-powered-by");
@@ -63,7 +65,11 @@ export function createApp({
     && typeof oidc.origin === "string"
     && oidc.origin.startsWith("https://"));
 
-  if (canWrite) {
+  const canUseTasks = Boolean(privateDb && oidc && enableWorkTasks
+    && typeof csrfSecret === "string" && csrfSecret.length >= 32
+    && typeof oidc.origin === "string" && oidc.origin.startsWith("https://"));
+
+  if (canWrite || canUseTasks) {
     app.get("/auth/csrf", async (req, res) => {
       try {
         const userId = await resolveSessionUserId({
@@ -78,6 +84,9 @@ export function createApp({
       }
     });
 
+  }
+
+  if (canWrite) {
     app.post("/api/dossiers/:caseId/notes-partagees",
       express.json({ limit: "8kb", type: "application/json" }),
       async (req, res) => {
@@ -110,6 +119,80 @@ export function createApp({
             return res.status(422).json({ error: "NOTE_INVALIDE" });
           }
           return res.status(503).json({ error: "SERVICE_INDISPONIBLE" });
+        }
+      });
+  }
+
+  // Tâches personnelles isolées : le serveur retrouve le propriétaire depuis
+  // la session HttpOnly. Le corps de requête ne peut jamais choisir ownerId.
+  if (canUseTasks) {
+    const handleTaskError = (error, res) => {
+      if (error instanceof WorkTaskAccessDenied) {
+        return res.status(404).json({ error: "TACHE_INDISPONIBLE" });
+      }
+      if (error instanceof WorkTaskInvalid) {
+        return res.status(422).json({ error: "TACHE_INVALIDE" });
+      }
+      if (error instanceof WorkTaskConflict) {
+        return res.status(409).json({ error: "TACHE_MODIFIEE" });
+      }
+      return res.status(503).json({ error: "SERVICE_INDISPONIBLE" });
+    };
+    const csrfOk = req => validCsrf({
+      secret: csrfSecret,
+      cookieHeader: req.headers.cookie,
+      csrfHeader: req.get("X-CSRF-Token"),
+      origin: req.get("Origin"),
+      allowedOrigin: oidc.origin,
+    });
+
+    app.get("/api/mes-taches", async (req, res) => {
+      try {
+        const offsetText = req.query.offset;
+        if (offsetText !== undefined && (typeof offsetText !== "string" || !/^\\d{1,6}$/.test(offsetText))) {
+          return res.status(422).json({ error: "TACHE_INVALIDE" });
+        }
+        const result = await listOwnTasks({
+          db: privateDb, cookieHeader: req.headers.cookie,
+          offset: offsetText ? Number(offsetText) : 0,
+        });
+        return res.status(200).json(result);
+      } catch (error) {
+        return handleTaskError(error, res);
+      }
+    });
+
+    app.post("/api/mes-taches",
+      express.json({ limit: "4kb", type: "application/json" }),
+      async (req, res) => {
+        if (!csrfOk(req)) return res.status(403).json({ error: "CSRF_REFUSE" });
+        try {
+          const task = await createOwnTask({
+            db: privateDb, cookieHeader: req.headers.cookie, input: req.body,
+          });
+          return res.status(201).json(task);
+        } catch (error) {
+          return handleTaskError(error, res);
+        }
+      });
+
+    app.patch("/api/mes-taches/:taskId",
+      express.json({ limit: "4kb", type: "application/json" }),
+      async (req, res) => {
+        if (!csrfOk(req)) return res.status(403).json({ error: "CSRF_REFUSE" });
+        try {
+          const keys = Object.keys(req.body || {});
+          if (keys.length !== 2 || !keys.includes("expectedVersion") || !keys.includes("changes")) {
+            throw new WorkTaskInvalid();
+          }
+          const task = await updateOwnTask({
+            db: privateDb, cookieHeader: req.headers.cookie,
+            taskId: req.params.taskId, expectedVersion: req.body.expectedVersion,
+            changes: req.body.changes,
+          });
+          return res.status(200).json(task);
+        } catch (error) {
+          return handleTaskError(error, res);
         }
       });
   }
