@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { SaisieRapide } from "../components/SaisieRapide";
 import { readStorageJson, writeStorageJson } from "../lib/storage";
 import {
   TASKS_STORAGE_KEY, MODELES_ACTIONS_PRO,
@@ -117,6 +118,8 @@ export function BureauTachesPage() {
         <p style={css.intro}><strong>Confidentialité :</strong> maquette enregistrée uniquement dans ce navigateur. N'y saisis aucun nom, donnée sociale ou dossier réel. Outlook et ses notifications ne sont pas encore connectés : les rappels ci-dessous apparaissent lorsque tu ouvres cette page.</p>
         <Link to="/pilotage-actions">← Retour à la file active</Link>
       </header>
+
+      <SaisieRapide onSaved={setTasks} />
 
       <section style={css.summary} aria-label="Repères de la journée">
         {[
