@@ -139,8 +139,12 @@ export function DocumentsHubPage() {
   }
 
   function saveDocuments(next) {
+    if (!writeStorageJson(STORAGE_KEY, next)) {
+      setMessage("Index documentaire non enregistré : stockage du navigateur indisponible.");
+      return false;
+    }
     setDocuments(next);
-    writeStorageJson(STORAGE_KEY, next);
+    return true;
   }
 
   function addDocument(event) {
@@ -161,14 +165,15 @@ export function DocumentsHubPage() {
         note: safeText(draft.note),
       },
     ];
-    saveDocuments(next);
+    if (!saveDocuments(next)) return;
     setDraft(emptyDocument);
     setMessage("Emplacement documentaire ajouté.");
   }
 
   function removeDocument(id) {
-    saveDocuments(documents.filter((doc) => doc.id !== id));
-    setMessage("Référence retirée de l’index. Aucun fichier Windows n’a été supprimé.");
+    if (saveDocuments(documents.filter((doc) => doc.id !== id))) {
+      setMessage("Référence retirée de l’index. Aucun fichier Windows n’a été supprimé.");
+    }
   }
 
   function updateStatus(id, statut) {
@@ -177,7 +182,7 @@ export function DocumentsHubPage() {
 
   function updateFileTriage(documentId, file, decision) {
     const key = file.relativePath || file.chemin || file.name;
-    saveDocuments(documents.map((doc) => {
+    if (!saveDocuments(documents.map((doc) => {
       if (doc.id !== documentId) return doc;
       return {
         ...doc,
@@ -186,7 +191,7 @@ export function DocumentsHubPage() {
           [key]: decision,
         },
       };
-    }));
+    }))) return;
     setMessage("Décision de classement enregistrée. Aucun fichier n’a été déplacé ni supprimé.");
   }
 
@@ -194,7 +199,7 @@ export function DocumentsHubPage() {
     const rowIndex = rows.findIndex((row, index) => documentDossierId(row, index) === dossierId);
     const selectedRow = rowIndex >= 0 ? rows[rowIndex] : null;
 
-    saveDocuments(documents.map((doc) => {
+    if (!saveDocuments(documents.map((doc) => {
       if (doc.id !== id) return doc;
       if (!selectedRow) {
         return {
@@ -214,13 +219,16 @@ export function DocumentsHubPage() {
           ? doc.note
           : `${safeText(doc.note)}${safeText(doc.note) ? " " : ""}Rapprochement manuel avec la file active.`,
       };
-    }));
+    }))) return;
 
     setMessage(selectedRow ? "Référence reliée au dossier de la file active." : "Rattachement retiré.");
   }
 
   function saveRoots() {
-    writeStorageJson(ROOTS_KEY, roots);
+    if (!writeStorageJson(ROOTS_KEY, roots)) {
+      setMessage("Emplacements non enregistrés : stockage du navigateur indisponible.");
+      return;
+    }
     setMessage("Racines de travail enregistrées dans ce navigateur.");
   }
 
@@ -255,8 +263,9 @@ export function DocumentsHubPage() {
       return;
     }
 
-    saveDocuments(next);
-    setMessage(`${matched} référence(s) supplémentaire(s) rapprochée(s) automatiquement avec la file active.`);
+    if (saveDocuments(next)) {
+      setMessage(`${matched} référence(s) supplémentaire(s) rapprochée(s) automatiquement avec la file active.`);
+    }
   }
 
   function importExistingFolder(event) {
@@ -335,7 +344,7 @@ export function DocumentsHubPage() {
       return;
     }
 
-    saveDocuments([...documents, ...imported]);
+    if (!saveDocuments([...documents, ...imported])) return;
     const matchedCount = imported.filter((doc) => doc.dossierId).length;
     setLastImport({
       rootName,
