@@ -27,7 +27,7 @@ const DB_CAPABILITIES = Object.freeze({
   RESERVED_WRITE: CAPABILITIES.RESERVED_WRITE,
 });
 
-function toPolicyDossier(record) {
+export function toPolicyDossier(record) {
   return {
     id: record.id,
     referentId: record.referentId,
