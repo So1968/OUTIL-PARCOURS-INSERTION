@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 
-// Inspect the Git index: only files that would be included in a commit.
+// Vérification des fichiers indexés par Git ; ne lit jamais les dossiers OneDrive.
 const forbiddenExtensions = new Set([
   '.csv', '.tsv', '.xlsx', '.xls', '.ods', '.docx', '.doc', '.odt',
   '.rtf', '.pdf', '.jsonl', '.ndjson', '.sql', '.sqlite', '.sqlite3',
@@ -15,6 +15,18 @@ const forbiddenBasenames = new Set([
 const privateDirectories = new Set([
   'private', 'local-data', 'imports', 'exports', 'dossiers-usagers',
 ]);
+const textExtensions = new Set([
+  '.js', '.jsx', '.mjs', '.cjs', '.ts', '.tsx', '.json',
+  '.md', '.txt', '.html', '.css', '.yml', '.yaml', '.xml',
+]);
+const indicators = [
+  { name: 'jeton GitHub ou OpenAI', regex: /\b(?:github_pat_|gh[pousr]_|sk-(?:proj-)?)[A-Za-z0-9_-]{18,}\b/g },
+  { name: 'clé AWS', regex: /\bAKIA[A-Z0-9]{16}\b/g },
+  { name: 'clé privée', regex: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g },
+  { name: 'courriel', regex: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi },
+  { name: 'téléphone français', regex: /\b(?:\+33[\s.-]?|0033[\s.-]?|0)[1-9](?:[\s.-]?[0-9]{2}){4}\b/g },
+];
+const allowedDemonstration = new Set(['0600000000', '0100000000']);
 
 function isForbidden(filePath) {
   const parts = filePath.replaceAll('\\', '/').split('/');
@@ -29,20 +41,55 @@ function isForbidden(filePath) {
   return false;
 }
 
+function isAcceptedExample(indicator, match) {
+  if (indicator.name === 'téléphone français') {
+    return allowedDemonstration.has(match.replace(/\D/g, ''));
+  }
+  if (indicator.name === 'courriel') {
+    return /@(?:example\.(?:com|org|net)|exemple\.invalid|localhost\.invalid)$/i.test(match);
+  }
+  return false;
+}
+
 let trackedFiles;
 try {
   trackedFiles = execFileSync('git', ['ls-files', '--cached', '-z'], {
     cwd: process.cwd(), encoding: 'utf8',
   }).split('\0').filter(Boolean);
 } catch {
-  console.error('PRIVACY CHECK FAILED: impossible de lire les fichiers suivis par Git.');
+  console.error('PRIVACY CHECK FAILED: impossible de lire l’index Git.');
   process.exit(2);
 }
 
-const violations = trackedFiles.filter(isForbidden);
+const violations = trackedFiles.filter(isForbidden).map(file => ({ file, reason: 'chemin ou extension interdits' }));
+let inspectedTextFiles = 0;
+
+for (const file of trackedFiles) {
+  if (isForbidden(file) || !textExtensions.has(path.extname(file).toLowerCase())) continue;
+  let contents;
+  try {
+    // Le contenu indexé est examiné, y compris lorsqu’il diffère du fichier local.
+    contents = execFileSync('git', ['show', ':' + file], {
+      encoding: 'utf8', maxBuffer: 4 * 1024 * 1024,
+    });
+  } catch {
+    violations.push({ file, reason: 'lecture du contenu impossible' });
+    continue;
+  }
+  inspectedTextFiles++;
+  for (const indicator of indicators) {
+    indicator.regex.lastIndex = 0;
+    if ([...contents.matchAll(indicator.regex)].some(match => !isAcceptedExample(indicator, match[0]))) {
+      violations.push({ file, reason: indicator.name });
+    }
+  }
+}
+
 if (violations.length) {
-  console.error('PRIVACY CHECK FAILED: fichiers sensibles ou exports dans le dépôt :');
-  for (const file of violations) console.error(`- ${file}`);
+  console.error('PRIVACY CHECK FAILED : contenu ou fichier potentiellement confidentiel.');
+  for (const { file, reason } of violations) console.error(`- ${file} : ${reason}`);
+  console.error('Le détail détecté n’est jamais imprimé dans les journaux CI.');
   process.exit(1);
 }
-console.log(`Privacy check passed: ${trackedFiles.length} fichiers suivis contrôlés (noms, chemins, extensions).`);
+
+console.log(`Privacy check passed: ${trackedFiles.length} fichiers suivis, ${inspectedTextFiles} fichiers texte inspectés.`);
