@@ -2,6 +2,16 @@
 
 Ce document complète le cadrage métier sans le remplacer : `docs/03_PROFILS_ACCES_DROITS.md`, `docs/27_ARCHITECTURE_APPLICATIVE.md` et `docs/30_PROFILS_DROITS_TRACABILITE.md`.
 
+## Étape supplémentaire — écriture HTTP contrôlée, désactivée par défaut
+
+- Avec SSO validé et activation volontaire `ARTAG_ENABLE_SHARED_WRITES=1`, une session active peut demander un jeton CSRF par `GET /auth/csrf`.
+- Une note de dossier partagée peut ensuite être créée par `POST /api/dossiers/:caseId/notes-partagees` si toutes les conditions sont réunies : session nominative active, **origine HTTPS exacte**, jeton CSRF lié au cookie de session, affectation au dossier, droit d'écriture et version attendue.
+- Réponses : 201 si la transaction PostgreSQL et son audit ont réussi, 403 pour CSRF, 404 pour accès refusé, 409 pour conflit de version, 422 pour note invalide. Aucun texte de note privée n'est renvoyé.
+- `frontend/src/lib/secureApi.js` prépare le client API `same-origin` sans conserver les jetons d'authentification ; **aucun écran métier n'utilise encore ce client**, afin de ne pas basculer des dossiers ou anciennes données locales sans reprise validée.
+- Les tests utilisent une base PostgreSQL et des identités fictives. Le **mode production reste bloqué** : le véritable SSO, TLS/proxy, droits métiers définitifs, régimes de conservation et mise en conformité restent à valider.
+
+**Cette étape n'autorise pas l'exploitation réelle** et ne transfère aucune information vers Insertis, Mon Suivi Social, Outlook ou OneDrive.
+
 ## Étape suivante — écritures transactionnelles non exposées
 
 - `backend/src/sharedNoteService.js` prépare l'ajout de **brouillons partagés** par une professionnelle autorisée. Le service exige une session PostgreSQL valide, le droit `SHARED_WRITE` sur le dossier, et refuse les dossiers archivés.
