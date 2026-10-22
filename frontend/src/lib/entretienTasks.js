@@ -61,8 +61,8 @@ export function genererTachesApresEntretien({
     return { tasks: previous, added: 0 };
   }
   const labels = [
-    ...String(suitePrevue).split(/\\r?\\n|;/),
-    ...String(prochaineAction).split(/\\r?\\n|;/),
+    ...String(suitePrevue).split(/\r?\n|;/),
+    ...String(prochaineAction).split(/\r?\n|;/),
   ].map(line => normalize(line.replace(MARKER, "")))
     .filter(Boolean);
   if (!["Faite", "Pas nécessaire"].includes(traceInsertis)) {
@@ -88,7 +88,7 @@ export function genererTachesApresEntretien({
 }
 
 function isoDate(value) {
-  if (typeof value !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(`${value}T12:00:00.000Z`);
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
