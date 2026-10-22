@@ -6,6 +6,7 @@ const navigationItems = [
   { to: "/", label: "Accueil", end: true },
   { to: "/evaluation-personne", label: "Avec une personne", roles: ACCOMPAGNEMENT_ROLES },
   { to: "/pilotage-actions", label: "File active", roles: ACCOMPAGNEMENT_ROLES },
+  { to: "/bureau-quotidien", label: "Mes tâches", roles: ACCOMPAGNEMENT_ROLES },
   { to: "/parcours-social-socio-professionnel", label: "Parcours", roles: PARCOURS_ROLES },
   { to: "/accompagnement-global", label: "Accompagnement", roles: ACCOMPAGNEMENT_ROLES },
   { to: "/continuite-service", label: "Continuité", roles: CONTINUITE_ROLES },
