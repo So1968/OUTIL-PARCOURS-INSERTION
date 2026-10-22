@@ -14,6 +14,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 8. [Audit technique et interopérabilité du 22/10/2026](36_AUDIT_TECHNIQUE_ET_INTEROPERABILITE_20261022.md) — risques confirmés, correctifs, dépendances Insertis / Mon Suivi Social / Outlook / OneDrive.
 9. [Socle backend et habilitations](37_SOCLE_BACKEND_ET_HABILITATIONS.md) — Express, Prisma, routes bloquées et contrôles de droits à tester.
 10. [Correspondance aux référentiels de la Métropole](38_CORRESPONDANCE_REFERENTIELS_METROPOLE.md) — repérage des modèles de suivi social, socio-professionnel et Appui TNS, **à faire valider**.
+11. [Plan de charge quotidien et saisie express](40_PLAN_CHARGE_QUOTIDIEN.md) — rendez-vous, imprévus, tâches et estimation des temps sans données personnelles.
 11. [État de livraison et conditions de recette](39_ETAT_LIVRAISON_ET_RECETTE.md) — fonctions testées, activation bloquée et validations ARTAG indispensables.
 
 ## Grandes familles documentaires
