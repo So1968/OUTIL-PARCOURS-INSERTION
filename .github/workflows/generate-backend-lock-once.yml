@@ -1,0 +1,41 @@
+name: Génération ponctuelle du verrou backend
+
+on:
+  push:
+    branches: [feat/backend-fondations-20261022]
+    paths:
+      - backend/package.json
+      - '.github/workflows/generate-backend-lock-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  lock:
+    if: github.repository == 'So1968/OUTIL-PARCOURS-INSERTION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Télécharger la branche
+        uses: actions/checkout@v4
+        with:
+          ref: feat/backend-fondations-20261022
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Générer le verrou de dépendances
+        run: npm install --prefix backend --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Enregistrer uniquement le verrou
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add backend/package-lock.json
+          if git diff --cached --quiet; then
+            echo 'Verrou déjà à jour'
+          else
+            git commit -m 'Verrouille les dépendances du backend'
+            git push origin HEAD:feat/backend-fondations-20261022
+          fi

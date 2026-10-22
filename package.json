@@ -7,6 +7,9 @@
     "build": "npm --prefix frontend run build",
     "lint": "npm --prefix frontend run lint",
     "test": "npm --prefix frontend run test",
-    "privacy": "node scripts/check-privacy.mjs"
+    "privacy": "node scripts/check-privacy.mjs",
+    "backend:dev": "npm --prefix backend start",
+    "backend:test": "npm --prefix backend test",
+    "backend:schema": "npm --prefix backend run db:validate"
   }
 }

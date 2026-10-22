@@ -1,0 +1,32 @@
+name: Backend — socle de sécurité
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: API, permissions et Prisma
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Installer les dépendances verrouillées
+        run: npm ci --prefix backend
+      - name: Tester les refus d'accès et l'API fermée
+        run: npm run backend:test
+      - name: Valider le schéma sans connexion PostgreSQL
+        env:
+          DATABASE_URL: postgresql://demo:demo@127.0.0.1:5432/artag_demo?schema=public
+        run: npm --prefix backend run db:validate
