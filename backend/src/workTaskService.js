@@ -117,7 +117,7 @@ export async function createOwnTask({ db, cookieHeader, input } = {}) {
 }
 
 export async function updateOwnTask({ db, cookieHeader, taskId, expectedVersion, changes } = {}) {
-  if (typeof taskId !== "string" || !UUID.test(taskId)) throw new WorkTaskAccessDenied();
+  if (typeof taskId !== "string" || !SAFE_ID.test(taskId)) throw new WorkTaskAccessDenied();
   if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 0) throw new WorkTaskInvalid();
   const data = validFields(changes);
   const ownerId = await getOwner(db, cookieHeader);
