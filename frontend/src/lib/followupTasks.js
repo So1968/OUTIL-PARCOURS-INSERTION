@@ -38,7 +38,7 @@ export function decomposeActions(value) {
 
 export function creerTachesEntretien({
   dossierId, journalId, suitePrevue = "", prochaineAction = "",
-  echeance = "", now = new Date(), existingTasks = [],
+  echeance = "", traceInsertis = "À faire", now = new Date(), existingTasks = [],
 } = {}) {
   if (!dossierId || !journalId) return { tasks: existingTasks, added: 0 };
   const createdAt = now.toISOString();
@@ -46,8 +46,10 @@ export function creerTachesEntretien({
     ? echeance
     : shiftLocalDate(todayLocal(now), 1);
   const proposed = [
-    ...decomposeActions(suitePrevue || prochaineAction),
-    "Tracer l'entretien dans Insertis",
+    ...decomposeActions(suitePrevue),
+    ...decomposeActions(prochaineAction),
+    ...(["Faite", "Pas nécessaire"].includes(traceInsertis)
+      ? [] : ["Tracer l'entretien dans Insertis"]),
   ];
   const seen = new Set();
   const byId = new Set(existingTasks.map(task => task.id));
@@ -82,8 +84,37 @@ export function classeEcheance(task, today = todayLocal()) {
 
 export function rappelsDuJour(tasks, today = todayLocal()) {
   return tasks.filter(task => task.status !== "fait"
-    && (task.dueDate <= today || task.remindDate <= today));
+    && ((task.dueDate && task.dueDate <= today)
+      || (task.remindDate && task.remindDate <= today)));
 }
+
+export const MODELES_ACTIONS_PRO = Object.freeze({
+  "Après entretien": [
+    "Tracer l'entretien dans Insertis",
+    "Confirmer le prochain rendez-vous",
+    "Vérifier les documents à demander",
+    "Préparer un compte rendu court",
+  ],
+  "Appui TNS": [
+    "Faire le point avec la CMA",
+    "Vérifier une échéance liée à l'activité",
+    "Préparer les pièces utiles au projet",
+    "Relancer un partenaire de l'activité",
+  ],
+  "Parcours professionnel": [
+    "Actualiser les étapes du parcours",
+    "Relancer une candidature ou une formation",
+    "Préparer le prochain entretien",
+    "Vérifier la réponse de France Travail",
+  ],
+  "Droits et démarches": [
+    "Vérifier une démarche administrative",
+    "Relancer un justificatif attendu",
+    "Vérifier une échéance de droits",
+    "Transmettre un relais au professionnel habilité",
+  ],
+});
+
 
 export function createManualTask({ title, dueDate, dossierId = "", now = new Date() }) {
   const clean = normaliseText(title);
