@@ -1,0 +1,54 @@
+name: Archivage ponctuel des branches d’audit fusionnées
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/archive-audit-branches-once.yml'
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  archive-merged-branches:
+    if: github.repository == 'So1968/OUTIL-PARCOURS-INSERTION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Préserver chaque commit vérifié puis retirer sa branche
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          archive() {
+            local pr="$1" branch="$2" expected="$3" tag="$4"
+            local merged current tagsha
+            merged="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$pr" --jq '.merged')"
+            if [[ "$merged" != "true" ]]; then
+              echo "::warning::PR non fusionnée, branche conservée : $branch"
+              return
+            fi
+            if ! current="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$branch" --jq '.object.sha' 2>/dev/null)"; then
+              echo "Déjà absente : $branch"
+              return
+            fi
+            if [[ "$current" != "$expected" ]]; then
+              echo "::warning::SHA modifié, branche conservée : $branch"
+              return
+            fi
+            if tagsha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha' 2>/dev/null)"; then
+              if [[ "$tagsha" != "$expected" ]]; then
+                echo "::warning::Tag conflit, branche conservée : $branch"
+                return
+              fi
+            else
+              gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" \
+                -f "ref=refs/tags/$tag" -f "sha=$expected" >/dev/null
+            fi
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$branch" >/dev/null
+            echo "Archivée : $branch"
+          }
+          archive 7 'fix/audit-rattachement-documents-20261022' 'ac39423f9acf21895d52259d1ff4cf9073a79e74' 'archive/20261022/audit-rattachement-documents'
+          archive 8 'fix/fiabilite-import-enregistrements-20261022' 'a676069efebfa00ce5cf9e76a8c2c7b88eddec18' 'archive/20261022/fiabilite-import-enregistrements'
