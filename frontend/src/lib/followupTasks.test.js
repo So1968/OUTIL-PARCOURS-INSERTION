@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classeEcheance, creerTachesEntretien, decomposeActions, rappelsDuJour, shiftLocalDate, todayLocal } from "./followupTasks";
+import { classeEcheance, creerTachesEntretien, decomposeActions, rappelsDuJour, creerTachesRendezVous, shiftLocalDate, todayLocal } from "./followupTasks";
 
 const now = new Date(2026, 9, 22, 15, 30);
 
@@ -48,6 +48,31 @@ describe("tâches après entretien — données fictives", () => {
     expect(classeEcheance({ dueDate: "2026-10-20", status: "fait" }, "2026-10-22")).toBe("fait");
     expect(rappelsDuJour([{ status: "fait", dueDate: "2026-10-20" },
       { status: "a_faire", dueDate: "2026-10-25", remindDate: "2026-10-22" }], "2026-10-22")).toHaveLength(1);
+  });
+
+  it("conserve toutes les actions des deux champs de suivi sans doublon", () => {
+    const r = creerTachesEntretien({
+      dossierId: "demo", journalId: "rdv-2",
+      suitePrevue: "- Appeler la CMA", prochaineAction: "- Préparer un courrier\n- Appeler la CMA",
+      traceInsertis: "Faite", now,
+    });
+    expect(r.tasks.map(task => task.title)).toEqual(["Appeler la CMA", "Préparer un courrier"]);
+  });
+
+  it("prépare les rappels internes des rendez-vous sans nom ni transmission externe", () => {
+    const rdv = {
+      id: "agenda-fictif", date: "2026-10-30",
+      prenom: "NE_PAS_REPRENDRE", telephone: "SECRET_TELEPHONE",
+      accordRappel: "À demander", statut: "À confirmer",
+    };
+    const first = creerTachesRendezVous(rdv);
+    expect(first.added).toBe(2);
+    expect(first.tasks[0].dueDate).toBe("2026-10-29");
+    expect(first.tasks[1].dueDate).toBe("2026-10-31");
+    expect(JSON.stringify(first.tasks)).not.toMatch(/NE_PAS_REPRENDRE|SECRET_TELEPHONE/);
+    expect(creerTachesRendezVous(rdv, first.tasks).added).toBe(0);
+    expect(creerTachesRendezVous({ ...rdv, accordRappel: "Oui" }).added).toBe(3);
+    expect(creerTachesRendezVous({ ...rdv, statut: "Annulé" }).added).toBe(0);
   });
 
   it("gère les dates locales sans décalage UTC", () => {
