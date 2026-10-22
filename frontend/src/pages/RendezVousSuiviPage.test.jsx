@@ -1,10 +1,11 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { RendezVousSuiviPage } from "./RendezVousSuiviPage";
 
 describe("rappels de rendez-vous : vérification de l'accord", () => {
   beforeEach(() => localStorage.clear());
+  afterEach(() => cleanup());
 
   it("ne présume jamais l'accord et bloque les liens d'envoi par défaut", () => {
     render(<MemoryRouter><RendezVousSuiviPage /></MemoryRouter>);
