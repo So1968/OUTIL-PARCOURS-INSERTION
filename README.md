@@ -34,6 +34,16 @@ En cas de doute :
 - `public/` : assets publiés par Vite (voir `frontend/vite.config.js`), dont le logo ARTAG utilisé au build
 - `docs/` : spécifications complètes et obligatoires du projet
 
+## Backend — fondations techniques
+
+Un socle séparé `backend/` est en préparation sur GitHub : Express, schéma PostgreSQL/Prisma, contrôles d'habilitation testables côté serveur. Les routes de dossiers restent **désactivées** et le démarrage en production est bloqué.
+
+- [Instructions et limitations du backend](backend/README.md).
+- [Habilitations et état du socle](docs/37_SOCLE_BACKEND_ET_HABILITATIONS.md).
+- [Correspondance provisoire avec les référentiels de la Métropole](docs/38_CORRESPONDANCE_REFERENTIELS_METROPOLE.md) : repérage documentaire, sans créer d'obligations non confirmées.
+
+Le frontend existant reste en mode prototype et n'est pas relié à cette API. Ne pas y saisir de données réelles.
+
 ## Démarrage local
 
 Depuis la racine du dépôt :

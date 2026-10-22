@@ -1,0 +1,21 @@
+{
+  "name": "outil-parcours-insertion-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Socle API interne ARTAG — mode sécurisé, aucun dossier activé",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test",
+    "db:validate": "prisma validate --schema prisma/schema.prisma",
+    "db:generate": "prisma generate --schema prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3",
+    "express": "5.1.0",
+    "helmet": "8.3.0"
+  },
+  "devDependencies": {
+    "prisma": "6.19.3"
+  }
+}

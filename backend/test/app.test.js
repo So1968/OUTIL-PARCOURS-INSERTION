@@ -1,0 +1,37 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { once } from "node:events";
+import { createApp } from "../src/app.js";
+
+async function withServer(check) {
+  const server = createApp().listen(0, "127.0.0.1");
+  await once(server, "listening");
+  try {
+    await check(`http://127.0.0.1:${server.address().port}`);
+  } finally {
+    await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  }
+}
+
+test("la santé du socle répond sans aucun détail métier", async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/healthz`);
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { status: "ok", service: "artag-api-socle" });
+    assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.equal(response.headers.has("x-powered-by"), false);
+    assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+  });
+});
+
+test("les routes métier ne sont jamais accessibles dans ce socle", async () => {
+  await withServer(async (baseUrl) => {
+    for (const [method, uri] of [["GET", "/api/dossiers"], ["POST", "/api/dossiers"], ["GET", "/api/notes-reservees"]]) {
+      const response = await fetch(`${baseUrl}${uri}`, { method });
+      assert.equal(response.status, 503);
+      assert.deepEqual(await response.json(), { error: "METIER_NON_ACTIVE" });
+    }
+    const missing = await fetch(`${baseUrl}/other`);
+    assert.equal(missing.status, 404);
+  });
+});

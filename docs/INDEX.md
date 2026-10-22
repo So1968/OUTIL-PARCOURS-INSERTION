@@ -12,6 +12,8 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 6. [Confidentialité Git](30_CONFIDENTIALITE_GIT.md) — données qui ne doivent jamais être commitées.
 7. [Avancement](avancement.md) — mémoire de progression, à vérifier avec le code actuel.
 8. [Audit technique et interopérabilité du 22/10/2026](36_AUDIT_TECHNIQUE_ET_INTEROPERABILITE_20261022.md) — risques confirmés, correctifs, dépendances Insertis / Mon Suivi Social / Outlook / OneDrive.
+9. [Socle backend et habilitations](37_SOCLE_BACKEND_ET_HABILITATIONS.md) — Express, Prisma, routes bloquées et contrôles de droits à tester.
+10. [Correspondance aux référentiels de la Métropole](38_CORRESPONDANCE_REFERENTIELS_METROPOLE.md) — repérage des modèles de suivi social, socio-professionnel et Appui TNS, **à faire valider**.
 
 ## Grandes familles documentaires
 

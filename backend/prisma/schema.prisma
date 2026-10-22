@@ -1,0 +1,148 @@
+// Modèle cible — aucune migration ni donnée réelle n'est créée automatiquement.
+// Les permissions effectives doivent être vérifiées côté serveur et journalisées.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AppRole {
+  REFERENTE
+  APPUI_TNS
+  ACCUEIL
+  RELAIS_LOGEMENT
+  DIRECTION
+  GOUVERNANCE
+  ADMIN_TECHNIQUE
+}
+
+enum CaseCapability {
+  SHARED_READ
+  SHARED_WRITE
+  TNS_READ
+  TNS_WRITE
+  RESERVED_READ
+  RESERVED_WRITE
+}
+
+enum ExternalSystem {
+  INSERTIS
+  MON_SUIVI_SOCIAL
+  OUTLOOK
+  ONEDRIVE
+}
+
+model UserAccount {
+  id              String            @id @default(uuid())
+  email           String            @unique
+  role            AppRole
+  enabled         Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  referentCases   CaseFile[]        @relation("ReferentCases")
+  assignments     CaseAssignment[]
+  grants          TemporaryGrant[]  @relation("GrantRecipient")
+  approvedGrants  TemporaryGrant[]  @relation("GrantApprover")
+  privateNotes    PrivateNote[]
+  auditActions    AuditEvent[]
+}
+
+model CaseFile {
+  id            String            @id @default(uuid())
+  referentId    String?
+  referent      UserAccount?      @relation("ReferentCases", fields: [referentId], references: [id], onDelete: SetNull)
+  version       Int               @default(0)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  archivedAt    DateTime?
+  assignments   CaseAssignment[]
+  grants        TemporaryGrant[]
+  sharedNotes   SharedNote[]
+  privateNotes  PrivateNote[]
+  externalLinks ExternalLink[]
+  auditEvents   AuditEvent[]
+}
+
+model CaseAssignment {
+  id         String         @id @default(uuid())
+  caseId     String
+  userId     String
+  capability CaseCapability
+  active     Boolean        @default(false)
+  caseFile   CaseFile       @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  user       UserAccount    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([caseId, userId, capability])
+  @@index([userId])
+}
+
+model TemporaryGrant {
+  id           String         @id @default(uuid())
+  caseId       String
+  userId       String
+  approvedById String
+  capability   CaseCapability
+  reason       String         @db.VarChar(500)
+  startsAt     DateTime
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  caseFile     CaseFile       @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  recipient    UserAccount    @relation("GrantRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  approver     UserAccount    @relation("GrantApprover", fields: [approvedById], references: [id], onDelete: Restrict)
+
+  @@index([userId, expiresAt])
+}
+
+model SharedNote {
+  id        String   @id @default(uuid())
+  caseId    String
+  text      String   @db.Text
+  validated Boolean  @default(false)
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  caseFile  CaseFile @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+}
+
+model PrivateNote {
+  id        String      @id @default(uuid())
+  caseId    String
+  authorId  String
+  text      String      @db.Text
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  caseFile  CaseFile    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  author    UserAccount @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([caseId, authorId])
+}
+
+model AuditEvent {
+  id        String       @id @default(uuid())
+  caseId    String?
+  actorId   String?
+  eventType String       @db.VarChar(100)
+  purpose   String?      @db.VarChar(500)
+  createdAt DateTime     @default(now())
+  caseFile  CaseFile?    @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  actor     UserAccount? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([caseId, createdAt])
+  @@index([actorId, createdAt])
+}
+
+model ExternalLink {
+  id          String         @id @default(uuid())
+  caseId      String
+  system      ExternalSystem
+  externalRef String         @db.VarChar(255)
+  enabled     Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  caseFile    CaseFile       @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@unique([caseId, system])
+}
