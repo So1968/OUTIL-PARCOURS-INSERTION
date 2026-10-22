@@ -35,6 +35,13 @@ enum ExternalSystem {
   ONEDRIVE
 }
 
+enum WorkTaskStatus {
+  A_FAIRE
+  EN_COURS
+  EN_ATTENTE
+  FAIT
+}
+
 model UserAccount {
   id              String            @id @default(uuid())
   email           String            @unique
@@ -49,6 +56,7 @@ model UserAccount {
   auditActions    AuditEvent[]
   webSessions     WebSession[]
   identityLinks   IdentityLink[]
+  ownWorkTasks    WorkTask[]
 }
 
 model CaseFile {
@@ -181,4 +189,23 @@ model OidcLoginAttempt {
   expiresAt   DateTime
 
   @@index([expiresAt])
+}
+
+// Tâches personnelles : aucun numéro de dossier ou note réservée dans ce modèle.
+// L'accès dépend toujours de la session serveur et du propriétaire.
+model WorkTask {
+  id                 String         @id @default(uuid())
+  ownerId            String
+  owner              UserAccount    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title              String         @db.VarChar(200)
+  dueDate            DateTime?      @db.Date
+  reminderDaysBefore Int            @default(1)
+  estimatedMinutes   Int?
+  status             WorkTaskStatus @default(A_FAIRE)
+  version            Int            @default(0)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@index([ownerId, dueDate])
+  @@index([ownerId, status])
 }

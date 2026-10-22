@@ -56,3 +56,11 @@ Le test d'intégration emploie un fournisseur OIDC **simulé** pour tester les r
 ## Écriture HTTP et CSRF (désactivés par défaut)
 
 L'activation de la préparation des notes exige `ARTAG_OIDC_ENABLED=1` **et** `ARTAG_ENABLE_SHARED_WRITES=1`, avec `ARTAG_CSRF_SECRET` (au minimum 32 caractères aléatoires) fourni exclusivement par l'environnement de recette autorisé. Le navigateur doit joindre son cookie de session `Secure/HttpOnly`, un `Origin` HTTPS conforme et l'en-tête `X-CSRF-Token` obtenu sur `GET /auth/csrf`. Le serveur vérifie à nouveau le compte, l'affectation, la version du dossier et journalise l'opération dans une transaction PostgreSQL. Aucune écriture externe n'est active. Le frontend comprend un client same-origin *non encore branché aux écrans historiques*.
+
+## Tâches personnelles PostgreSQL (recette contrôlée)
+
+Le modèle `WorkTask` et `src/workTaskService.js` introduisent une liste **privée à chaque compte actif**. Les routes `/api/mes-taches` ne sont disponibles que si `ARTAG_ENABLE_WORK_TASKS=1`, `ARTAG_OIDC_ENABLED=1`, `ARTAG_CSRF_SECRET` robuste et les paramètres HTTPS/SSO sont présents. Les mutations demandent un jeton `/auth/csrf`, une session valide, vérifient propriétaire et version puis écrivent un journal transactionnel.
+
+Le volet React ne se manifeste que si `VITE_ARTAG_SECURE_TASKS=1` et si le site est servi en HTTPS ; il ne migre ni ne partage les données du navigateur. Tests avec comptes fictifs, **aucune activation automatique, aucun dossier réel et production toujours interdite**. Détail : `docs/41_TACHES_PRIVEES_POSTGRESQL.md`.
+
+Les passages historiques en début de ce README décrivent les étapes précédentes du prototype ; l'état actuel des routes est expliqué dans la présente section et le code.

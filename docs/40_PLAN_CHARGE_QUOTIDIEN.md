@@ -47,3 +47,7 @@ L'outil doit rester une aide à l'organisation et à la continuité, et non un o
 6. Vérifier la recette multi-professionnelle, l'accessibilité, les exceptions de calendrier, les périodes de congé et les jours non travaillés.
 
 *Outil conçu par Sofia de los Rios dans le cadre de sa mission.*
+
+## Préparation du mode multi-postes privé — octobre 2026
+
+Le backend comporte désormais un modèle de tâches personnelles en PostgreSQL, une API **désactivée par défaut**, des permissions par compte et une interface professionnelle HTTPS optionnelle. Ce volet est séparé du tableau de démonstration : aucune reprise automatique des tâches locales ni synchronisation Outlook. Voir [docs/41_TACHES_PRIVEES_POSTGRESQL.md](41_TACHES_PRIVEES_POSTGRESQL.md).

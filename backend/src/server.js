@@ -40,13 +40,15 @@ async function start() {
     };
   }
   const enableSharedWrites = process.env.ARTAG_ENABLE_SHARED_WRITES === "1";
+  const enableWorkTasks = process.env.ARTAG_ENABLE_WORK_TASKS === "1";
   const csrfSecret = process.env.ARTAG_CSRF_SECRET || null;
-  if (enableSharedWrites && (!db || !oidc || !csrfSecret || csrfSecret.length < 32)) {
-    throw new Error("Écritures bloquées : SSO validé et secret CSRF requis.");
+  if ((enableSharedWrites || enableWorkTasks) && (!db || !oidc || !csrfSecret || csrfSecret.length < 32)) {
+    throw new Error("Routes métier bloquées : SSO validé et secret CSRF requis.");
   }
   const app = createApp({
     privateDb: db, oidc,
     enableSharedWrites,
+    enableWorkTasks,
     csrfSecret,
   });
   const server = app.listen(port, "127.0.0.1", () => {
