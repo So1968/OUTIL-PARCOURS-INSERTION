@@ -21,6 +21,15 @@ Signature : **Outil conçu par Sofia de los Rios dans le cadre de sa mission**.
 | Client API React | Fonctions `same-origin` testées ; aucun jeton en `localStorage` | **Non relié aux écrans existants** : aucune migration silencieuse de dossier |
 | Documents Métropole | Grille provisoire `docs/38_...` avec sources publiques | Aucun seuil 2026 ou modèle « obligatoire » confirmé sans convention ARTAG |
 
+## Préparation des tâches et rappels après entretien
+
+- L'écran dossier comprend une liste structurée des tâches tirées des suites explicitement saisies après entretien, sans extraction de notes réservées ni action inventée.
+- Chaque tâche possède un statut, une échéance propre et un choix de rappel J-7, J-2, J-1 ou le jour même. L'interface montre les retards, tâches du jour et tâches terminées.
+- Cette première maquette enregistre localement ses tâches : **ce n'est pas un agenda opérationnel multi-professionnel**. Le futur stockage sera PostgreSQL, avec affectation, journal et permissions côté serveur.
+- **Aucun rendez-vous ni rappel Outlook n'est actuellement créé.** Une prévisualisation générique « Action de suivi professionnel » évite toute transmission automatique d'informations sensibles.
+- La synchronisation Outlook automatique envisagée requerra : accord ARTAG, authentification professionnelle vérifiée, autorisations Microsoft Graph minimales, tests de conflits/doublons, règles de fuseau horaire et politique de notifications. Les tâches doivent être confirmées par la professionnelle avant synchronisation.
+- Les tâches issues d'un compte rendu ne doivent jamais partir du principe qu'un mot isolé signifie une action ni imposer une échéance arbitraire.
+
 ## Blocages institutionnels et techniques réels
 
 1. **Validation ARTAG (direction, métier, sécurité/RGPD)** : choix d'un responsable de traitement, périmètre, gestion des habilitations, politiques de conservation, exploitation et hébergement ; données réelles interdites avant décision.
