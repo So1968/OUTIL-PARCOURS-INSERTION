@@ -2,6 +2,14 @@
 
 Ce document complète le cadrage métier sans le remplacer : `docs/03_PROFILS_ACCES_DROITS.md`, `docs/27_ARCHITECTURE_APPLICATIVE.md` et `docs/30_PROFILS_DROITS_TRACABILITE.md`.
 
+## Étape suivante — écritures transactionnelles non exposées
+
+- `backend/src/sharedNoteService.js` prépare l'ajout de **brouillons partagés** par une professionnelle autorisée. Le service exige une session PostgreSQL valide, le droit `SHARED_WRITE` sur le dossier, et refuse les dossiers archivés.
+- La version courante du dossier doit correspondre à celle soumise par la professionnelle (**verrouillage optimiste**) ; une modification concurrente génère `DOSSIER_MODIFIE_ENTRE_TEMPS` au lieu d'un écrasement silencieux.
+- L'insertion de la note, l'incrément de version du dossier et l'événement d'audit s'effectuent dans **la même transaction PostgreSQL**. Le texte est limité et la note n'est pas validée automatiquement.
+- Tests PostgreSQL : refus anonymes, refus Appui TNS/Direction sans droit d'écriture, refus de texte vide, refus de conflit de version, journalisation et conservation des brouillons.
+- Le service reste **interne et sans endpoint HTTP**, pour ne pas activer d'écriture avant l'ajout d'une protection CSRF adaptée, de la revue métier des champs et de la validation SSO ARTAG.
+
 ## Étape d'authentification OIDC (préparée, non activée)
 
 - La bibliothèque `openid-client` 6 valide les réponses OpenID Connect : code d'autorisation, PKCE S256, état et nonce.
