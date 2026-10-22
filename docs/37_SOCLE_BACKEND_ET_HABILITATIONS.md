@@ -2,6 +2,15 @@
 
 Ce document complète le cadrage métier sans le remplacer : `docs/03_PROFILS_ACCES_DROITS.md`, `docs/27_ARCHITECTURE_APPLICATIVE.md` et `docs/30_PROFILS_DROITS_TRACABILITE.md`.
 
+## Étape supplémentaire : lecture contrôlée, réservée au backend
+
+- `backend/src/caseAccessService.js` prépare une **lecture de métadonnées uniquement**, jamais le contenu des notes ni les informations personnelles.
+- Le fournisseur d'identité vérifiée devra fournir l'identifiant de session, puis le backend relira dans PostgreSQL le **rôle et l'activation du compte**. Les rôles transmis par le navigateur sont ignorés.
+- La lecture vérifie la référente ou l'affectation explicite à un dossier ; une dérogation de Direction doit être nominative, approuvée et encore valide.
+- Chaque lecture réussie exige une entrée `AuditEvent` créée dans une transaction PostgreSQL ; si la trace échoue, la consultation échoue.
+- Tests unitaires et **test d'intégration sur un PostgreSQL éphémère dans GitHub Actions**. Aucun dossier ni compte ARTAG réel n'est utilisé.
+- Ce service n'est **branché à aucune route HTTP**. Le serveur renvoie toujours `503 METIER_NON_ACTIVE` pour les routes de dossiers. Il n'existe pas encore de session SSO réelle.
+
 ## Socle préparé et non activé
 
 - Backend Express + Helmet, dépendances verrouillées, modèle PostgreSQL/Prisma à valider.
