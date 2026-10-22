@@ -465,9 +465,13 @@ export function DossierPersonnePage() {
 
   function enregistrerAction(nextAction) {
     const next = { ...actions, [idCourant]: nextAction };
+    if (!writeStorageJson(STORAGE_ACTIONS, next)) {
+      setMessage("Enregistrement du dossier impossible dans ce navigateur.");
+      return false;
+    }
     setActions(next);
-    writeStorageJson(STORAGE_ACTIONS, next);
     setMessage("Dossier mis à jour.");
+    return true;
   }
 
   function updateAction(champ, v) {
@@ -477,17 +481,25 @@ export function DossierPersonnePage() {
   function updateIntervention(champ, v) {
     const nextIntervention = { ...intervention, [champ]: v };
     const next = { ...interventions, [idCourant]: nextIntervention };
+    if (!writeStorageJson(STORAGE_INTERVENTIONS, next)) {
+      setMessage("Brouillon non enregistré : stockage indisponible.");
+      return false;
+    }
     setInterventions(next);
-    writeStorageJson(STORAGE_INTERVENTIONS, next);
     setMessage("Brouillon d’intervention enregistré.");
+    return true;
   }
 
   function updateAutonomie(champ, v) {
     const nextAutonomie = { ...autonomie, [champ]: v };
     const next = { ...autonomies, [idCourant]: nextAutonomie };
+    if (!writeStorageJson(STORAGE_AUTONOMIE, next)) {
+      setMessage("Repères autonomie non enregistrés : stockage indisponible.");
+      return false;
+    }
     setAutonomies(next);
-    writeStorageJson(STORAGE_AUTONOMIE, next);
     setMessage("Repères autonomie enregistrés.");
+    return true;
   }
 
   function ajouterTache(tache) {
@@ -504,11 +516,15 @@ export function DossierPersonnePage() {
 
   function ajouterEntreeJournal(type, texte, date = dateNote) {
     const contenu = String(texte || "").trim();
-    if (!contenu) return;
-    const entree = { id: String(Date.now()), date, type, texte: contenu, createdAt: new Date().toISOString() };
+    if (!contenu) return false;
+    const entree = { id: crypto.randomUUID(), date, type, texte: contenu, createdAt: new Date().toISOString() };
     const next = { ...journaux, [idCourant]: [entree, ...(journaux[idCourant] || [])] };
+    if (!writeStorageJson(STORAGE_JOURNAL, next)) {
+      setMessage("Journal non enregistré : stockage indisponible.");
+      return false;
+    }
     setJournaux(next);
-    writeStorageJson(STORAGE_JOURNAL, next);
+    return true;
   }
 
   function ajouterJournal() {
@@ -516,38 +532,49 @@ export function DossierPersonnePage() {
       setMessage("Note vide : rien à ajouter.");
       return;
     }
-    ajouterEntreeJournal(typeNote, nouvelleNote, dateNote);
+    if (!ajouterEntreeJournal(typeNote, nouvelleNote, dateNote)) return;
     setNouvelleNote("");
     setMessage("Note ajoutée au journal du dossier.");
   }
 
   function ajouterAutonomieAuJournal() {
-    ajouterEntreeJournal("Synthèse autonomie", syntheseAutonomieRedigee, new Date().toISOString().slice(0, 10));
-    setMessage("Synthèse autonomie ajoutée au journal.");
+    if (ajouterEntreeJournal("Synthèse autonomie", syntheseAutonomieRedigee, new Date().toISOString().slice(0, 10))) {
+      setMessage("Synthèse autonomie ajoutée au journal.");
+    }
   }
 
   function ajouterParcoursAuJournal() {
-    ajouterEntreeJournal("Parcours autonomie", parcoursAutonomie, new Date().toISOString().slice(0, 10));
-    setMessage("Parcours autonomie ajouté au journal.");
+    if (ajouterEntreeJournal("Parcours autonomie", parcoursAutonomie, new Date().toISOString().slice(0, 10))) {
+      setMessage("Parcours autonomie ajouté au journal.");
+    }
   }
 
   function alimenterAnalyseAvecAutonomie() {
     const base = texteCourt(intervention.analyse, "");
     const ajout = syntheseAutonomieRedigee.trim();
     const prochaineAnalyse = base ? `${base}\n\n${ajout}` : ajout;
-    updateIntervention("analyse", prochaineAnalyse);
-    setMessage("Synthèse autonomie ajoutée dans l’analyse professionnelle.");
+    if (updateIntervention("analyse", prochaineAnalyse)) {
+      setMessage("Synthèse autonomie ajoutée dans l’analyse professionnelle.");
+    }
   }
 
   function ajouterInterventionAuJournal() {
-    ajouterEntreeJournal("Intervention / suivi social", noteMonSuiviSocial, new Date().toISOString().slice(0, 10));
-    enregistrerAction({ ...action, traceInsertis: "À faire", prochaineAction: intervention.suitePrevue || action.prochaineAction });
+    if (!ajouterEntreeJournal("Intervention / suivi social", noteMonSuiviSocial, new Date().toISOString().slice(0, 10))) return;
+    if (!enregistrerAction({ ...action, traceInsertis: "À faire", prochaineAction: intervention.suitePrevue || action.prochaineAction })) {
+      setMessage("Intervention au journal, mais statut Insertis non enregistré. Vérifie le dossier.");
+      return;
+    }
     setMessage("Intervention ajoutée au journal. Trace Insertis marquée à faire.");
   }
 
-  function copierTexte(texte, libelle) {
-    navigator.clipboard?.writeText(texte);
-    setMessage(`${libelle} copié.`);
+  async function copierTexte(texte, libelle) {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Presse-papiers indisponible");
+      await navigator.clipboard.writeText(texte);
+      setMessage(`${libelle} copié.`);
+    } catch {
+      setMessage("Copie impossible : sélectionne le texte manuellement.");
+    }
   }
 
   function enregistrerReferenceDocumentaire() {
@@ -573,8 +600,11 @@ export function DossierPersonnePage() {
       ? documents.map((item) => (item.dossierId === idCourant ? reference : item))
       : [...documents, reference];
 
+    if (!writeStorageJson(STORAGE_DOCUMENTS, next)) {
+      setMessage("Référence documentaire non enregistrée : stockage indisponible.");
+      return;
+    }
     setDocuments(next);
-    writeStorageJson(STORAGE_DOCUMENTS, next);
     setMessage("Dossier documentaire relié à cette fiche.");
   }
 
