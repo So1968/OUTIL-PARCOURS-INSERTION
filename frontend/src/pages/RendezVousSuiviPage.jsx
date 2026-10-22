@@ -8,6 +8,7 @@ import {
   typesRendezVous,
 } from "../data/troncCommunSuivi";
 import { readStorageJson, removeStorageItem, writeStorageJson } from "../lib/storage";
+import { TASKS_STORAGE_KEY, creerTachesRendezVous } from "../lib/followupTasks";
 
 const STORAGE_KEY = "artag-rendez-vous-suivi";
 
@@ -176,9 +177,13 @@ export function RendezVousSuiviPage() {
     setCopie("");
   }
 
-  function copier(message, label) {
-    navigator.clipboard.writeText(message);
-    setCopie(label);
+  async function copier(message, label) {
+    try {
+      await navigator.clipboard.writeText(message);
+      setCopie(label);
+    } catch {
+      setCopie("Copie impossible. Sélectionne le texte manuellement.");
+    }
   }
 
   function enregistrerRendezVous() {
@@ -188,15 +193,27 @@ export function RendezVousSuiviPage() {
       enregistreLe: new Date().toISOString(),
     };
     const updated = [nouveauRdv, ...historique];
+    if (!writeStorageJson(STORAGE_KEY, updated)) {
+      setCopie("Impossible de sauvegarder ce rendez-vous dans le navigateur.");
+      return;
+    }
     setHistorique(updated);
-    writeStorageJson(STORAGE_KEY, updated);
-    setCopie("Rendez-vous enregistré dans l’historique.");
+    const savedTasks = readStorageJson(TASKS_STORAGE_KEY, []);
+    const proposition = creerTachesRendezVous(nouveauRdv, Array.isArray(savedTasks) ? savedTasks : []);
+    if (!writeStorageJson(TASKS_STORAGE_KEY, proposition.tasks)) {
+      setCopie("Rendez-vous enregistré, mais les tâches de préparation n'ont pas pu être sauvegardées.");
+      return;
+    }
+    setCopie(`Rendez-vous enregistré. ${proposition.added} tâche(s) de préparation et de suivi ajoutée(s) dans « Mes tâches ».`);
   }
 
   function effacerHistorique() {
+    if (!removeStorageItem(STORAGE_KEY)) {
+      setCopie("Suppression impossible dans ce navigateur.");
+      return;
+    }
     setHistorique([]);
-    removeStorageItem(STORAGE_KEY);
-    setCopie("Historique local effacé.");
+    setCopie("Historique local effacé. Les tâches déjà créées restent dans le bureau de travail.");
   }
 
   return (
@@ -206,6 +223,7 @@ export function RendezVousSuiviPage() {
         <div>
           <p className="referentiel-label">Tronc commun</p>
           <h1>Rendez-vous, rappels et documents</h1>
+          <p><Link to="/mes-taches">Mes tâches et rappels professionnels →</Link></p>
           <p className="page-intro">
             Une brique commune pour tous les accompagnements : social, socio-professionnel,
             Appui TNS, continuité et partenaires.
