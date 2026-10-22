@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { readStorageJson as lireJson, writeStorageJson } from "../lib/storage";
 import { humanFileSize } from "../lib/documentInventory";
+import { preparerBrouillonMonSuiviSocial } from "../lib/monSuiviSocialDraft";
 
 const STORAGE_ROWS = "artag-pilotage-actions-rows-v1";
 const STORAGE_ACTIONS = "artag-pilotage-actions-suivi-v1";
@@ -310,7 +311,7 @@ function genererTraceInsertis(row, rows, intervention, action, autonomie) {
   ].filter(Boolean).join("\n");
 }
 
-function genererMonSuiviSocial(intervention, action, syntheseAutonomie) {
+function genererNoteInterne(intervention, action, syntheseAutonomie) {
   return [
     `Faits / situation abordée :\n${texteCourt(intervention.faits)}`,
     "",
@@ -461,7 +462,18 @@ export function DossierPersonnePage() {
   const parcoursAutonomie = useMemo(() => genererParcoursAutonomie(autonomie, action), [autonomie, action]);
   const synthese = useMemo(() => (row ? syntheseDossier(row, rows, action, journal, autonomie) : ""), [row, rows, action, journal, autonomie]);
   const traceInsertis = useMemo(() => (row ? genererTraceInsertis(row, rows, intervention, action, autonomie) : ""), [row, rows, intervention, action, autonomie]);
-  const noteMonSuiviSocial = useMemo(() => genererMonSuiviSocial(intervention, action, syntheseAutonomieRedigee), [intervention, action, syntheseAutonomieRedigee]);
+  const noteInterneComplete = useMemo(
+    () => genererNoteInterne(intervention, action, syntheseAutonomieRedigee),
+    [intervention, action, syntheseAutonomieRedigee],
+  );
+  const noteMonSuiviSocial = useMemo(
+    () => preparerBrouillonMonSuiviSocial({
+      faits: intervention.faits,
+      demarches: intervention.demarches,
+      suitePrevue: intervention.suitePrevue,
+    }),
+    [intervention.faits, intervention.demarches, intervention.suitePrevue],
+  );
 
   function enregistrerAction(nextAction) {
     const next = { ...actions, [idCourant]: nextAction };
@@ -559,7 +571,7 @@ export function DossierPersonnePage() {
   }
 
   function ajouterInterventionAuJournal() {
-    if (!ajouterEntreeJournal("Intervention / suivi social", noteMonSuiviSocial, new Date().toISOString().slice(0, 10))) return;
+    if (!ajouterEntreeJournal("Intervention / suivi social", noteInterneComplete, new Date().toISOString().slice(0, 10))) return;
     if (!enregistrerAction({ ...action, traceInsertis: "À faire", prochaineAction: intervention.suitePrevue || action.prochaineAction })) {
       setMessage("Intervention au journal, mais statut Insertis non enregistré. Vérifie le dossier.");
       return;
@@ -803,6 +815,7 @@ export function DossierPersonnePage() {
 
           <details style={{ marginTop: "14px" }}>
             <summary style={s.summary}>Textes prêts à copier<span style={s.summaryHelp}>Insertis, Mon Suivi Social et ajout direct au journal.</span></summary>
+            <p style={s.intro}>Le brouillon Mon Suivi Social reprend uniquement faits, démarches et suite prévue. Analyse réservée, repères d’autonomie et paroles personnelles ne sont pas ajoutés automatiquement. Relis le texte et confirme les destinataires avant toute saisie manuelle : aucune synchronisation n’est active.</p>
             <div style={{ ...s.grid, marginTop: "12px" }}>
               <label style={s.field}>Texte court pour Insertis<textarea style={{ ...s.textarea, minHeight: "170px" }} readOnly value={traceInsertis} /></label>
               <label style={s.field}>Note pour Mon Suivi Social<textarea style={{ ...s.textarea, minHeight: "170px" }} readOnly value={noteMonSuiviSocial} /></label>
