@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ACCOMPAGNEMENT_ROLES, CONTINUITE_ROLES, PARCOURS_ROLES, PORTE_DIRECTION_ROLES, roleIsAllowed } from "../auth/access";
 import { useRole } from "../auth/useRole";
+import { SaisieRapide } from "../components/SaisieRapide";
 
 const entreesPrincipales = [
   {
@@ -51,6 +52,10 @@ export function AccueilPage() {
             </p>
           </div>
         </header>
+
+        {roleIsAllowed(currentRole, ACCOMPAGNEMENT_ROLES) && (
+          <div style={{ margin: "18px 0" }}><SaisieRapide /></div>
+        )}
 
         {entreesVisibles.length > 0 ? (
           <section className="accueil-simple__grid" aria-label="Actions principales">
