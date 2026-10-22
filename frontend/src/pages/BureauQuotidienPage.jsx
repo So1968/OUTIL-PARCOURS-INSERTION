@@ -129,7 +129,7 @@ export function BureauQuotidienPage() {
       `Rendez-vous enregistrés : ${charge.appointmentsCount}`,
       `Éléments sans durée : ${charge.missingEstimates}`,
       "Récapitulatif sans nom, numéro de dossier ni note d'entretien.",
-    ].join("\\n");
+    ].join("\n");
     try {
       await navigator.clipboard.writeText(bilan);
       setMessage("Bilan anonyme copié. Tu peux le coller dans ton point de charge ChatGPT.");
