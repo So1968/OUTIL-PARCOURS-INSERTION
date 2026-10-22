@@ -13,6 +13,24 @@ jobs:
     name: API, permissions et Prisma
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: artag_ci_demo
+          POSTGRES_PASSWORD: fictif_ci_local
+          POSTGRES_DB: artag_ci_demo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U artag_ci_demo -d artag_ci_demo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Base créée par le runner CI, détruite à la fin du job ; jamais ARTAG.
+      DATABASE_URL: postgresql://artag_ci_demo:fictif_ci_local@127.0.0.1:5432/artag_ci_demo?schema=public
+      ARTAG_DB_INTEGRATION_TEST: '1'
     steps:
       - name: Récupérer le dépôt
         uses: actions/checkout@v4
@@ -24,9 +42,11 @@ jobs:
           cache-dependency-path: backend/package-lock.json
       - name: Installer les dépendances verrouillées
         run: npm ci --prefix backend
-      - name: Tester les refus d'accès et l'API fermée
-        run: npm run backend:test
-      - name: Valider le schéma sans connexion PostgreSQL
-        env:
-          DATABASE_URL: postgresql://demo:demo@127.0.0.1:5432/artag_demo?schema=public
+      - name: Valider le schéma Prisma
         run: npm --prefix backend run db:validate
+      - name: Générer le client Prisma pour la base de test
+        run: npm --prefix backend run db:generate
+      - name: Initialiser la base éphémère de CI
+        run: npm --prefix backend run db:push:test
+      - name: Tester refus d'accès, requêtes PostgreSQL et audit transactionnel
+        run: npm run backend:test
