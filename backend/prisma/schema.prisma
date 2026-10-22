@@ -172,3 +172,13 @@ model WebSession {
 
   @@index([userId, expiresAt])
 }
+
+model OidcLoginAttempt {
+  stateDigest String    @id @db.Char(64)
+  verifier    String    @db.VarChar(255)
+  nonce       String    @db.VarChar(255)
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+
+  @@index([expiresAt])
+}
