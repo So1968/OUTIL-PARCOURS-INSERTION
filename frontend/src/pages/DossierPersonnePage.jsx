@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { readStorageJson as lireJson, writeStorageJson } from "../lib/storage";
 import { humanFileSize } from "../lib/documentInventory";
 import { preparerBrouillonMonSuiviSocial } from "../lib/monSuiviSocialDraft";
-import { preparerTachesEntretien, repartitionTaches, previsualiserRappelCalendrier } from "../lib/entretienTasks";
+import { preparerTachesEntretien, genererTachesApresEntretien, repartitionTaches, previsualiserRappelCalendrier } from "../lib/entretienTasks";
 
 const STORAGE_ROWS = "artag-pilotage-actions-rows-v1";
 const STORAGE_ACTIONS = "artag-pilotage-actions-suivi-v1";
@@ -539,7 +539,7 @@ export function DossierPersonnePage() {
       return false;
     }
     setJournaux(next);
-    return true;
+    return entree.id;
   }
 
   function ajouterJournal() {
@@ -602,12 +602,32 @@ export function DossierPersonnePage() {
   }
 
   function ajouterInterventionAuJournal() {
-    if (!ajouterEntreeJournal("Intervention / suivi social", noteInterneComplete, new Date().toISOString().slice(0, 10))) return;
-    if (!enregistrerAction({ ...action, traceInsertis: "À faire", prochaineAction: intervention.suitePrevue || action.prochaineAction })) {
-      setMessage("Intervention au journal, mais statut Insertis non enregistré. Vérifie le dossier.");
+    const journalId = ajouterEntreeJournal(
+      "Intervention / suivi social", noteInterneComplete, new Date().toISOString().slice(0, 10),
+    );
+    if (!journalId) return;
+    if (!enregistrerAction({
+      ...action, traceInsertis: "À faire",
+      prochaineAction: intervention.suitePrevue || action.prochaineAction,
+    })) {
+      setMessage("Intervention journalisée, mais statut Insertis non enregistré. Vérifie le dossier.");
       return;
     }
-    setMessage("Intervention ajoutée au journal. Trace Insertis marquée à faire.");
+
+    // Les tâches viennent uniquement des actions explicites, jamais du récit,
+    // de la parole de la personne ou de l'analyse réservée.
+    const proposition = genererTachesApresEntretien({
+      journalId,
+      suitePrevue: intervention.suitePrevue,
+      prochaineAction: action.prochaineAction,
+      traceInsertis: "À faire",
+      previous: tachesDossier,
+    });
+    if (!enregistrerTaches(proposition.tasks)) {
+      setMessage("Entretien enregistré mais les tâches n'ont pas été sauvegardées. Vérifie le bureau quotidien.");
+      return;
+    }
+    setMessage(`Entretien enregistré : ${proposition.added} tâche(s) ajoutée(s), dont la trace Insertis. Fixe leurs échéances dans Mon bureau quotidien.`);
   }
 
   async function copierTexte(texte, libelle) {
@@ -898,7 +918,7 @@ export function DossierPersonnePage() {
             <div style={s.actions}>
               <button style={s.mainButton} type="button" onClick={() => copierTexte(traceInsertis, "Texte Insertis")}>Copier pour Insertis</button>
               <button style={s.mainButton} type="button" onClick={() => copierTexte(noteMonSuiviSocial, "Note Mon Suivi Social")}>Copier pour Mon Suivi Social</button>
-              <button style={s.button} type="button" onClick={ajouterInterventionAuJournal}>Ajouter au journal + marquer Insertis à faire</button>
+              <button style={s.button} type="button" onClick={ajouterInterventionAuJournal}>Terminer l’entretien : journal + tâches + trace Insertis</button>
             </div>
           </details>
         </section>
