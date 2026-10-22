@@ -2,6 +2,15 @@
 
 Ce document complète le cadrage métier sans le remplacer : `docs/03_PROFILS_ACCES_DROITS.md`, `docs/27_ARCHITECTURE_APPLICATIVE.md` et `docs/30_PROFILS_DROITS_TRACABILITE.md`.
 
+## Étape suivante — sessions serveur et route HTTP protégée (non activée en exploitation)
+
+- `backend/src/sessions.js` crée des jetons aléatoires de 256 bits. Seul leur **hachage** est stocké dans PostgreSQL ; expiration après huit heures, révocation possible, compte utilisateur actif obligatoire.
+- Le navigateur ne contient qu'un cookie opaque `__Host-artag-session` (`Secure`, `HttpOnly`, `SameSite=Lax`). Un rôle transmis par le navigateur n'est jamais accepté comme preuve d'autorisation.
+- Un modèle `IdentityLink` permet le **provisionnement manuel contrôlé** du futur couple (émetteur OIDC, sujet), sans créer automatiquement des comptes à partir des emails.
+- `GET /api/dossiers/:caseId/overview` nécessite l'injection **côté serveur** de la base. Il réutilise les contrôles de permissions par dossier et la journalisation transactionnelle et ne retourne que l'identifiant technique, la version et la date de modification.
+- Les tests vérifient les accès avec/sans cookie, les refus de la Direction, la révocation, et l'absence de notes personnelles dans la réponse sur une base PostgreSQL éphémère.
+- **Par défaut `server.js` n'injecte aucune base** : l'application accessible localement retourne toujours `503` pour les routes de dossier. L'authentification OIDC institutionnelle reste à configurer et valider, aucun accès à des données ARTAG réelles n'est ouvert.
+
 ## Étape supplémentaire : lecture contrôlée, réservée au backend
 
 - `backend/src/caseAccessService.js` prépare une **lecture de métadonnées uniquement**, jamais le contenu des notes ni les informations personnelles.
