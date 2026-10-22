@@ -32,3 +32,9 @@ Une future instance ARTAG devra obtenir validation du responsable de traitement,
 - Le profil technique et le CA ne lisent pas les notes individuelles. La direction lit les indicateurs agrégés ; une consultation ponctuelle du dossier nécessite une dérogation nominative et tracée.
 - Les notes réservées ne sont jamais déduites d'un droit de lecture sur le dossier partagé.
 - Les connecteurs Insertis, Mon Suivi Social, Outlook et OneDrive sont désactivés par défaut. Aucun secret dans Git ni dans le frontend.
+
+## Service de lecture testé, mais non exposé
+
+`src/caseAccessService.js` fournit `readCaseOverview` : il reçoit un futur fournisseur de sujet authentifié par le serveur, lit le rôle depuis PostgreSQL, vérifie l'affectation et journalise la lecture dans la même transaction. Son résultat ne contient que `id`, `version` et `updatedAt`, **jamais les notes professionnelles ou les données nominatives**. Les comptes et données d'essai sont exclusivement fictifs. Aucun endpoint ne l'appelle actuellement.
+
+La CI utilise un conteneur PostgreSQL éphémère et y applique le schéma par `prisma db push` uniquement dans ce contexte. Cela n'est **pas** une migration de production ni une procédure à lancer sur une base ARTAG.
