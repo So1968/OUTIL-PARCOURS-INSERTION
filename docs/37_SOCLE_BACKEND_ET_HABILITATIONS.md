@@ -2,6 +2,19 @@
 
 Ce document complète le cadrage métier sans le remplacer : `docs/03_PROFILS_ACCES_DROITS.md`, `docs/27_ARCHITECTURE_APPLICATIVE.md` et `docs/30_PROFILS_DROITS_TRACABILITE.md`.
 
+## Étape d'authentification OIDC (préparée, non activée)
+
+- La bibliothèque `openid-client` 6 valide les réponses OpenID Connect : code d'autorisation, PKCE S256, état et nonce.
+- L'émetteur doit être **HTTPS**, et pour Microsoft Entra le tenant doit être dédié ; les autorités partagées `common`, `organizations` et `consumers` sont refusées.
+- La tentative de connexion est stockée sous empreinte de l'état et **consommée à usage unique** au retour du fournisseur. Le navigateur doit aussi présenter le cookie d'état correspondant.
+- Le couple `issuer` / `subject` n'ouvre une session que s'il figure déjà dans la table `IdentityLink` reliée à un compte actif. **Jamais de création automatique d'utilisateur ni de droit à partir d'un email.**
+- Les sessions sont créées uniquement après validation du fournisseur et association au compte habilité ; déconnexion avec révocation côté serveur et vérification `Origin`.
+- `backend/src/server.js` garde les routes métier fermées par défaut, refuse toujours `NODE_ENV=production` et n'active les modules de connexion qu'avec `ARTAG_OIDC_ENABLED=1` et tous les paramètres institutionnels présents.
+- Les tests valident le parcours avec un **faux fournisseur déterministe** et une base PostgreSQL éphémère. **Ils ne remplacent pas un test SSO réel validé par ARTAG.**
+- Aucun mot de passe, secret ou jeton ne figure dans le dépôt.
+
+**Important :** le code constitue une préparation d'intégration SSO, pas une autorisation d'usage réel. Avant toute activation institutionnelle : revue indépendante, protection TLS et proxy, règles de provisionnement, MFA, procédures de révocation et validation ARTAG.
+
 ## Étape suivante — sessions serveur et route HTTP protégée (non activée en exploitation)
 
 - `backend/src/sessions.js` crée des jetons aléatoires de 256 bits. Seul leur **hachage** est stocké dans PostgreSQL ; expiration après huit heures, révocation possible, compte utilisateur actif obligatoire.
