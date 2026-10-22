@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { parseCsv as parserCsv } from "../lib/csv";
+import { analyserImportDossiers } from "../lib/importDossiers";
 import { readStorageJson as lireJson, removeStorageItem, writeStorageJson } from "../lib/storage";
 
 const STORAGE_ROWS = "artag-pilotage-actions-rows-v1";
@@ -429,15 +430,30 @@ export function PilotageActionsPage() {
   const texteSynthese = useMemo(() => synthese(rows, actions), [rows, actions]);
 
   function enregistrer(nextActions) {
+    if (!writeStorageJson(STORAGE_ACTIONS, nextActions)) {
+      setMessage("Enregistrement impossible dans ce navigateur. Aucune sauvegarde confirmée.");
+      return false;
+    }
     setActions(nextActions);
-    writeStorageJson(STORAGE_ACTIONS, nextActions);
+    return true;
   }
 
   function enregistrerRows(nextRows, nextActions = actions) {
+    // Sauvegarde au mieux sur deux clés : une transaction serveur reste nécessaire.
+    if (!writeStorageJson(STORAGE_ROWS, nextRows)) {
+      setMessage("Import non enregistré : stockage du navigateur indisponible.");
+      return false;
+    }
+    if (!writeStorageJson(STORAGE_ACTIONS, nextActions)) {
+      const restored = writeStorageJson(STORAGE_ROWS, rows);
+      setMessage(restored
+        ? "Import annulé : impossible de conserver les actions, ancienne liste rétablie."
+        : "Échec partiel du stockage : ne continue pas à saisir, vérifie les données locales.");
+      return false;
+    }
     setRows(nextRows);
     setActions(nextActions);
-    writeStorageJson(STORAGE_ROWS, nextRows);
-    writeStorageJson(STORAGE_ACTIONS, nextActions);
+    return true;
   }
 
   function importerCsv(event) {
@@ -452,17 +468,33 @@ export function PilotageActionsPage() {
         return;
       }
 
-      const nextActions = {};
+      const controle = analyserImportDossiers(lignes, rows);
+      if (!controle.ok) {
+        setMessage(controle.message);
+        return;
+      }
+      if (controle.missingFromImport > 0 && !window.confirm(
+        `${controle.missingFromImport} dossier(s) de l'ancienne liste sont absents du nouveau CSV. `
+        + "Ils ne seront plus visibles dans la file active (leurs actions restent conservées localement). Continuer ?",
+      )) {
+        setMessage("Import annulé : l'ancienne liste est conservée.");
+        return;
+      }
+
+      // Garder les actions d'anciens dossiers pour permettre leur récupération
+      // après un nouvel import. Aucune suppression silencieuse d'actions.
+      const nextActions = { ...actions };
       lignes.forEach((row, index) => {
         const id = idDossier(row, index);
         const existante = { ...actionVide(), ...(actions[id] || {}) };
         nextActions[id] = dejaTravaille(existante) ? existante : { ...actionVide(), ...propositionAutomatique(row) };
       });
 
-      enregistrerRows(lignes, nextActions);
-      setMessage(`${lignes.length} dossiers importés. La file active est classée automatiquement par urgence.`);
+      if (!enregistrerRows(lignes, nextActions)) return;
+      setMessage(`${lignes.length} dossiers importés (${controle.newInImport} nouveau(x), ${controle.missingFromImport} absent(s) du CSV). Actions préexistantes conservées.`);
     };
 
+    reader.onerror = () => setMessage("Lecture du CSV impossible. La file active reste inchangée.");
     reader.readAsText(fichier, "windows-1252");
   }
 
@@ -483,7 +515,7 @@ export function PilotageActionsPage() {
     };
     const nextRows = [row, ...rows];
     const nextActions = { ...actions, [id]: { ...actionVide(), prochaineAction: "- Qualifier la situation globale", echeance: dateIsoDans(7), priorite: "Priorité 2", vigilance: "À suivre" } };
-    enregistrerRows(nextRows, nextActions);
+    if (!enregistrerRows(nextRows, nextActions)) return;
     setMessage("Dossier manuel créé.");
     navigate(`/pilotage-actions/dossier/${encodeURIComponent(id)}`);
   }
@@ -497,8 +529,9 @@ export function PilotageActionsPage() {
         [champ]: valeurAction,
       },
     };
-    enregistrer(next);
-    setMessage("Modification enregistrée : la place dans la file se recalcule automatiquement.");
+    if (enregistrer(next)) {
+      setMessage("Modification enregistrée : la place dans la file se recalcule automatiquement.");
+    }
   }
 
   function ajouterTache(id, tache) {
@@ -525,8 +558,9 @@ export function PilotageActionsPage() {
       const actuelle = { ...actionVide(), ...(next[id] || {}) };
       if (!dejaTravaille(actuelle) || !actuelle.prochaineAction) next[id] = { ...actuelle, ...propositionAutomatique(row) };
     });
-    enregistrer(next);
-    setMessage("Les lignes vides ont été préremplies. La file se reclasse automatiquement.");
+    if (enregistrer(next)) {
+      setMessage("Les lignes vides ont été préremplies. La file se reclasse automatiquement.");
+    }
   }
 
   function recalculerTouteLaFile() {
@@ -535,17 +569,22 @@ export function PilotageActionsPage() {
       return;
     }
     if (!window.confirm("Recalculer toute la file va remplacer les priorités, actions et vigilances actuelles. Continuer ?")) return;
-    const next = {};
+    const next = { ...actions };
     rows.forEach((row, index) => {
       next[idDossier(row, index)] = { ...actionVide(), ...propositionAutomatique(row) };
     });
-    enregistrer(next);
-    setMessage("Toute la file a été recalculée et reclassée automatiquement.");
+    if (enregistrer(next)) {
+      setMessage("Toute la file a été recalculée et reclassée automatiquement.");
+    }
   }
 
-  function copierSynthese() {
-    navigator.clipboard.writeText(texteSynthese);
-    setMessage("Synthèse copiée.");
+  async function copierSynthese() {
+    try {
+      await navigator.clipboard.writeText(texteSynthese);
+      setMessage("Synthèse copiée.");
+    } catch {
+      setMessage("Copie impossible : utilise la zone de texte ou vérifie les autorisations du navigateur.");
+    }
   }
 
   function telechargerSynthese() {
@@ -563,8 +602,12 @@ export function PilotageActionsPage() {
 
   function effacerLocal() {
     if (!window.confirm("Effacer la liste importée et le suivi local ?")) return;
-    removeStorageItem(STORAGE_ROWS);
-    removeStorageItem(STORAGE_ACTIONS);
+    const rowsRemoved = removeStorageItem(STORAGE_ROWS);
+    const actionsRemoved = removeStorageItem(STORAGE_ACTIONS);
+    if (!rowsRemoved || !actionsRemoved) {
+      setMessage("Suppression incomplète : vérifie le stockage local avant de continuer.");
+      return;
+    }
     setRows([]);
     setActions({});
     setMessage("Données locales effacées.");
