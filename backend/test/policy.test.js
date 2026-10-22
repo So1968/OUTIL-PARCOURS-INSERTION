@@ -69,6 +69,13 @@ test("la direction nécessite une dérogation nominative, motivée et bornée", 
     startsAt: "2026-10-22T09:00:00.000Z", expiresAt: "2026-10-22T12:00:00.000Z",
   };
   assert.equal(may(dir, CAPABILITIES.SHARED_READ), false);
+  assert.equal(may(dir, CAPABILITIES.SHARED_READ, {
+    ...base,
+    assignments: [{ userId: "dir-1", active: true, capability: CAPABILITIES.SHARED_READ }],
+  }), false);
+  assert.equal(may(dir, CAPABILITIES.SHARED_READ, {
+    ...base, grants: [{ ...grant, approvedBy: "dir-1" }],
+  }, { now: new Date("2026-10-22T10:00:00Z") }), false);
   assert.equal(may(dir, CAPABILITIES.SHARED_READ, { ...base, grants: [grant] }, { now: new Date("2026-10-22T10:00:00Z") }), true);
   assert.equal(may(dir, CAPABILITIES.SHARED_READ, { ...base, grants: [grant] }, { now: new Date("2026-10-22T12:00:00Z") }), false);
   assert.equal(may(dir, CAPABILITIES.SHARED_WRITE, { ...base, grants: [grant] }, { now: new Date("2026-10-22T10:00:00Z") }), false);
