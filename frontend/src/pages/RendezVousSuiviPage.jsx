@@ -20,6 +20,7 @@ const rdvInitial = {
   motif: "Premier contact / accueil",
   date: "",
   heure: "",
+  durationMinutes: 30,
   lieu: "ARTAG",
   statut: "À confirmer",
 };
@@ -176,9 +177,13 @@ export function RendezVousSuiviPage() {
     setCopie("");
   }
 
-  function copier(message, label) {
-    navigator.clipboard.writeText(message);
-    setCopie(label);
+  async function copier(message, label) {
+    try {
+      await navigator.clipboard.writeText(message);
+      setCopie(label);
+    } catch {
+      setCopie("Copie impossible : sélectionner le texte manuellement.");
+    }
   }
 
   function enregistrerRendezVous() {
@@ -188,14 +193,20 @@ export function RendezVousSuiviPage() {
       enregistreLe: new Date().toISOString(),
     };
     const updated = [nouveauRdv, ...historique];
+    if (!writeStorageJson(STORAGE_KEY, updated)) {
+      setCopie("Rendez-vous non enregistré : stockage indisponible.");
+      return;
+    }
     setHistorique(updated);
-    writeStorageJson(STORAGE_KEY, updated);
     setCopie("Rendez-vous enregistré dans l’historique.");
   }
 
   function effacerHistorique() {
+    if (!removeStorageItem(STORAGE_KEY)) {
+      setCopie("Impossible d’effacer l’historique local.");
+      return;
+    }
     setHistorique([]);
-    removeStorageItem(STORAGE_KEY);
     setCopie("Historique local effacé.");
   }
 
@@ -313,6 +324,13 @@ export function RendezVousSuiviPage() {
           <label>
             <span>Lieu</span>
             <input value={rdv.lieu} onChange={(event) => updateRdv("lieu", event.target.value)} />
+          </label>
+
+          <label>
+            <span>Durée réservée estimée</span>
+            <select value={rdv.durationMinutes} onChange={event => updateRdv("durationMinutes", Number(event.target.value))}>
+              {[15, 30, 45, 60, 90, 120].map(n => <option value={n} key={n}>{n} min</option>)}
+            </select>
           </label>
         </div>
 
