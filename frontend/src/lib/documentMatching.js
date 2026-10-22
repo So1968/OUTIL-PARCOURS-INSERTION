@@ -28,6 +28,7 @@ export function documentPersonLabel(row) {
 export function rankDocumentMatches(folderName, rows = []) {
   const folder = normalise(folderName);
   const folderTokens = new Set(tokens(folderName));
+  const folderWithBoundaries = ` ${folder} `;
 
   return rows
     .map((row, index) => {
@@ -39,7 +40,13 @@ export function rankDocumentMatches(folderName, rows = []) {
       let score = 0;
       const reasons = [];
 
-      if (dossierIdNormalise && folder.includes(dossierIdNormalise)) {
+      // Ne jamais rapprocher un dossier par sous-chaîne (ex. 123 dans 12345).
+      // L'identifiant de repli "dossier-<index>" n'est pas stable après réimport.
+      const hasStableIdentifier = [
+        "Numéro Insertis", "Numero Insertis", "N° Insertis", "N° dossier", "Numero dossier", "__id",
+      ].some((field) => Boolean(row?.[field]));
+      if (hasStableIdentifier && dossierIdNormalise
+        && folderWithBoundaries.includes(` ${dossierIdNormalise} `)) {
         score += 120;
         reasons.push("numéro dossier");
       }
