@@ -68,18 +68,18 @@ export function genererTachesApresEntretien({
   if (!["Faite", "Pas nécessaire"].includes(traceInsertis)) {
     labels.push("Tracer l’entretien dans Insertis");
   }
-  const seen = new Set();
-  const ids = new Set(previous.map(t => t.id));
+  const seen = new Set(
+    previous.filter(t => t.sourceJournalId === journalId)
+      .map(t => normalize(t.title).toLocaleLowerCase("fr-FR")),
+  );
   const next = [];
   for (const line of labels) {
     const title = line.slice(0, 240);
     const key = title.toLocaleLowerCase("fr-FR");
     if (seen.has(key)) continue;
     seen.add(key);
-    const id = `${journalId}:${seen.size}`;
-    if (ids.has(id)) continue;
     next.push({
-      id, sourceJournalId: journalId, title,
+      id: crypto.randomUUID(), sourceJournalId: journalId, title,
       status: "À faire", dueDate: "", reminderDaysBefore: 1,
       estimatedMinutes: "", outlookStatus: "Non synchronisé",
     });
