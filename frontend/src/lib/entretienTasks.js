@@ -106,6 +106,7 @@ export function rappelsProfessionnels(tasks = [], day) {
   if (!isoDate(day)) return [];
   return tasks.filter(t =>
     t && t.status !== "Fait" && isoDate(t.dueDate) &&
+    (!isoDate(t.snoozedUntil) || t.snoozedUntil <= day) &&
     (t.dueDate <= day || (jourDeRappel(t.dueDate, t.reminderDaysBefore ?? 1) || "9999-12-31") <= day),
   ).sort((a,b) => a.dueDate.localeCompare(b.dueDate));
 }
