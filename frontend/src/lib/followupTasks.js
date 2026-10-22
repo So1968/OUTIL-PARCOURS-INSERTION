@@ -126,3 +126,34 @@ export function createManualTask({ title, dueDate, dossierId = "", now = new Dat
     createdAt: now.toISOString(), outlookStatus: "non_connecte",
   };
 }
+
+/** Deux points de repère professionnels créés à l'enregistrement d'un rendez-vous.
+ * Le titre reste générique : aucune identité n'apparaît dans le bureau.
+ */
+export function creerTachesRendezVous(rdv, existingTasks = []) {
+  if (!rdv?.id || !/^\d{4}-\d{2}-\d{2}$/.test(rdv.date ?? "")
+    || ["Annulé", "Reporté"].includes(rdv.statut)) {
+    return { tasks: existingTasks, added: 0 };
+  }
+  const now = new Date();
+  const preparationDay = shiftLocalDate(rdv.date, -1);
+  const entries = [
+    { key: "preparation", title: "Préparer le rendez-vous et vérifier les documents utiles", day: preparationDay },
+    { key: "suite", title: "Faire le point après rendez-vous : actions, relances et trace Insertis", day: shiftLocalDate(rdv.date, 1) },
+  ];
+  if (rdv.accordRappel === "Oui") {
+    entries.push({
+      key: "rappel",
+      title: "Vérifier le rappel autorisé pour le rendez-vous",
+      day: shiftLocalDate(rdv.date, -2),
+    });
+  }
+  const existing = new Set(existingTasks.map(task => task.id));
+  const proposed = entries.filter(entry => !existing.has(`${rdv.id}:${entry.key}`)).map(entry => ({
+    id: `${rdv.id}:${entry.key}`, sourceId: rdv.id, dossierId: "",
+    title: entry.title, dueDate: entry.day, remindDate: entry.day,
+    status: "a_faire", priority: "normale",
+    createdAt: now.toISOString(), completedAt: null, outlookStatus: "non_connecte",
+  }));
+  return { tasks: [...existingTasks, ...proposed], added: proposed.length };
+}
