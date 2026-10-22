@@ -44,3 +44,11 @@ La CI utilise un conteneur PostgreSQL éphémère et y applique le schéma par `
 Le backend prévoit des sessions de huit heures avec jeton aléatoire de 256 bits et hachage en base, jamais une identité ou un rôle provenant des requêtes. Un compte doit être actif en base. La route `GET /api/dossiers/:caseId/overview` n'existe que si une base privée est explicitement injectée côté serveur ; elle ne lit aucune note, ne renvoie aucune identité et journalise toute lecture. L'application lancée avec `npm run backend:dev` **ne branche pas** cette base et garde toutes les routes métier fermées. Les tests HTTP utilisent uniquement PostgreSQL fictif.
 
 Un futur callback OpenID Connect valide devra rattacher le sujet émis par un fournisseur autorisé au modèle `IdentityLink` pré-provisionné, puis appeler `issueSession`. **Ne jamais appeler cette fonction depuis une route qui accepterait un identifiant de compte envoyé par le navigateur.**
+
+## Authentification nominative — intégration SSO préparée
+
+Le module `src/oidcProvider.js` utilise `openid-client` 6 pour le flux d'autorisation OIDC avec PKCE, state et nonce. `src/authRouter.js` impose une tentative courte à usage unique, et contrôle la correspondance d'un `issuer + subject` cryptographiquement validé avec un lien `IdentityLink` **pré-provisionné** vers un compte actif en base. Il ne crée pas de comptes à partir du nom ou de l'email. La déconnexion révoque la session, et le serveur n'accepte pas d'opérations métier sans une session vérifiée.
+
+L'activation est **désactivée par défaut**. Un environnement local sécurisé, sous contrôle de la structure, devra fournir `ARTAG_OIDC_ENABLED=1`, `DATABASE_URL`, `ARTAG_OIDC_ISSUER` (tenant dédié), `ARTAG_OIDC_CLIENT_ID`, `ARTAG_OIDC_CLIENT_SECRET`, `ARTAG_PUBLIC_ORIGIN` (HTTPS), `ARTAG_OIDC_REDIRECT_URI` (HTTPS, chemin `/auth/callback`). Ces valeurs ne doivent jamais être commitées. L'instance normale n'a pas ces paramètres et conserve les routes fermées. Le mode production demeure interdit.
+
+Le test d'intégration emploie un fournisseur OIDC **simulé** pour tester les règles métier sans s'authentifier chez Microsoft ; aucune preuve d'interopérabilité réelle avec le tenant ARTAG n'en découle. La mise en production exige une revue SSI/RGPD, une configuration M365/SSO autorisée et un essai en environnement de recette.

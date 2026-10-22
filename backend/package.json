@@ -14,7 +14,8 @@
   "dependencies": {
     "@prisma/client": "6.19.3",
     "express": "5.1.0",
-    "helmet": "8.3.0"
+    "helmet": "8.3.0",
+    "openid-client": "6.8.8"
   },
   "devDependencies": {
     "prisma": "6.19.3"
