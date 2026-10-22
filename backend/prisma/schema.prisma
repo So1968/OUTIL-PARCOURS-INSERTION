@@ -47,6 +47,8 @@ model UserAccount {
   approvedGrants  TemporaryGrant[]  @relation("GrantApprover")
   privateNotes    PrivateNote[]
   auditActions    AuditEvent[]
+  webSessions     WebSession[]
+  identityLinks   IdentityLink[]
 }
 
 model CaseFile {
@@ -145,4 +147,28 @@ model ExternalLink {
   caseFile    CaseFile       @relation(fields: [caseId], references: [id], onDelete: Cascade)
 
   @@unique([caseId, system])
+}
+
+model IdentityLink {
+  id        String      @id @default(uuid())
+  userId    String
+  issuer    String      @db.VarChar(512)
+  subject   String      @db.VarChar(255)
+  createdAt DateTime    @default(now())
+  user      UserAccount @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([issuer, subject])
+  @@index([userId])
+}
+
+model WebSession {
+  id          String      @id @default(uuid())
+  userId      String
+  tokenDigest String      @unique @db.Char(64)
+  createdAt   DateTime    @default(now())
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  user        UserAccount @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
 }
