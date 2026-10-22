@@ -39,7 +39,16 @@ async function start() {
       redirectUri: process.env.ARTAG_OIDC_REDIRECT_URI,
     };
   }
-  const app = createApp({ privateDb: db, oidc });
+  const enableSharedWrites = process.env.ARTAG_ENABLE_SHARED_WRITES === "1";
+  const csrfSecret = process.env.ARTAG_CSRF_SECRET || null;
+  if (enableSharedWrites && (!db || !oidc || !csrfSecret || csrfSecret.length < 32)) {
+    throw new Error("Écritures bloquées : SSO validé et secret CSRF requis.");
+  }
+  const app = createApp({
+    privateDb: db, oidc,
+    enableSharedWrites,
+    csrfSecret,
+  });
   const server = app.listen(port, "127.0.0.1", () => {
     console.info("ARTAG API développement : accès local, routes métier désactivées par défaut.");
   });
