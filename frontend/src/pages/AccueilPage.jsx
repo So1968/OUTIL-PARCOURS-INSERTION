@@ -11,6 +11,13 @@ const entreesPrincipales = [
     roles: ACCOMPAGNEMENT_ROLES,
   },
   {
+    titre: "Mes tâches et rappels",
+    texte: "Retrouver les actions après entretien, relances et échéances sans rien oublier.",
+    lien: "/mes-taches",
+    bouton: "Ouvrir mes tâches",
+    roles: ACCOMPAGNEMENT_ROLES,
+  },
+  {
     titre: "Je regarde ma file active",
     texte: "Voir les urgences, les actions à faire, les échéances et les traces Insertis.",
     lien: "/pilotage-actions",
