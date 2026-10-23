@@ -59,7 +59,8 @@ describe("bureau privé : saisie rapide et reprise sans doublon", () => {
       ],
     });
     render(<SecureWorkEventsPanel />);
-    expect(await screen.findByText(/10 min de charge connue/)).toBeInTheDocument();
+    expect(await screen.findByText(/de charge connue le/)).toBeInTheDocument();
+    expect(screen.getByText("10 min", { selector:"strong" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name:"Activités enregistrées (1)" })).toBeInTheDocument();
   });
 });
