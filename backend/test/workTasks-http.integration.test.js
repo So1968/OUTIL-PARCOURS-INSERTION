@@ -61,7 +61,8 @@ test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit
       where: { id: ref }, select: { role: true, enabled: true },
     }), { role: "REFERENTE", enabled: true });
     const body = { title: "Relancer un partenaire fictif", dueDate: "2026-11-13",
-      reminderDaysBefore: 2, estimatedMinutes: 20, status: "A_FAIRE" };
+      reminderDaysBefore: 2, estimatedMinutes: 20, status: "A_FAIRE",
+      requestId: randomUUID() };
     const write = (url, token, csrf, method, data, reqOrigin = origin) => fetch(url, {
       method, headers: {
         Cookie: cookie(token), Origin: reqOrigin, "X-CSRF-Token": csrf,
@@ -91,6 +92,17 @@ test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit
     assert.equal(first.dueDate, "2026-11-13");
     assert.equal(first.title, body.title);
     assert.equal(Object.hasOwn(first, "ownerId"), false);
+
+    // La même requête reçue deux fois retourne la même tâche sans création.
+    const replay = await write(path, refToken, csrfRef, "POST", body);
+    assert.equal(replay.status, 201);
+    assert.equal((await replay.json()).id, first.id);
+    assert.equal((await db.workTask.count({ where: { ownerId: ref } })), 1);
+
+    // Une clé réutilisée pour un contenu différent ne remplace pas la tâche.
+    assert.equal((await write(path, refToken, csrfRef, "POST", {
+      ...body, title: "Autre tâche fictive",
+    })).status, 409);
 
     const refList = await fetch(path, { headers: { Cookie: cookie(refToken) } });
     assert.equal(refList.status, 200);
