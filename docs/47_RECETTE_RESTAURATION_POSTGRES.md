@@ -7,7 +7,7 @@
 Le workflow GitHub Actions `.github/workflows/postgres-recovery.yml` exécute sur une machine éphémère :
 
 1. Démarrage d'un conteneur PostgreSQL 16 de test, entièrement fictif, distinct de tout environnement ARTAG.
-2. Validation du schéma Prisma, génération du client puis `prisma db push` **uniquement dans la base éphémère de CI**.
+2. Validation du schéma Prisma, génération du client puis **application de la migration versionnée** avec `prisma migrate deploy` sur la base éphémère de CI, et vérification de l'historique et de la dérive.
 3. Création d'un compte de recette fictif, de deux tâches, d'un événement express et d'une trace d'audit non nominative.
 4. Sauvegarde personnalisée `pg_dump --format custom` avec `--no-owner --no-acl`.
 5. Création d'une **seconde base de test vide**, `artag_ci_restore`, et restauration `pg_restore --single-transaction --exit-on-error`.
@@ -28,7 +28,7 @@ Ce script **n'est pas un outil de sauvegarde réelle** : il ne doit pas être re
 ## Ce qui manque pour l'exploitation institutionnelle
 
 - Une base PostgreSQL **privée, inventoriée, administrée et validée** par l'ARTAG ; le dépôt GitHub reste public.
-- Des **migrations Prisma versionnées** et relues, avec plan de retour arrière. La CI utilise encore `db push` et ne certifie pas de migrations.
+- Un **plan institutionnel de migrations Prisma versionnées** relues et de retour arrière. La CI teste désormais la migration initiale sur base fictive, mais ne valide aucune application sur des bases ARTAG existantes.
 - Une stratégie de sauvegardes réelle : choix du lieu chiffré, fréquence, politique de conservation, clés et rotation, contrôle d'accès, duplication géographique selon le besoin, supervision et alertes.
 - La définition par l'ARTAG du **RPO** (perte de données tolérée) et du **RTO** (délai maximal de reprise), puis des tests mesurés attestant de ces objectifs.
 - Une procédure de restauration approuvée, exécutée sur un site **isolé et sans flux sortants**, avec une personne responsable, une validation de l'intégrité et la journalisation des opérations.
@@ -50,3 +50,7 @@ Ce script **n'est pas un outil de sauvegarde réelle** : il ne doit pas être re
 Ce document ne doit pas servir de preuve d'homologation. La réussite d'un test GitHub Actions sur une base fictive démontre seulement que **la mécanique de sauvegarde/restauration des modèles testés** fonctionne dans cet environnement.
 
 *Outil conçu par Sofia de los Rios dans le cadre de sa mission.*
+
+## Évolution d'octobre 2026 : migrations CI versionnées
+
+Le test de restauration emploie désormais une migration versionnée Prisma, vérifie le registre `_prisma_migrations` et contrôle la dérive du schéma restauré. Voir [la notice des migrations](48_MIGRATIONS_PRISMA_VERSIONNEES.md). Ces contrôles restent limités aux bases fictives du runner.
