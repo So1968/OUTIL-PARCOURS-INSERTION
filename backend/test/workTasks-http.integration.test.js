@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { once } from "node:events";
 import { randomUUID } from "node:crypto";
 import { createApp } from "../src/app.js";
-import { updateOwnTask, WorkTaskAccessDenied } from "../src/workTaskService.js";
+import { updateOwnTask, professionalDay, plusCalendarDays, WorkTaskAccessDenied } from "../src/workTaskService.js";
 import { COOKIE_NAME, issueSession, revokeSession, resolveSessionUserId } from "../src/sessions.js";
 
 test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit", {
@@ -37,6 +37,7 @@ test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit
     ]);
     server = createApp({
       privateDb: db, oidc, enableWorkTasks: true,
+      clock: () => new Date("2026-11-11T09:00:00Z"),
       csrfSecret: "secret-pour-tests-de-recette-uniquement-32-caracteres",
     }).listen(0, "127.0.0.1");
     await once(server, "listening");
@@ -85,7 +86,7 @@ test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit
     assert.equal(response.status, 201);
     const first = await response.json();
     assert.deepEqual(Object.keys(first).sort(),
-      ["dueDate", "estimatedMinutes", "id", "reminderDaysBefore", "status", "title", "updatedAt", "version"]);
+      ["dueDate", "estimatedMinutes", "id", "reminderDaysBefore", "snoozedUntil", "status", "title", "updatedAt", "version"]);
     assert.equal(first.version, 0);
     assert.equal(first.dueDate, "2026-11-13");
     assert.equal(first.title, body.title);
@@ -101,6 +102,18 @@ test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit
       headers: { Cookie: cookie(refToken) },
     })).status, 422);
 
+    const remindersUrl = base + "/api/mes-rappels";
+    assert.equal((await fetch(remindersUrl)).status, 404);
+    const reminderResponse = await fetch(remindersUrl, { headers: { Cookie: cookie(refToken) } });
+    assert.equal(reminderResponse.status, 200);
+    assert.deepEqual((await reminderResponse.json()).reminders.map(t => t.id), [first.id]);
+    assert.equal((await fetch(remindersUrl, { headers: { Cookie: cookie(tnsToken) } })
+      .then(r => r.json())).reminders.length, 0);
+    assert.equal((await fetch(remindersUrl, { headers: { Cookie: cookie(dirToken) } })).status, 404);
+    assert.equal((await fetch(remindersUrl + "?offset=invalid", {
+      headers: { Cookie: cookie(refToken) },
+    })).status, 422);
+
     const updateUrl = path + "/" + first.id;
     // Contrôle direct du service avant la couche HTTP (données fictives).
     await assert.rejects(updateOwnTask({
@@ -113,22 +126,41 @@ test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit
     assert.equal((await write(updateUrl, refToken, csrfRef, "PATCH", {
       expectedVersion: 0, changes: { status: "INCONNU" },
     })).status, 422);
+
+    // Reporter un rappel sans toucher à la date initiale ni exposer la tâche.
     assert.equal((await write(updateUrl, refToken, csrfRef, "PATCH", {
-      expectedVersion: 0, changes: { status: "FAIT" },
+      expectedVersion: 0, changes: { snoozedUntil: "2026-11-12" },
     })).status, 200);
+    const paused = await fetch(remindersUrl, { headers: { Cookie: cookie(refToken) } });
+    assert.deepEqual((await paused.json()).reminders, []);
     assert.equal((await write(updateUrl, refToken, csrfRef, "PATCH", {
-      expectedVersion: 0, changes: { status: "A_FAIRE" },
+      expectedVersion: 1, changes: { snoozedUntil: "2026-02-30" },
+    })).status, 422);
+    assert.equal((await write(updateUrl, refToken, csrfRef, "PATCH", {
+      expectedVersion: 1, changes: { snoozedUntil: null },
+    })).status, 200);
+    const resumed = await fetch(remindersUrl, { headers: { Cookie: cookie(refToken) } });
+    assert.deepEqual((await resumed.json()).reminders.map(t => t.id), [first.id]);
+
+    assert.equal((await write(updateUrl, refToken, csrfRef, "PATCH", {
+      expectedVersion: 2, changes: { status: "FAIT" },
+    })).status, 200);
+    const complete = await fetch(remindersUrl, { headers: { Cookie: cookie(refToken) } });
+    assert.deepEqual((await complete.json()).reminders, []);
+    assert.equal((await write(updateUrl, refToken, csrfRef, "PATCH", {
+      expectedVersion: 2, changes: { status: "A_FAIRE" },
     })).status, 409);
     const final = await db.workTask.findUnique({ where: { id: first.id } });
     assert.equal(final.status, "FAIT");
-    assert.equal(final.version, 1);
+    assert.equal(final.version, 3);
     assert.equal(final.ownerId, ref);
 
     const events = await db.auditEvent.findMany({ where: {
       actorId: ref,
-      eventType: { in: ["WORK_TASK_CREATED", "WORK_TASK_UPDATED", "WORK_TASK_LIST_READ"] },
+      eventType: { in: ["WORK_TASK_CREATED", "WORK_TASK_UPDATED", "WORK_TASK_LIST_READ", "WORK_TASK_REMINDERS_READ"] },
     } });
-    assert.equal(events.length, 3);
+    assert.equal(events.length, 9);
+    assert.equal(events.filter(e => e.eventType === "WORK_TASK_REMINDERS_READ").length, 4);
     assert.ok(events.every(e => e.caseId === null && !e.purpose.includes(body.title)));
 
     await revokeSession({ db, cookieHeader: cookie(refToken) });
@@ -143,4 +175,12 @@ test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit
     await db.userAccount.deleteMany({ where: { id: { in: [ref, tns, direction] } } });
     await db.$disconnect();
   }
+});
+
+test("calendrier professionnel Paris : heures été/hiver et décalage en jours civils", () => {
+  assert.equal(professionalDay(new Date("2026-10-24T22:30:00Z")), "2026-10-25");
+  assert.equal(professionalDay(new Date("2026-10-25T23:30:00Z")), "2026-10-26");
+  assert.equal(plusCalendarDays("2026-03-28", 2), "2026-03-30");
+  assert.equal(plusCalendarDays("2026-10-25", 7), "2026-11-01");
+  assert.throws(() => plusCalendarDays("2026-02-30", 1));
 });
