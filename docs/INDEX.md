@@ -22,6 +22,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 16. [Audit Grok : priorités et séparation des modes](44_AUDIT_GROK_PRIORITES_ET_MODES.md) — mode Focus, limites du frontend et révocation des sessions.
 17. [Second audit Grok : reprise des tâches et activation sécurisée](45_AUDIT_GROK_REPRISE_ET_ACTIVATION.md) — actions immédiates dédoublonnées et verrou de recette.
 18. [Bureau privé : événements express et charge connue](46_BUREAU_PRIVE_SAISIE_EXPRESS.md) — PostgreSQL, idempotence, charge partielle, sécurité et recette fictive.
+19. [Recette de restauration PostgreSQL](47_RECETTE_RESTAURATION_POSTGRES.md) — exercice automatisé avec base fictive isolée et checklist institutionnelle.
 
 ## Grandes familles documentaires
 
