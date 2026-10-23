@@ -1,4 +1,5 @@
 import { SecureTasksPanel } from "../components/SecureTasksPanel";
+import { SecureWorkEventsPanel } from "../components/SecureWorkEventsPanel";
 import { secureTaskApiEnabled } from "../lib/secureTasksApi";
 import { BureauQuotidienPage } from "./BureauQuotidienPage";
 
@@ -11,7 +12,8 @@ export function BureauTravailRoute() {
     return (
       <main className="page-shell" style={{ maxWidth: 1040, margin: "0 auto", padding: 24 }}>
         <h1>Mon bureau professionnel protégé</h1>
-        <p>Les tâches de démonstration ne sont ni affichées ni importées automatiquement.</p>
+        <p>Les tâches et événements de démonstration ne sont ni affichés ni importés automatiquement.</p>
+        <SecureWorkEventsPanel />
         <SecureTasksPanel />
       </main>
     );

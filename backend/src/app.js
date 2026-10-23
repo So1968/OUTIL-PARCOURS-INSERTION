@@ -6,6 +6,7 @@ import { createAuthRouter } from "./authRouter.js";
 import { issueCsrfToken, validCsrf } from "./csrf.js";
 import { createSharedNote, DossierVersionConflict, InvalidSharedNote } from "./sharedNoteService.js";
 import { listOwnTasks, listOwnReminders, createOwnTask, updateOwnTask, WorkTaskAccessDenied, WorkTaskInvalid, WorkTaskConflict } from "./workTaskService.js";
+import { listOwnEvents, createOwnEvent, updateOwnEvent, WorkEventDenied, WorkEventInvalid, WorkEventConflict } from "./workEventService.js";
 
 export function createApp({
   privateDb = null,
@@ -146,6 +147,68 @@ export function createApp({
       origin: req.get("Origin"),
       allowedOrigin: oidc.origin,
     });
+
+    // Le même verrou serveur, la même session et le même CSRF protègent
+    // les repères de charge. Aucun champ nominatif n'est accepté.
+    const handleEventError = (error, res) => {
+      if (error instanceof WorkEventDenied) {
+        return res.status(404).json({ error: "EVENEMENT_INDISPONIBLE" });
+      }
+      if (error instanceof WorkEventInvalid) {
+        return res.status(422).json({ error: "EVENEMENT_INVALIDE" });
+      }
+      if (error instanceof WorkEventConflict) {
+        return res.status(409).json({ error: "EVENEMENT_MODIFIE" });
+      }
+      return res.status(503).json({ error: "SERVICE_INDISPONIBLE" });
+    };
+    app.get("/api/mes-evenements", async (req, res) => {
+      try {
+        const { offset, day } = req.query;
+        if (offset !== undefined && (typeof offset !== "string" || !/^\d{1,6}$/.test(offset))) {
+          throw new WorkEventInvalid();
+        }
+        if (day !== undefined && typeof day !== "string") throw new WorkEventInvalid();
+        const result = await listOwnEvents({
+          db: privateDb, cookieHeader: req.headers.cookie, day,
+          now: clock(), offset: offset ? Number(offset) : 0,
+        });
+        return res.status(200).json(result);
+      } catch (error) {
+        return handleEventError(error, res);
+      }
+    });
+    app.post("/api/mes-evenements", express.json({ limit: "2kb", type: "application/json" }),
+      async (req, res) => {
+        if (!csrfOk(req)) return res.status(403).json({ error: "CSRF_REFUSE" });
+        try {
+          const result = await createOwnEvent({
+            db: privateDb, cookieHeader: req.headers.cookie, input: req.body,
+          });
+          return res.status(result.created ? 201 : 200).json(result.event);
+        } catch (error) {
+          return handleEventError(error, res);
+        }
+      });
+    app.patch("/api/mes-evenements/:eventId",
+      express.json({ limit: "2kb", type: "application/json" }),
+      async (req, res) => {
+        if (!csrfOk(req)) return res.status(403).json({ error: "CSRF_REFUSE" });
+        try {
+          const keys = Object.keys(req.body || {});
+          if (keys.length !== 2 || !keys.includes("expectedVersion") || !keys.includes("changes")) {
+            throw new WorkEventInvalid();
+          }
+          const event = await updateOwnEvent({
+            db: privateDb, cookieHeader: req.headers.cookie,
+            eventId: req.params.eventId, expectedVersion: req.body.expectedVersion,
+            changes: req.body.changes,
+          });
+          return res.status(200).json(event);
+        } catch (error) {
+          return handleEventError(error, res);
+        }
+      });
 
     app.get("/api/mes-taches", async (req, res) => {
       try {

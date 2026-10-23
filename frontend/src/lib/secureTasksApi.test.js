@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   secureTaskApiEnabled, loadSecureTasks, loadSecureReminders, nextProfessionalDay,
-  createSecureTask, editSecureTask,
+  createSecureTask, editSecureTask, loadSecureWorkEvents,
+  createSecureWorkEvent, editSecureWorkEvent,
   SecureTasksUnavailable,
 } from "./secureTasksApi";
 
@@ -19,6 +20,12 @@ describe("tâches serveur : aucune activation implicite", () => {
     expect(secureTaskApiEnabled()).toBe(false);
     await expect(loadSecureTasks()).rejects.toBeInstanceOf(SecureTasksUnavailable);
     await expect(loadSecureReminders()).rejects.toBeInstanceOf(SecureTasksUnavailable);
+    await expect(loadSecureWorkEvents()).rejects.toBeInstanceOf(SecureTasksUnavailable);
+    await expect(createSecureWorkEvent({
+      requestId: "fictif", day:"2026-10-23", kind:"APPEL", minutes:10, state:"EFFECTUE",
+    })).rejects.toBeInstanceOf(SecureTasksUnavailable);
+    await expect(editSecureWorkEvent({ id:"fake", version:0 }, { state:"ANNULE" }))
+      .rejects.toBeInstanceOf(SecureTasksUnavailable);
     await expect(createSecureTask("Action fictive")).rejects.toBeInstanceOf(SecureTasksUnavailable);
     await expect(editSecureTask({ id:"fictif", version:0 }, { status:"FAIT" }))
       .rejects.toBeInstanceOf(SecureTasksUnavailable);
