@@ -20,6 +20,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 14. [État de livraison et conditions de recette](39_ETAT_LIVRAISON_ET_RECETTE.md) — fonctions testées, activation bloquée et validations ARTAG indispensables.
 15. [Audit sécurité et correctifs du backend](43_AUDIT_SECURITE_BACKEND_ET_CORRECTIFS.md) — limitation des tentatives, purge contrôlée et points bloquants.
 16. [Audit Grok : priorités et séparation des modes](44_AUDIT_GROK_PRIORITES_ET_MODES.md) — mode Focus, limites du frontend et révocation des sessions.
+17. [Second audit Grok : reprise des tâches et activation sécurisée](45_AUDIT_GROK_REPRISE_ET_ACTIVATION.md) — actions immédiates dédoublonnées et verrou de recette.
 
 ## Grandes familles documentaires
 
