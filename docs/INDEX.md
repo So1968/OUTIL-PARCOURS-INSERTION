@@ -19,6 +19,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 13. [Rappels privés et reports](42_RAPPELS_PRIVES_ET_REPORTS.md) — rappels calculés sur la journée Europe/Paris, report, sécurité et tests PostgreSQL.
 14. [État de livraison et conditions de recette](39_ETAT_LIVRAISON_ET_RECETTE.md) — fonctions testées, activation bloquée et validations ARTAG indispensables.
 15. [Audit sécurité et correctifs du backend](43_AUDIT_SECURITE_BACKEND_ET_CORRECTIFS.md) — limitation des tentatives, purge contrôlée et points bloquants.
+16. [Audit Grok : priorités et séparation des modes](44_AUDIT_GROK_PRIORITES_ET_MODES.md) — mode Focus, limites du frontend et révocation des sessions.
 
 ## Grandes familles documentaires
 
