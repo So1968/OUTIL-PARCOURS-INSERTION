@@ -1,0 +1,49 @@
+name: Archivage ponctuel des rappels privés fusionnés
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/archive-reminders-once.yml'
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  archive:
+    if: github.repository == 'So1968/OUTIL-PARCOURS-INSERTION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Préserver le commit vérifié avant suppression
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch='feat/rappels-prives-dates-et-report-20261023'
+          sha='d988c348b5621675cce09d0ad12ac685f6d21f31'
+          tag='archive/20261023/rappels-prives-et-reports'
+          merged="$(gh api "repos/$GITHUB_REPOSITORY/pulls/20" --jq '.merged')"
+          if [[ "$merged" != 'true' ]]; then
+            echo 'PR non fusionnée ; conservation de la branche'
+            exit 0
+          fi
+          if ! current="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$branch" --jq '.object.sha' 2>/dev/null)"; then
+            echo 'Branche déjà absente'
+            exit 0
+          fi
+          if [[ "$current" != "$sha" ]]; then
+            echo 'SHA modifié ; conservation de la branche'
+            exit 0
+          fi
+          if existing="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha' 2>/dev/null)"; then
+            if [[ "$existing" != "$sha" ]]; then
+              echo 'Tag différent ; conservation de la branche'
+              exit 0
+            fi
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" -f "ref=refs/tags/$tag" -f "sha=$sha" >/dev/null
+          fi
+          gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$branch" >/dev/null
+          echo 'Branche archivée et retirée'
