@@ -13,7 +13,7 @@
     "db:migrate:ci": "node scripts/ciMigrate.mjs"
   },
   "dependencies": {
-    "@prisma/client": "6.19.3",
+    "@prisma/client": "7.10.1",
     "express": "5.1.0",
     "helmet": "8.3.0",
     "openid-client": "6.8.8"
