@@ -78,3 +78,9 @@ Les états OIDC et sessions expirées peuvent être comptés sans modification a
 Avant toute initialisation OIDC, `backend/src/server.js` appelle `validateRecipeActivation(process.env)`. Si un module SSO ou métier est activé, `ARTAG_PRIVATE_RECIPE_GATE=1` doit être explicitement configuré, ainsi qu'une origine `ARTAG_PUBLIC_ORIGIN` HTTPS canonique et `ARTAG_OIDC_REDIRECT_URI` sur le chemin `/auth/callback` de cette même origine. Le serveur refuse toujours `NODE_ENV=production`. En cas de configuration absente ou contradictoire, le processus échoue sans afficher de secret.
 
 Ce drapeau est une **protection technique complémentaire**, jamais une preuve de consentement ou de validation ARTAG. Les recettes HTTP qui instancient `createApp` directement conservent leur configuration fictive sans démarrer le serveur. Voir `docs/45_AUDIT_GROK_REPRISE_ET_ACTIVATION.md`.
+
+## Vérification de restauration PostgreSQL sur données fictives
+
+Le workflow GitHub Actions `postgres-recovery.yml` crée quelques données strictement fictives sur la base éphémère, effectue une sauvegarde personnalisée avec `pg_dump`, restaure une seconde base **vide** via `pg_restore --single-transaction`, puis compare les empreintes SHA-256 des enregistrements attendus. La sauvegarde est supprimée sur le runner, jamais publiée dans un artefact. Cette vérification n'est **ni une sauvegarde réelle ARTAG ni une preuve d'homologation** : voir `docs/47_RECETTE_RESTAURATION_POSTGRES.md`.
+
+Le modèle Prisma est encore appliqué en CI par `db push` et requiert des **migrations versionnées** avant tout usage institutionnel. Aucune commande de restauration de production n'est fournie dans le dépôt public.
