@@ -4,6 +4,7 @@ on:
     branches: [feat/migrations-prisma-versionnees-20261023]
     paths: ['.github/workflows/generate-prisma-baseline-once.yml']
 
+# Ce workflow sera retiré après génération et validation du SQL.
 permissions:
   contents: write
 
