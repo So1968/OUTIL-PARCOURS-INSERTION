@@ -57,12 +57,16 @@ export async function loadSecureTasks() {
   throw new SecureTasksUnavailable("Liste trop volumineuse : pagination à examiner.");
 }
 
-export async function createSecureTask(title) {
+export async function createSecureTask(title, requestId = crypto.randomUUID()) {
+  if (typeof requestId !== "string" ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requestId)) {
+    throw new SecureTasksUnavailable("Identifiant de requête invalide.");
+  }
   const csrf = await token();
   return doRequest("/api/mes-taches", {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify({ title, requestId }),
   });
 }
 
