@@ -3,7 +3,7 @@ import path from 'node:path';
 
 // Vérification des fichiers indexés par Git ; ne lit jamais les dossiers OneDrive.
 const permittedMigration = "backend/prisma/migrations/20261023_initial_schema/migration.sql";
-const forbiddenMigrationStatements = /\\b(?:INSERT\\s+INTO|UPDATE\\s+\\S+\\s+SET|DELETE\\s+FROM|COPY\\s+\\S+\\s+(?:FROM|TO)|CREATE\\s+(?:USER|ROLE|EXTENSION)|ALTER\\s+ROLE|DROP\\s+(?:TABLE|SCHEMA|DATABASE)|GRANT\\s+|REVOKE\\s+)\\b/i;
+const forbiddenMigrationStatements = /\b(?:INSERT\s+INTO|UPDATE\s+\S+\s+SET|DELETE\s+FROM|COPY\s+\S+\s+(?:FROM|TO)|CREATE\s+(?:USER|ROLE|EXTENSION)|ALTER\s+ROLE|DROP\s+(?:TABLE|SCHEMA|DATABASE)|GRANT\s+|REVOKE\s+)\b/i;
 const forbiddenExtensions = new Set([
   '.csv', '.tsv', '.xlsx', '.xls', '.ods', '.docx', '.doc', '.odt',
   '.rtf', '.pdf', '.jsonl', '.ndjson', '.sql', '.sqlite', '.sqlite3',
@@ -83,7 +83,7 @@ for (const file of trackedFiles) {
   if (file === permittedMigration) {
     // Exception étroite : migrations schéma seulement, jamais contenu métier.
     // Le fichier ne peut contenir de DML, export, création de rôle ni extension.
-    if (!/CREATE\\s+TABLE/i.test(contents) || forbiddenMigrationStatements.test(contents) ||
+    if (!/CREATE\s+TABLE/i.test(contents) || forbiddenMigrationStatements.test(contents) ||
       contents.length > 300000) {
       violations.push({ file, reason: 'migration SQL non limitée au schéma' });
     }
