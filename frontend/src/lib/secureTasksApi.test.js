@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  secureTaskApiEnabled, loadSecureTasks, createSecureTask, editSecureTask,
+  secureTaskApiEnabled, loadSecureTasks, loadSecureReminders, nextProfessionalDay,
+  createSecureTask, editSecureTask,
   SecureTasksUnavailable,
 } from "./secureTasksApi";
 
@@ -17,6 +18,7 @@ describe("tâches serveur : aucune activation implicite", () => {
   it("reste fermé et ne fait aucune requête réseau dans le prototype", async () => {
     expect(secureTaskApiEnabled()).toBe(false);
     await expect(loadSecureTasks()).rejects.toBeInstanceOf(SecureTasksUnavailable);
+    await expect(loadSecureReminders()).rejects.toBeInstanceOf(SecureTasksUnavailable);
     await expect(createSecureTask("Action fictive")).rejects.toBeInstanceOf(SecureTasksUnavailable);
     await expect(editSecureTask({ id:"fictif", version:0 }, { status:"FAIT" }))
       .rejects.toBeInstanceOf(SecureTasksUnavailable);
@@ -31,4 +33,10 @@ describe("tâches serveur : aucune activation implicite", () => {
       expect(fetch).not.toHaveBeenCalled();
     }
   });
+  it("reporte au prochain jour civil, même lors du changement d'heure", () => {
+    expect(nextProfessionalDay("2026-10-25")).toBe("2026-10-26");
+    expect(nextProfessionalDay("2026-03-28")).toBe("2026-03-29");
+    expect(() => nextProfessionalDay("2026-02-30")).toThrow(SecureTasksUnavailable);
+  });
+
 });
