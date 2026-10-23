@@ -168,7 +168,7 @@ export function createApp({
     app.get("/api/mes-rappels", async (req, res) => {
       try {
         const offsetText = req.query.offset;
-        if (offsetText !== undefined && (typeof offsetText !== "string" || !/^\\d{1,6}$/.test(offsetText))) {
+        if (offsetText !== undefined && (typeof offsetText !== "string" || !/^\d{1,6}$/.test(offsetText))) {
           return res.status(422).json({ error: "TACHE_INVALIDE" });
         }
         const result = await listOwnReminders({
