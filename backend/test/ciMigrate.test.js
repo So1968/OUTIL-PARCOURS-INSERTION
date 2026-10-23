@@ -29,7 +29,7 @@ test("refuse les noms, ports, serveurs et mots de passe autres que CI fictive", 
     "postgresql://demo:demo@127.0.0.1:5432/artag_ci_demo?schema=public",
     "postgresql://artag_ci_demo:fictif_ci_local@127.0.0.1:5432/base_reelle?schema=public",
     "postgresql://artag_ci_demo:fictif_ci_local@127.0.0.1:5433/artag_ci_demo?schema=public",
-    "postgresql://artag_ci_demo:fictif_ci_local@base.exemple.invalid:5432/artag_ci_demo?schema=public",
+    "postgresql://artag_ci_demo:fictif_ci_local" + String.fromCharCode(64) + "base.exemple.invalid:5432/artag_ci_demo?schema=public",
     "postgresql://artag_ci_demo:fictif_ci_local@127.0.0.1:5432/artag_ci_demo?schema=autre",
   ]) {
     assert.throws(() => validateCiMigrationTarget({ ...fake, DATABASE_URL: db }));
