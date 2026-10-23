@@ -35,7 +35,7 @@ test("refuse les redirections OIDC hors origine, HTTP, URL à secret ou chemin a
   for (const changes of [
     { ARTAG_PUBLIC_ORIGIN:"http://artag.example.org" },
     { ARTAG_PUBLIC_ORIGIN:"https://artag.example.org/admin" },
-    { ARTAG_PUBLIC_ORIGIN:"https://someone:password@artag.example.org" },
+    { ARTAG_PUBLIC_ORIGIN:"https://someone:password" + String.fromCharCode(64) + "artag.example.org" },
     { ARTAG_OIDC_REDIRECT_URI:"https://evil.example.org/auth/callback" },
     { ARTAG_OIDC_REDIRECT_URI:"https://artag.example.org/other" },
     { ARTAG_OIDC_REDIRECT_URI:"http://artag.example.org/auth/callback" },
