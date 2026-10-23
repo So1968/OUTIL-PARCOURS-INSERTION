@@ -1,4 +1,6 @@
-> **État actualisé — 23 octobre 2026 :** le début de cette notice retrace les toutes premières étapes et contient des mentions historiquement dépassées (« aucune session », « toutes les routes désactivées »). Le statut actuel est dans les sections **Sessions HTTP**, **SSO**, **Écriture HTTP**, **Tâches personnelles** et [audit sécurité](../docs/43_AUDIT_SECURITE_BACKEND_ET_CORRECTIFS.md). Les fonctionnalités sont toujours désactivées hors configuration de recette autorisée, et le serveur interdit la production.\n\n# Backend ARTAG — socle technique désactivé par défaut
+> **État actualisé — 23 octobre 2026 :** le début de cette notice retrace les toutes premières étapes et contient des mentions historiquement dépassées (« aucune session », « toutes les routes désactivées »). Le statut actuel est dans les sections **Sessions HTTP**, **SSO**, **Écriture HTTP**, **Tâches personnelles** et [audit sécurité](../docs/43_AUDIT_SECURITE_BACKEND_ET_CORRECTIFS.md). Les fonctionnalités sont toujours désactivées hors configuration de recette autorisée, et le serveur interdit la production.
+
+# Backend ARTAG — socle technique désactivé par défaut
 
 Ce dossier introduit **Express + PostgreSQL/Prisma** conformément à `STACK_RECOMMANDEE.md` et `docs/27_ARCHITECTURE_APPLICATIVE.md`.
 
