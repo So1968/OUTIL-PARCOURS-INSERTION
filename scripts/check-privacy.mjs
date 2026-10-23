@@ -2,6 +2,8 @@ import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 
 // Vérification des fichiers indexés par Git ; ne lit jamais les dossiers OneDrive.
+const permittedMigration = "backend/prisma/migrations/20261023_initial_schema/migration.sql";
+const forbiddenMigrationStatements = /\\b(?:INSERT\\s+INTO|UPDATE\\s+\\S+\\s+SET|DELETE\\s+FROM|COPY\\s+\\S+\\s+(?:FROM|TO)|CREATE\\s+(?:USER|ROLE|EXTENSION)|ALTER\\s+ROLE|DROP\\s+(?:TABLE|SCHEMA|DATABASE)|GRANT\\s+|REVOKE\\s+)\\b/i;
 const forbiddenExtensions = new Set([
   '.csv', '.tsv', '.xlsx', '.xls', '.ods', '.docx', '.doc', '.odt',
   '.rtf', '.pdf', '.jsonl', '.ndjson', '.sql', '.sqlite', '.sqlite3',
@@ -16,7 +18,7 @@ const privateDirectories = new Set([
   'private', 'local-data', 'imports', 'exports', 'dossiers-usagers',
 ]);
 const textExtensions = new Set([
-  '.js', '.jsx', '.mjs', '.cjs', '.ts', '.tsx', '.json',
+  '.js', '.jsx', '.mjs', '.cjs', '.ts', '.tsx', '.json', '.sql',
   '.md', '.txt', '.html', '.css', '.yml', '.yaml', '.xml',
 ]);
 const indicators = [
@@ -29,6 +31,7 @@ const indicators = [
 const allowedDemonstration = new Set(['0600000000', '0100000000']);
 
 function isForbidden(filePath) {
+  if (filePath === permittedMigration) return false;
   const parts = filePath.replaceAll('\\', '/').split('/');
   const name = parts.at(-1).toLowerCase();
   if (parts.slice(0, -1).some((segment) => privateDirectories.has(segment.toLowerCase()))) return true;
@@ -77,6 +80,14 @@ for (const file of trackedFiles) {
     continue;
   }
   inspectedTextFiles++;
+  if (file === permittedMigration) {
+    // Exception étroite : migrations schéma seulement, jamais contenu métier.
+    // Le fichier ne peut contenir de DML, export, création de rôle ni extension.
+    if (!/CREATE\\s+TABLE/i.test(contents) || forbiddenMigrationStatements.test(contents) ||
+      contents.length > 300000) {
+      violations.push({ file, reason: 'migration SQL non limitée au schéma' });
+    }
+  }
   for (const indicator of indicators) {
     indicator.regex.lastIndex = 0;
     if ([...contents.matchAll(indicator.regex)].some(match => !isAcceptedExample(indicator, match[0]))) {
