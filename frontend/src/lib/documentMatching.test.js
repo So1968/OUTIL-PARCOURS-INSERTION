@@ -8,19 +8,22 @@ const rows = [
 ];
 
 describe("documentMatching", () => {
-  it("reconnaît NOM Prénom", () => {
-    expect(findAutomaticDocumentMatch("EXEMPLE Alpha", rows)).toMatchObject({
+  it("ne rattache jamais automatiquement sur NOM Prénom seuls", () => {
+    expect(findAutomaticDocumentMatch("EXEMPLE Alpha", rows)).toBeNull();
+    expect(findAutomaticDocumentMatch("Beta DEMO - pièces", rows)).toBeNull();
+  });
+
+  it("accepte identifiant Insertis stable et identité concordante", () => {
+    expect(findAutomaticDocumentMatch("EXEMPLE Alpha 12345", rows)).toMatchObject({
       dossierId: "12345",
       personne: "EXEMPLE Alpha",
       confidence: "forte",
     });
   });
 
-  it("reconnaît Prénom NOM", () => {
-    expect(findAutomaticDocumentMatch("Beta DEMO - pièces", rows)).toMatchObject({
-      dossierId: "23456",
-      personne: "DEMO Beta",
-    });
+  it("ne rattache pas sur __id interne sans numéro de dossier", () => {
+    const dossiers = [{ Nom: "EXEMPLE", Prénom: "Alpha", __id: "ABC123" }];
+    expect(findAutomaticDocumentMatch("ABC123 EXEMPLE Alpha", dossiers)).toBeNull();
   });
 
   it("reconnaît un numéro Insertis", () => {
@@ -56,7 +59,7 @@ describe("documentMatching", () => {
   });
 
   it("classe les suggestions par score", () => {
-    const ranked = rankDocumentMatches("EXEMPLE Alpha", rows);
+    const ranked = rankDocumentMatches("EXEMPLE Alpha 12345", rows);
     expect(ranked[0].dossierId).toBe("12345");
     expect(ranked[0].score).toBeGreaterThan(90);
   });

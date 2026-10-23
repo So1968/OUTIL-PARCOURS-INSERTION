@@ -87,11 +87,12 @@ export function findAutomaticDocumentMatch(folderName, rows = []) {
   const best = ranked[0];
   const second = ranked[1];
 
-  const strongIdentityMatch =
-    best.reasons.includes("numéro dossier") ||
-    (best.reasons.includes("nom") && best.reasons.includes("prénom"));
-
-  if (!strongIdentityMatch || best.score < 90) return null;
+  // Une identité nominative n'est jamais assez stable pour lier automatiquement
+  // des documents sociaux : homonymie, nom d'usage ou changement de référente.
+  // Le nom et le prénom restent seulement des indices pour la revue humaine.
+  const stableIdFields = ["Numéro Insertis", "Numero Insertis", "N° Insertis", "N° dossier", "Numero dossier"];
+  const stableId = stableIdFields.some(field => String(best.row?.[field] ?? "").trim());
+  if (!stableId || !best.reasons.includes("numéro dossier") || best.score < 120) return null;
   if (second && second.score === best.score) return null;
 
   return {

@@ -29,6 +29,20 @@ export function createApp({
     res.status(200).json({ status: "ok", service: "artag-api-socle" });
   });
 
+  // Readiness distincte de la vie du processus : ne déclarer le service
+  // professionnel prêt que si PostgreSQL répond réellement.
+  app.get("/readyz", async (_req, res) => {
+    if (!privateDb?.$queryRaw) {
+      return res.status(503).json({ status: "unavailable" });
+    }
+    try {
+      await privateDb.$queryRaw`SELECT 1`;
+      return res.status(200).json({ status: "ready" });
+    } catch {
+      return res.status(503).json({ status: "unavailable" });
+    }
+  });
+
   if (privateDb && oidc) {
     app.use("/auth", createAuthRouter({ db: privateDb, ...oidc }));
   }
