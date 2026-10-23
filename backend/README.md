@@ -1,4 +1,4 @@
-# Backend ARTAG — socle technique désactivé par défaut
+> **État actualisé — 23 octobre 2026 :** le début de cette notice retrace les toutes premières étapes et contient des mentions historiquement dépassées (« aucune session », « toutes les routes désactivées »). Le statut actuel est dans les sections **Sessions HTTP**, **SSO**, **Écriture HTTP**, **Tâches personnelles** et [audit sécurité](../docs/43_AUDIT_SECURITE_BACKEND_ET_CORRECTIFS.md). Les fonctionnalités sont toujours désactivées hors configuration de recette autorisée, et le serveur interdit la production.\n\n# Backend ARTAG — socle technique désactivé par défaut
 
 Ce dossier introduit **Express + PostgreSQL/Prisma** conformément à `STACK_RECOMMANDEE.md` et `docs/27_ARCHITECTURE_APPLICATIVE.md`.
 
@@ -64,3 +64,9 @@ Le modèle `WorkTask` et `src/workTaskService.js` introduisent une liste **priv�
 Le volet React ne se manifeste que si `VITE_ARTAG_SECURE_TASKS=1` et si le site est servi en HTTPS ; il ne migre ni ne partage les données du navigateur. Tests avec comptes fictifs, **aucune activation automatique, aucun dossier réel et production toujours interdite**. Détail : `docs/41_TACHES_PRIVEES_POSTGRESQL.md`.
 
 Les passages historiques en début de ce README décrivent les étapes précédentes du prototype ; l'état actuel des routes est expliqué dans la présente section et le code.
+
+## Protection des tentatives et entretien des sessions — 23 octobre 2026
+
+Les routes de connexion et de callback utilisent un limiteur **mono-processus** de vingt requêtes par adresse TCP et par route sur dix minutes, avec réponse HTTP `429` et `Retry-After`. Les entêtes d'IP déclarée par le navigateur ne sont pas pris en compte. Cette protection ne dispense pas d'un filtrage distribué au niveau du proxy institutionnel.
+
+Les états OIDC et sessions expirées peuvent être comptés sans modification avec `npm --prefix backend run auth:prune -- --dry-run`. Une purge après rétention de sept jours requiert `--apply` et la confirmation `ARTAG_CONFIRM_AUTH_PRUNE=1`. Cette procédure ne doit être exécutée que dans une base de recette dont l'exploitant a autorisé la maintenance, jamais en production. Voir `docs/43_AUDIT_SECURITE_BACKEND_ET_CORRECTIFS.md`.
