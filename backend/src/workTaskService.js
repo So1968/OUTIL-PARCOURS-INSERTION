@@ -5,6 +5,7 @@ const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const ROLES = new Set(["REFERENTE", "APPUI_TNS", "ACCUEIL", "RELAIS_LOGEMENT"]);
 const STATUSES = new Set(["A_FAIRE", "EN_COURS", "EN_ATTENTE", "FAIT"]);
 const FIELDS = new Set(["title", "dueDate", "reminderDaysBefore", "snoozedUntil", "estimatedMinutes", "status"]);
+const CREATE_FIELDS = new Set([...FIELDS, "requestId"]);
 
 export class WorkTaskAccessDenied extends Error {
   constructor() { super("TACHE_INDISPONIBLE"); this.name = "WorkTaskAccessDenied"; }
@@ -28,7 +29,7 @@ function parseDay(value) {
 
 function validFields(input, { create = false } = {}) {
   if (!input || typeof input !== "object" || Array.isArray(input)
-    || Object.keys(input).some(key => !FIELDS.has(key))) throw new WorkTaskInvalid();
+    || Object.keys(input).some(key => !(create ? CREATE_FIELDS : FIELDS).has(key))) throw new WorkTaskInvalid();
   if (create && !Object.hasOwn(input, "title")) throw new WorkTaskInvalid();
   if (!create && Object.keys(input).length === 0) throw new WorkTaskInvalid();
   const data = {};
@@ -107,12 +108,40 @@ export async function listOwnTasks({ db, cookieHeader, offset = 0 } = {}) {
 
 export async function createOwnTask({ db, cookieHeader, input } = {}) {
   const data = validFields(input, { create: true });
+  const requestId = input.requestId;
+  if (requestId !== undefined &&
+    (typeof requestId !== "string" || !UUID.test(requestId))) throw new WorkTaskInvalid();
   const ownerId = await getOwner(db, cookieHeader);
   return db.$transaction(async tx => {
     await authorizedActor(tx, ownerId);
-    const task = await tx.workTask.create({ data: { ...data, ownerId }, select: taskSelect });
+    let task;
+    let created = true;
+    if (requestId) {
+      const result = await tx.workTask.createMany({
+        data: [{ ...data, ownerId, requestId }],
+        skipDuplicates: true,
+      });
+      created = result.count === 1;
+      task = await tx.workTask.findUnique({
+        where: { ownerId_requestId: { ownerId, requestId } },
+        select: taskSelect,
+      });
+      if (!task) throw new WorkTaskConflict();
+      // Une clé rejouée avec des informations différentes est une erreur,
+      // pas une autorisation de remplacer silencieusement la première création.
+      if (!created) {
+        const actual = exposed(task);
+        for (const [key, value] of Object.entries(data)) {
+          const normalized = value instanceof Date ? value.toISOString().slice(0, 10) : value;
+          if (actual[key] !== normalized) throw new WorkTaskConflict();
+        }
+      }
+    } else {
+      task = await tx.workTask.create({ data: { ...data, ownerId }, select: taskSelect });
+    }
     await tx.auditEvent.create({
-      data: { actorId: ownerId, eventType: "WORK_TASK_CREATED", purpose: "Création d'une tâche personnelle" },
+      data: { actorId: ownerId, eventType: created ? "WORK_TASK_CREATED" : "WORK_TASK_REPLAYED",
+        purpose: "Création idempotente d'une tâche personnelle" },
     });
     return exposed(task);
   }, { isolationLevel: "Serializable" });

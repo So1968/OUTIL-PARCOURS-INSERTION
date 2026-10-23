@@ -20,6 +20,7 @@ export function SecureTasksPanel() {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [retryTask, setRetryTask] = useState(null);
 
   if (!secureTaskApiEnabled()) return null;
 
@@ -39,24 +40,35 @@ export function SecureTasksPanel() {
     }
   };
 
-  const add = async event => {
-    event.preventDefault();
-    if (!title.trim()) return;
+  const saveTask = async payload => {
     setBusy(true);
     try {
-      await createSecureTask(title.trim());
+      // Même clé après une réponse réseau incertaine : pas de doublon serveur.
+      await createSecureTask(payload.title, payload.requestId);
+      setRetryTask(null);
       setTitle("");
-      const [data, reminderData] = await Promise.all([loadSecureTasks(), loadSecureReminders()]);
-      setTasks(data);
-      setReminders(reminderData.reminders);
-      setProfessionalDay(reminderData.day);
-      setReady(true);
       setMessage("Tâche sauvegardée sur le serveur professionnel.");
+      try {
+        const [data, reminderData] = await Promise.all([loadSecureTasks(), loadSecureReminders()]);
+        setTasks(data);
+        setReminders(reminderData.reminders);
+        setProfessionalDay(reminderData.day);
+        setReady(true);
+      } catch {
+        setMessage("Tâche enregistrée. Recharge la liste pour vérifier son affichage.");
+      }
     } catch (error) {
-      setMessage(error.message);
+      setRetryTask(payload);
+      setMessage(error.message + " Réessaie avec la même demande pour éviter tout doublon.");
     } finally {
       setBusy(false);
     }
+  };
+
+  const add = event => {
+    event.preventDefault();
+    if (!title.trim() || retryTask || busy) return;
+    void saveTask({ title: title.trim(), requestId: crypto.randomUUID() });
   };
 
   const edit = async (task, changes) => {
@@ -90,8 +102,17 @@ export function SecureTasksPanel() {
             <input value={title} maxLength={200} onChange={e => setTitle(e.target.value)}
               placeholder="Action brève à réaliser" required />
           </label>
-          <button type="submit" disabled={busy || !title.trim()}>Créer sur le serveur</button>
+          <button type="submit" disabled={busy || !!retryTask || !title.trim()}>Créer sur le serveur</button>
         </form>
+        {retryTask && <div role="alert">
+          <p>Une tentative précédente n’a pas été confirmée. Ne recrée pas cette tâche avec une nouvelle demande.</p>
+          <button type="button" disabled={busy} onClick={() => void saveTask(retryTask)}>
+            Réessayer sans doublon
+          </button>
+          <button type="button" disabled={busy} onClick={() => { setRetryTask(null); void reload(); }}>
+            Abandonner la tentative et vérifier la liste
+          </button>
+        </div>}
         <div aria-label="Rappels professionnels privés" className="daily-section">
           <h3>Mes rappels sécurisés du {professionalDay || "jour"} ({reminders.length})</h3>
           {reminders.length === 0 && <p>Rien à relancer pour le moment.</p>}
