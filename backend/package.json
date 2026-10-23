@@ -19,6 +19,6 @@
     "openid-client": "6.8.8"
   },
   "devDependencies": {
-    "prisma": "6.19.3"
+    "prisma": "7.10.1"
   }
 }
