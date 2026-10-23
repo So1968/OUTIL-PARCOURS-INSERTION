@@ -16,6 +16,7 @@ import { AppNavigation } from "./components/AppNavigation";
 import { AccessDeniedPage } from "./pages/AccessDeniedPage";
 import { AccueilPage } from "./pages/AccueilPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { secureTaskApiEnabled } from "./lib/secureTasksApi";
 
 function lazyNamed(importer, exportName) {
   return lazy(() => importer().then((module) => ({ default: module[exportName] })));
@@ -94,7 +95,31 @@ function AppRoutes() {
   );
 }
 
+function SecureWorkApp() {
+  // Les anciens écrans stockent encore des données métier dans localStorage.
+  // Ils restent hors du mode serveur HTTPS tant que leur migration n'est pas
+  // achevée : pas de sélection de rôle fictif ni de fuite par route directe.
+  return (
+    <AppErrorBoundary>
+      <Suspense fallback={<div role="status">Ouverture du bureau professionnel…</div>}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/bureau-quotidien" replace />} />
+          <Route path="/bureau-quotidien" element={<BureauTravailRoute />} />
+          <Route path="*" element={
+            <main className="page-shell">
+              <h1>Module non activé en mode professionnel sécurisé</h1>
+              <p>Les anciens écrans de démonstration restent fermés jusqu’à leur migration vers l’API sécurisée.</p>
+              <p><a href="/bureau-quotidien">Ouvrir le bureau professionnel</a></p>
+            </main>
+          } />
+        </Routes>
+      </Suspense>
+    </AppErrorBoundary>
+  );
+}
+
 export default function App() {
+  if (secureTaskApiEnabled()) return <SecureWorkApp />;
   return (
     <RoleProvider>
       <PrototypeProfileBanner />
