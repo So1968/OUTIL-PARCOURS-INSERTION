@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { SecureTasksPanel } from "../components/SecureTasksPanel";
+import { DailyFocusPanel } from "../components/DailyFocusPanel";
 import { readStorageJson, writeStorageJson } from "../lib/storage";
 import { repartitionTaches, rappelsProfessionnels, jourDeRappel } from "../lib/entretienTasks";
 import { calculerChargeJour, dureeLisible, minutesValides, TYPES_EVENEMENTS, isDate } from "../lib/workload";
@@ -10,6 +10,7 @@ const PERSONAL_KEY = "__mes_taches";
 const QUICK_KEY = "artag-evenements-express-demo-v1";
 const CAPACITY_KEY = "artag-capacite-journaliere-demo-v1";
 const RDV_KEY = "artag-rendez-vous-suivi";
+const FOCUS_KEY = "artag-focus-mode-demo-v1";
 const workDay = () => {
   const d = new Date();
   const part = value => String(value).padStart(2, "0");
@@ -37,6 +38,7 @@ export function BureauQuotidienPage() {
   const [message, setMessage] = useState("");
   const [lastQuickId, setLastQuickId] = useState("");
   const [freeTask, setFreeTask] = useState("");
+  const [focus, setFocus] = useState(() => readStorageJson(FOCUS_KEY, false) === true);
 
   const items = useMemo(() => Object.entries(records).flatMap(([dossierId, list]) =>
     (Array.isArray(list) ? list : []).map(task => ({ ...task, dossierId }))), [records]);
@@ -85,6 +87,14 @@ export function BureauQuotidienPage() {
     if (saveRecords(next, "Tâche ajoutée. Choisis une date de reprise dans la liste ci-dessous.")) {
       setFreeTask("");
     }
+  }
+
+  function toggleFocus() {
+    if (!writeStorageJson(FOCUS_KEY, !focus)) {
+      setMessage("Mode Focus non sauvegardé.");
+      return;
+    }
+    setFocus(!focus);
   }
 
   function reporterTache(task) {
@@ -250,7 +260,10 @@ export function BureauQuotidienPage() {
         </label>
       </div>
 
-      <section className="daily-section" aria-labelledby="charge-header">
+      <DailyFocusPanel tasks={items} today={day} focus={focus}
+        onToggle={toggleFocus} onUpdate={updateTask} />
+
+      {!focus &&       <section className="daily-section" aria-labelledby="charge-header">
         <h2 id="charge-header">Charge calculée</h2>
         <div className="daily-summary">
           <div><strong>{dureeLisible(charge.totalKnown)}</strong>Charge connue</div>
@@ -264,6 +277,7 @@ export function BureauQuotidienPage() {
         {charge.pendingWithoutDate > 0 && <p className="daily-alert">{charge.pendingWithoutDate} tâche(s) sans échéance restent à planifier.</p>}
         <button type="button" onClick={copierBilanAnonyme}>Copier le bilan sans données personnelles</button>
       </section>
+      }
 
       <section className="daily-section" aria-labelledby="rappels-header">
         <h2 id="rappels-header">Mes rappels à traiter ({reminders.length})</h2>
@@ -345,9 +359,7 @@ export function BureauQuotidienPage() {
         </ul>}
       </section>
 
-      <SecureTasksPanel />
-
-      <section aria-label="Mes actions">
+      {!focus && <section aria-label="Mes actions">
         <h2>{activeCount} tâche(s) non terminée(s)</h2>
         {taskSection("Priorité 1 — en retard", sorted.overdue, "retards")}
         {taskSection("Priorité 2 — aujourd'hui", sorted.today, "aujourdhui")}
@@ -355,7 +367,7 @@ export function BureauQuotidienPage() {
         <details><summary>Voir les tâches terminées ({sorted.done.length})</summary>
           {taskSection("Réalisées", sorted.done, "terminees")}
         </details>
-      </section>
+      </section>}
       {message && <p role="status">{message}</p>}
       <p>Les saisies restent dans ce navigateur de démonstration. Le total n'est pas une donnée officielle de temps de travail : il exclut les éléments sans durée, et Outlook n'est pas connecté. Une version professionnelle nécessitera le stockage ARTAG sécurisé et les droits validés.</p>
     </main>
