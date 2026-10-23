@@ -162,8 +162,8 @@ test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit
       actorId: ref,
       eventType: { in: ["WORK_TASK_CREATED", "WORK_TASK_UPDATED", "WORK_TASK_LIST_READ", "WORK_TASK_REMINDERS_READ"] },
     } });
-    assert.equal(events.length, 9);
-    assert.equal(events.filter(e => e.eventType === "WORK_TASK_REMINDERS_READ").length, 4);
+    assert.equal(events.length, 10);
+    assert.equal(events.filter(e => e.eventType === "WORK_TASK_REMINDERS_READ").length, 5);
     assert.ok(events.every(e => e.caseId === null && !e.purpose.includes(body.title)));
 
     await revokeSession({ db, cookieHeader: cookie(refToken) });
