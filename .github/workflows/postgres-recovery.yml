@@ -33,6 +33,7 @@ jobs:
       RESTORE_DATABASE_URL: postgresql://artag_ci_demo:fictif_ci_local@127.0.0.1:5432/artag_ci_restore?schema=public
       PGPASSWORD: fictif_ci_local
       ARTAG_DB_INTEGRATION_TEST: '1'
+      ARTAG_SCHEMA_MIGRATION_REHEARSAL: '1'
       ARTAG_RECOVERY_REHEARSAL: '1'
     steps:
       - name: Extraire le code (jamais de sauvegarde réelle)
@@ -49,7 +50,9 @@ jobs:
         run: |
           npm --prefix backend run db:validate
           npm --prefix backend run db:generate
-          npm --prefix backend run db:push:test
+          npm --prefix backend run db:migrate:ci -- deploy
+          npm --prefix backend run db:migrate:ci -- status
+          npm --prefix backend run db:migrate:ci -- drift
       - name: Insérer une petite série d'enregistrements fictifs
         run: node backend/scripts/recoveryFixture.mjs seed
       - name: Sauvegarder sans export GitHub et restaurer dans une nouvelle base
@@ -83,6 +86,10 @@ jobs:
 
           original="$(node backend/scripts/recoveryFixture.mjs checksum)"
           restored="$(DATABASE_URL="$RESTORE_DATABASE_URL" node backend/scripts/recoveryFixture.mjs checksum)"
+          # La restauration doit aussi conserver le registre de migrations
+          # et le schéma attendu, sans nécessité de db push.
+          DATABASE_URL="$RESTORE_DATABASE_URL" npm --prefix backend run db:migrate:ci -- status
+          DATABASE_URL="$RESTORE_DATABASE_URL" npm --prefix backend run db:migrate:ci -- drift
           if [[ "$original" != "$restored" ]]; then
             echo 'Échec : données fictives restaurées différentes.'
             exit 1

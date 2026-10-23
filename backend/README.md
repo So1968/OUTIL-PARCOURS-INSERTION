@@ -84,3 +84,7 @@ Ce drapeau est une **protection technique complémentaire**, jamais une preuve d
 Le workflow GitHub Actions `postgres-recovery.yml` crée quelques données strictement fictives sur la base éphémère, effectue une sauvegarde personnalisée avec `pg_dump`, restaure une seconde base **vide** via `pg_restore --single-transaction`, puis compare les empreintes SHA-256 des enregistrements attendus. La sauvegarde est supprimée sur le runner, jamais publiée dans un artefact. Cette vérification n'est **ni une sauvegarde réelle ARTAG ni une preuve d'homologation** : voir `docs/47_RECETTE_RESTAURATION_POSTGRES.md`.
 
 Le modèle Prisma est encore appliqué en CI par `db push` et requiert des **migrations versionnées** avant tout usage institutionnel. Aucune commande de restauration de production n'est fournie dans le dépôt public.
+
+## Migrations Prisma versionnées — base fictive uniquement
+
+Le dépôt comporte désormais `prisma/migrations/20261023_initial_schema/migration.sql`, généré depuis le modèle Prisma. Les workflows de tests utilisent `npm --prefix backend run db:migrate:ci -- deploy`, puis `status` et `drift`. Le script `ciMigrate.mjs` interdit une base autre que les bases fictives du runner GitHub, et `db:push:test` a été supprimé. **Ne pas appliquer l'initialisation sur une base existante**, ni utiliser ces commandes dans un environnement ARTAG. Voir `docs/48_MIGRATIONS_PRISMA_VERSIONNEES.md`.

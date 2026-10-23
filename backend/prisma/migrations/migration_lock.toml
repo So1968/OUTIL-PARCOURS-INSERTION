@@ -1,0 +1,3 @@
+# Prisma Migrate : fournisseur officiel pour la base de recette fictive.
+# Ne pas changer sans procédure de migration approuvée.
+provider = "postgresql"
