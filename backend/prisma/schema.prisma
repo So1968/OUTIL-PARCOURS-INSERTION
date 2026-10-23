@@ -42,6 +42,22 @@ enum WorkTaskStatus {
   FAIT
 }
 
+// Repères de charge strictement personnels et sans nom de bénéficiaire.
+enum WorkEventKind {
+  IMPREVU
+  APPEL
+  RENDEZ_VOUS
+  ENTRETIEN
+  RELANCE
+  ADMINISTRATIF
+}
+
+enum WorkEventState {
+  PREVU
+  EFFECTUE
+  ANNULE
+}
+
 model UserAccount {
   id              String            @id @default(uuid())
   email           String            @unique
@@ -57,6 +73,7 @@ model UserAccount {
   webSessions     WebSession[]
   identityLinks   IdentityLink[]
   ownWorkTasks    WorkTask[]
+  ownWorkEvents   WorkEvent[]
 }
 
 model CaseFile {
@@ -209,4 +226,24 @@ model WorkTask {
 
   @@index([ownerId, dueDate])
   @@index([ownerId, status])
+}
+
+
+// Saisie express privée : aucune description libre, aucun lien nominatif.
+// La clé client unique évite les doubles créations lors d'un renvoi réseau.
+model WorkEvent {
+  id          String         @id @default(uuid())
+  ownerId     String
+  owner       UserAccount    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  requestId   String         @db.VarChar(80)
+  day         DateTime       @db.Date
+  kind        WorkEventKind
+  state       WorkEventState
+  minutes     Int
+  version     Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@unique([ownerId, requestId])
+  @@index([ownerId, day])
 }
