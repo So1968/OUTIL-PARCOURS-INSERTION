@@ -9,6 +9,9 @@ vi.mock("../lib/secureTasksApi", () => ({
 vi.mock("../components/SecureTasksPanel", () => ({
   SecureTasksPanel: () => <p>VOLET_SERVEUR_FICTIF</p>,
 }));
+vi.mock("../components/SecureWorkEventsPanel", () => ({
+  SecureWorkEventsPanel: () => <p>CHARGE_SERVEUR_FICTIVE</p>,
+}));
 import { BureauTravailRoute } from "./BureauTravailRoute";
 
 describe("séparation du bureau démo / tâches privées", () => {
@@ -21,6 +24,7 @@ describe("séparation du bureau démo / tâches privées", () => {
     render(<MemoryRouter><BureauTravailRoute /></MemoryRouter>);
     expect(screen.getByRole("heading", { name:"Plan de charge du jour" })).toBeInTheDocument();
     expect(screen.queryByText("VOLET_SERVEUR_FICTIF")).not.toBeInTheDocument();
+    expect(screen.queryByText("CHARGE_SERVEUR_FICTIVE")).not.toBeInTheDocument();
   });
   it("en mode serveur, ne monte aucun composant lisant les tâches locales", () => {
     localStorage.setItem("artag-taches-entretien-demo-v1", JSON.stringify({
@@ -31,6 +35,7 @@ describe("séparation du bureau démo / tâches privées", () => {
     render(<MemoryRouter><BureauTravailRoute /></MemoryRouter>);
     expect(screen.getByRole("heading", { name:"Mon bureau professionnel protégé" })).toBeInTheDocument();
     expect(screen.getByText("VOLET_SERVEUR_FICTIF")).toBeInTheDocument();
+    expect(screen.getByText("CHARGE_SERVEUR_FICTIVE")).toBeInTheDocument();
     expect(screen.queryByText("NE_PAS_AFFICHER")).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name:"Plan de charge du jour" })).not.toBeInTheDocument();
     expect(spy).not.toHaveBeenCalled();
