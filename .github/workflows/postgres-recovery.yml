@@ -1,0 +1,90 @@
+name: Recette isolée — sauvegarde et restauration PostgreSQL
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  recovery-rehearsal:
+    name: PostgreSQL 16 — sauvegarde puis restauration fictive
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: artag_ci_demo
+          POSTGRES_PASSWORD: fictif_ci_local
+          POSTGRES_DB: artag_ci_demo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U artag_ci_demo -d artag_ci_demo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Tous ces paramètres sont PUBLICS, fictifs et restreints au conteneur CI.
+      DATABASE_URL: postgresql://artag_ci_demo:fictif_ci_local@127.0.0.1:5432/artag_ci_demo?schema=public
+      RESTORE_DATABASE_URL: postgresql://artag_ci_demo:fictif_ci_local@127.0.0.1:5432/artag_ci_restore?schema=public
+      PGPASSWORD: fictif_ci_local
+      ARTAG_DB_INTEGRATION_TEST: '1'
+      ARTAG_RECOVERY_REHEARSAL: '1'
+    steps:
+      - name: Extraire le code (jamais de sauvegarde réelle)
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Installer les dépendances exactes
+        run: npm ci --prefix backend
+      - name: Vérifier et préparer le schéma éphémère
+        run: |
+          npm --prefix backend run db:validate
+          npm --prefix backend run db:generate
+          npm --prefix backend run db:push:test
+      - name: Insérer une petite série d'enregistrements fictifs
+        run: node backend/scripts/recoveryFixture.mjs seed
+      - name: Sauvegarder sans export GitHub et restaurer dans une nouvelle base
+        shell: bash
+        run: |
+          set -euo pipefail
+          backup_dir="$RUNNER_TEMP/artag-recovery"
+          mkdir -p "$backup_dir"
+          chmod 700 "$backup_dir"
+          trap 'rm -f "$backup_dir/fixture.dump"; rmdir "$backup_dir" 2>/dev/null || true' EXIT
+
+          # Les utilitaires PostgreSQL 16 sont lancés dans une image éphémère,
+          # sans installer de client de base sur l'hôte et sans publier d'artefact.
+          docker run --rm --network host --user "$(id -u):$(id -g)" \
+            -e PGPASSWORD -v "$backup_dir:/backup" postgres:16 \
+            pg_dump --host 127.0.0.1 --port 5432 --username artag_ci_demo \
+              --dbname artag_ci_demo --format custom --no-owner --no-acl \
+              --file /backup/fixture.dump
+          test -s "$backup_dir/fixture.dump"
+          chmod 600 "$backup_dir/fixture.dump"
+
+          docker run --rm --network host -e PGPASSWORD postgres:16 \
+            createdb --host 127.0.0.1 --port 5432 \
+              --username artag_ci_demo artag_ci_restore
+          docker run --rm --network host -e PGPASSWORD \
+            -v "$backup_dir:/backup:ro" postgres:16 \
+            pg_restore --host 127.0.0.1 --port 5432 \
+              --username artag_ci_demo --dbname artag_ci_restore \
+              --no-owner --no-acl --single-transaction --exit-on-error \
+              /backup/fixture.dump
+
+          original="$(node backend/scripts/recoveryFixture.mjs checksum)"
+          restored="$(DATABASE_URL="$RESTORE_DATABASE_URL" node backend/scripts/recoveryFixture.mjs checksum)"
+          if [[ "$original" != "$restored" ]]; then
+            echo 'Échec : données fictives restaurées différentes.'
+            exit 1
+          fi
+          echo 'Recette fictive de sauvegarde et restauration : empreintes identiques.'
