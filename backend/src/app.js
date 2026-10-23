@@ -5,7 +5,7 @@ import { resolveSessionUserId } from "./sessions.js";
 import { createAuthRouter } from "./authRouter.js";
 import { issueCsrfToken, validCsrf } from "./csrf.js";
 import { createSharedNote, DossierVersionConflict, InvalidSharedNote } from "./sharedNoteService.js";
-import { listOwnTasks, createOwnTask, updateOwnTask, WorkTaskAccessDenied, WorkTaskInvalid, WorkTaskConflict } from "./workTaskService.js";
+import { listOwnTasks, listOwnReminders, createOwnTask, updateOwnTask, WorkTaskAccessDenied, WorkTaskInvalid, WorkTaskConflict } from "./workTaskService.js";
 
 export function createApp({
   privateDb = null,
@@ -13,6 +13,7 @@ export function createApp({
   csrfSecret = null,
   enableSharedWrites = false,
   enableWorkTasks = false,
+  clock = () => new Date(),
 } = {}) {
   const app = express();
   app.disable("x-powered-by");
@@ -155,6 +156,24 @@ export function createApp({
         const result = await listOwnTasks({
           db: privateDb, cookieHeader: req.headers.cookie,
           offset: offsetText ? Number(offsetText) : 0,
+        });
+        return res.status(200).json(result);
+      } catch (error) {
+        return handleTaskError(error, res);
+      }
+    });
+
+    // Rappel privé à consulter dans le bureau professionnel, jamais une
+    // notification Outlook ou un transfert à un fournisseur externe.
+    app.get("/api/mes-rappels", async (req, res) => {
+      try {
+        const offsetText = req.query.offset;
+        if (offsetText !== undefined && (typeof offsetText !== "string" || !/^\\d{1,6}$/.test(offsetText))) {
+          return res.status(422).json({ error: "TACHE_INVALIDE" });
+        }
+        const result = await listOwnReminders({
+          db: privateDb, cookieHeader: req.headers.cookie,
+          now: clock(), offset: offsetText ? Number(offsetText) : 0,
         });
         return res.status(200).json(result);
       } catch (error) {
