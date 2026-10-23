@@ -77,3 +77,42 @@ export async function editSecureTask(task, changes) {
     body: JSON.stringify({ expectedVersion: task.version, changes }),
   });
 }
+
+/**
+ * Liste privée de rappels échus. La date provient de l'API (Europe/Paris),
+ * jamais de l'horloge locale du navigateur. Aucun appel à Microsoft Graph.
+ */
+export async function loadSecureReminders() {
+  let offset = 0;
+  let day = null;
+  const reminders = [];
+  for (let page = 0; page < 100; page++) {
+    const result = await doRequest(`/api/mes-rappels?offset=${offset}`);
+    if (!Array.isArray(result.reminders) || !/^\d{4}-\d{2}-\d{2}$/.test(result.day ?? "")) {
+      throw new SecureTasksUnavailable();
+    }
+    if (day !== null && result.day !== day) {
+      throw new SecureTasksUnavailable("La journée a changé pendant le chargement. Recharge les rappels.");
+    }
+    day = result.day;
+    reminders.push(...result.reminders);
+    if (result.nextOffset === null) return { day, reminders };
+    if (!Number.isSafeInteger(result.nextOffset) || result.nextOffset <= offset) {
+      throw new SecureTasksUnavailable();
+    }
+    offset = result.nextOffset;
+  }
+  throw new SecureTasksUnavailable("Liste de rappels trop volumineuse : pagination à examiner.");
+}
+
+export function nextProfessionalDay(day) {
+  if (typeof day !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(day)) {
+    throw new SecureTasksUnavailable();
+  }
+  const value = new Date(`${day}T12:00:00Z`);
+  if (Number.isNaN(value.getTime()) || value.toISOString().slice(0, 10) !== day) {
+    throw new SecureTasksUnavailable();
+  }
+  value.setUTCDate(value.getUTCDate() + 1);
+  return value.toISOString().slice(0, 10);
+}
