@@ -70,7 +70,7 @@ describe("bureau de charge et saisie express (démonstration)", () => {
       }],
     }));
     renderBoard();
-    expect(screen.getByRole("heading", { name:"Mes rappels à traiter (1)" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name:"À faire maintenant (1)" })).toBeInTheDocument();
     fireEvent.click(screen.getAllByRole("button", { name:"Reporter au lendemain" })[0]);
     const stored = JSON.parse(localStorage.getItem("artag-taches-entretien-demo-v1"));
     expect(stored["dossier-fictif"][0].dueDate).not.toBe(workDay());
@@ -95,6 +95,37 @@ describe("bureau de charge et saisie express (démonstration)", () => {
     expect(JSON.parse(localStorage.getItem("artag-focus-mode-demo-v1"))).toBe(true);
     fireEvent.click(screen.getByRole("button", { name:"Quitter le mode Focus" }));
     expect(screen.getByRole("heading", { name:"Charge calculée" })).toBeInTheDocument();
+  });
+
+
+  it("garde la dernière tâche commencée et permet de la reprendre après une interruption", () => {
+    localStorage.setItem("artag-taches-entretien-demo-v1", JSON.stringify({
+      "__mes_taches": [
+        { id:"one", title:"Préparer la réunion fictive", status:"À faire", dueDate:workDay() },
+      ],
+    }));
+    renderBoard();
+    fireEvent.click(screen.getByRole("button", { name:"Commencer cette tâche" }));
+    expect(JSON.parse(localStorage.getItem("artag-derniere-tache-demo-v1")))
+      .toEqual({ dossierId:"__mes_taches", taskId:"one" });
+    expect(screen.getByRole("heading", { name:"Reprendre la dernière tâche interrompue" }))
+      .toBeInTheDocument();
+    expect(screen.getByRole("button", { name:"Reprendre cette tâche" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name:"Terminer cette tâche" }));
+    expect(screen.queryByRole("heading", { name:"Reprendre la dernière tâche interrompue" }))
+      .not.toBeInTheDocument();
+  });
+
+  it("regroupe les retards et échéances sans répéter les mêmes actions", () => {
+    localStorage.setItem("artag-taches-entretien-demo-v1", JSON.stringify({
+      "__mes_taches": [
+        { id:"one", title:"Appel fictif", status:"À faire", dueDate:workDay(), reminderDaysBefore:1 },
+        { id:"two", title:"Action future", status:"À faire", dueDate:"2099-01-01", reminderDaysBefore:1 },
+      ],
+    }));
+    renderBoard();
+    expect(screen.getByRole("heading", { name:"À faire maintenant (1)" })).toBeInTheDocument();
+    expect(screen.getAllByRole("checkbox", { name:"Terminer : Appel fictif" })).toHaveLength(1);
   });
 
   it("signale les tâches sans temps estimé plutôt que de fabriquer une durée", () => {

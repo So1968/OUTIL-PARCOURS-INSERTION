@@ -1,5 +1,6 @@
 import { createApp } from "./app.js";
 import { createOidcProvider } from "./oidcProvider.js";
+import { validateRecipeActivation } from "./recipeActivation.js";
 
 // La production reste interdite avant revue de sécurité et accord ARTAG.
 // Le mode SSO est désactivé par défaut et exige une configuration explicite.
@@ -13,6 +14,7 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
 }
 
 async function start() {
+  const activation = validateRecipeActivation(process.env);
   let db = null;
   let oidc = null;
   if (process.env.ARTAG_OIDC_ENABLED === "1") {
@@ -51,6 +53,15 @@ async function start() {
     enableWorkTasks,
     csrfSecret,
   });
+  if (activation.enabled) {
+    // Aucune URL, identifiant, nom de compte, email, jeton ou secret dans les logs.
+    console.info(JSON.stringify({
+      event: "artag_private_recipe_configured",
+      sso: activation.sso,
+      sharedWrites: activation.sharedWrites,
+      workTasks: activation.workTasks,
+    }));
+  }
   const server = app.listen(port, "127.0.0.1", () => {
     console.info("ARTAG API développement : accès local, routes métier désactivées par défaut.");
   });
