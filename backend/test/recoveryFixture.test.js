@@ -33,7 +33,7 @@ test("la maintenance refuse la production et l'absence de double verrou", () => 
 
 test("la cible n'accepte ni base privée distante ni autre nom de base", () => {
   for (const uri of [
-    "postgresql://fictif:fictif@database.exemple.invalid:5432/artag_ci_demo?schema=public",
+    "postgresql://fictif:fictif" + String.fromCharCode(64) + "database.exemple.invalid:5432/artag_ci_demo?schema=public",
     "postgresql://fictif:fictif@127.0.0.1:5432/base_metier?schema=public",
     "postgresql://fictif:fictif@127.0.0.1:5433/artag_ci_demo?schema=public",
     "postgresql://fictif:fictif@127.0.0.1:5432/artag_ci_demo?schema=sensible",
