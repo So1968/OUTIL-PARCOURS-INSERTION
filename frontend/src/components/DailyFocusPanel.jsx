@@ -1,6 +1,6 @@
 import { troisPriorites, progressionTaches } from "../lib/dailyFocus";
 
-export function DailyFocusPanel({ tasks, today, focus, onToggle, onUpdate }) {
+export function DailyFocusPanel({ tasks, today, focus, onToggle, onUpdate, onStart }) {
   const priorities = troisPriorites(tasks, today);
   const progress = progressionTaches(tasks);
   return (
@@ -21,6 +21,9 @@ export function DailyFocusPanel({ tasks, today, focus, onToggle, onUpdate }) {
                   checked={false} onChange={() => onUpdate(task, { status: "Fait" })} />
                 <strong style={{ marginLeft: 8 }}>{task.title}</strong>
               </label>
+              <button type="button" style={{ marginLeft: 12 }} onClick={() => onStart(task)}>
+                Commencer cette tâche
+              </button>
               <button type="button" style={{ marginLeft: 12 }}
                 onClick={() => onUpdate(task, {
                   priority: task.priority === "haute" ? "normale" : "haute",
