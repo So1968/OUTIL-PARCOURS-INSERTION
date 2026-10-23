@@ -1,0 +1,39 @@
+name: Archivage temporaire de la recette PostgreSQL
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/archive-recovery-once.yml']
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  archive:
+    if: github.repository == 'So1968/OUTIL-PARCOURS-INSERTION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Conserver le commit avant suppression de branche
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch='feat/recette-sauvegarde-restauration-postgres-20261023'
+          sha='bd484cba862e7d5865c5f1010888b9e7891f1382'
+          tag='archive/20261023/recette-restauration-postgres'
+          merged="$(gh api "repos/$GITHUB_REPOSITORY/pulls/25" --jq .merged)"
+          [[ "$merged" == true ]] || { echo 'PR non fusionnée : conservation de branche'; exit 0; }
+          if ! current="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$branch" --jq '.object.sha' 2>/dev/null)"; then
+            echo 'Branche déjà absente'
+            exit 0
+          fi
+          [[ "$current" == "$sha" ]] || { echo 'SHA modifié : conservation de branche'; exit 0; }
+          if existing="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha' 2>/dev/null)"; then
+            [[ "$existing" == "$sha" ]] || { echo 'Tag en conflit : branche conservée'; exit 0; }
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" -f "ref=refs/tags/$tag" -f "sha=$sha" >/dev/null
+          fi
+          gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$branch" >/dev/null
+          echo 'Branche archivée et supprimée après vérification'
