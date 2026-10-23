@@ -116,3 +116,53 @@ export function nextProfessionalDay(day) {
   value.setUTCDate(value.getUTCDate() + 1);
   return value.toISOString().slice(0, 10);
 }
+
+
+// Repères de charge professionnels : aucun titre ou commentaire libre transmis.
+export async function loadSecureWorkEvents(day = null) {
+  let offset = 0;
+  let serverDay = null;
+  const events = [];
+  if (day !== null && !/^\d{4}-\d{2}-\d{2}$/.test(day)) {
+    throw new SecureTasksUnavailable("Date de charge invalide.");
+  }
+  for (let page = 0; page < 100; page++) {
+    const query = new URLSearchParams({ offset: String(offset) });
+    if (day) query.set("day", day);
+    const result = await doRequest("/api/mes-evenements?" + query.toString());
+    if (!Array.isArray(result.events) ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(result.day ?? "") ||
+      (serverDay !== null && serverDay !== result.day)) {
+      throw new SecureTasksUnavailable("Réponse de charge invalide.");
+    }
+    serverDay = result.day;
+    events.push(...result.events);
+    if (result.nextOffset === null) return { day: serverDay, events };
+    if (!Number.isSafeInteger(result.nextOffset) || result.nextOffset <= offset) {
+      throw new SecureTasksUnavailable("Pagination des activités invalide.");
+    }
+    offset = result.nextOffset;
+  }
+  throw new SecureTasksUnavailable("Trop d'activités : liste à examiner.");
+}
+
+export async function createSecureWorkEvent(input) {
+  const csrf = await token();
+  return doRequest("/api/mes-evenements", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
+    body: JSON.stringify(input),
+  });
+}
+
+export async function editSecureWorkEvent(event, changes) {
+  if (!event || typeof event.id !== "string" || !Number.isSafeInteger(event.version)) {
+    throw new SecureTasksUnavailable("Activité à recharger.");
+  }
+  const csrf = await token();
+  return doRequest("/api/mes-evenements/" + encodeURIComponent(event.id), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
+    body: JSON.stringify({ expectedVersion: event.version, changes }),
+  });
+}
