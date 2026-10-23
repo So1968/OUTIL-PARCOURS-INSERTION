@@ -72,3 +72,9 @@ Les passages historiques en début de ce README décrivent les étapes précéde
 Les routes de connexion et de callback utilisent un limiteur **mono-processus** de vingt requêtes par adresse TCP et par route sur dix minutes, avec réponse HTTP `429` et `Retry-After`. Les entêtes d'IP déclarée par le navigateur ne sont pas pris en compte. Cette protection ne dispense pas d'un filtrage distribué au niveau du proxy institutionnel.
 
 Les états OIDC et sessions expirées peuvent être comptés sans modification avec `npm --prefix backend run auth:prune -- --dry-run`. Une purge après rétention de sept jours requiert `--apply` et la confirmation `ARTAG_CONFIRM_AUTH_PRUNE=1`. Cette procédure ne doit être exécutée que dans une base de recette dont l'exploitant a autorisé la maintenance, jamais en production. Voir `docs/43_AUDIT_SECURITE_BACKEND_ET_CORRECTIFS.md`.
+
+## Second verrou de recette privée (23/10/2026)
+
+Avant toute initialisation OIDC, `backend/src/server.js` appelle `validateRecipeActivation(process.env)`. Si un module SSO ou métier est activé, `ARTAG_PRIVATE_RECIPE_GATE=1` doit être explicitement configuré, ainsi qu'une origine `ARTAG_PUBLIC_ORIGIN` HTTPS canonique et `ARTAG_OIDC_REDIRECT_URI` sur le chemin `/auth/callback` de cette même origine. Le serveur refuse toujours `NODE_ENV=production`. En cas de configuration absente ou contradictoire, le processus échoue sans afficher de secret.
+
+Ce drapeau est une **protection technique complémentaire**, jamais une preuve de consentement ou de validation ARTAG. Les recettes HTTP qui instancient `createApp` directement conservent leur configuration fictive sans démarrer le serveur. Voir `docs/45_AUDIT_GROK_REPRISE_ET_ACTIVATION.md`.
