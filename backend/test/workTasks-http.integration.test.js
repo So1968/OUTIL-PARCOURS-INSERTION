@@ -110,6 +110,9 @@ test("PostgreSQL + HTTP : tâches personnelles isolées, CSRF, versions et audit
     assert.equal((await fetch(remindersUrl, { headers: { Cookie: cookie(tnsToken) } })
       .then(r => r.json())).reminders.length, 0);
     assert.equal((await fetch(remindersUrl, { headers: { Cookie: cookie(dirToken) } })).status, 404);
+    assert.equal((await fetch(remindersUrl + "?offset=0", {
+      headers: { Cookie: cookie(refToken) },
+    })).status, 200);
     assert.equal((await fetch(remindersUrl + "?offset=invalid", {
       headers: { Cookie: cookie(refToken) },
     })).status, 422);
