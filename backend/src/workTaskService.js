@@ -4,7 +4,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const ROLES = new Set(["REFERENTE", "APPUI_TNS", "ACCUEIL", "RELAIS_LOGEMENT"]);
 const STATUSES = new Set(["A_FAIRE", "EN_COURS", "EN_ATTENTE", "FAIT"]);
-const FIELDS = new Set(["title", "dueDate", "reminderDaysBefore", "estimatedMinutes", "status"]);
+const FIELDS = new Set(["title", "dueDate", "reminderDaysBefore", "snoozedUntil", "estimatedMinutes", "status"]);
 
 export class WorkTaskAccessDenied extends Error {
   constructor() { super("TACHE_INDISPONIBLE"); this.name = "WorkTaskAccessDenied"; }
@@ -39,6 +39,7 @@ function validFields(input, { create = false } = {}) {
     data.title = input.title.trim();
   }
   if (Object.hasOwn(input, "dueDate")) data.dueDate = parseDay(input.dueDate);
+  if (Object.hasOwn(input, "snoozedUntil")) data.snoozedUntil = parseDay(input.snoozedUntil);
   if (Object.hasOwn(input, "reminderDaysBefore")) {
     if (![0, 1, 2, 7].includes(input.reminderDaysBefore)) throw new WorkTaskInvalid();
     data.reminderDaysBefore = input.reminderDaysBefore;
@@ -56,13 +57,14 @@ function validFields(input, { create = false } = {}) {
 }
 
 const taskSelect = {
-  id: true, title: true, dueDate: true, reminderDaysBefore: true,
+  id: true, title: true, dueDate: true, snoozedUntil: true, reminderDaysBefore: true,
   estimatedMinutes: true, status: true, version: true, updatedAt: true,
 };
 function exposed(task) {
   return {
     ...task,
     dueDate: task.dueDate ? task.dueDate.toISOString().slice(0, 10) : null,
+    snoozedUntil: task.snoozedUntil ? task.snoozedUntil.toISOString().slice(0, 10) : null,
   };
 }
 
@@ -141,5 +143,70 @@ export async function updateOwnTask({ db, cookieHeader, taskId, expectedVersion,
       data: { actorId: ownerId, eventType: "WORK_TASK_UPDATED", purpose: "Mise à jour d'une tâche personnelle" },
     });
     return exposed(task);
+  }, { isolationLevel: "Serializable" });
+}
+
+// Le jour métier est celui de Paris, pas celui de la machine du serveur.
+// On calcule les décalages sur les dates civiles UTC pour éviter les anomalies
+// autour du passage à l'heure d'été ou d'hiver.
+export function professionalDay(now = new Date()) {
+  if (!(now instanceof Date) || Number.isNaN(now.getTime())) throw new WorkTaskInvalid();
+  const parts = new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit",
+  }).formatToParts(now);
+  const find = type => parts.find(p => p.type === type)?.value;
+  return `${find("year")}-${find("month")}-${find("day")}`;
+}
+
+export function plusCalendarDays(yyyyMmDd, increment) {
+  const date = parseDay(yyyyMmDd);
+  if (!date || !Number.isInteger(increment) || Math.abs(increment) > 366) {
+    throw new WorkTaskInvalid();
+  }
+  date.setUTCDate(date.getUTCDate() + increment);
+  return date.toISOString().slice(0, 10);
+}
+
+/**
+ * Rappels consultés depuis une session active, aucun déclenchement externe.
+ * La requête SQL/PostgreSQL filtre par propriétaire, échéance réelle,
+ * décalage de rappel et snooze. La lecture est journalisée en transaction.
+ */
+export async function listOwnReminders({ db, cookieHeader, now = new Date(), offset = 0 } = {}) {
+  if (!Number.isSafeInteger(offset) || offset < 0 || offset > 100000) throw new WorkTaskInvalid();
+  const day = professionalDay(now);
+  const ownerId = await getOwner(db, cookieHeader);
+  const startOfDay = parseDay(day);
+  const dueConditions = [0, 1, 2, 7].map(reminderDaysBefore => ({
+    reminderDaysBefore,
+    dueDate: { lte: parseDay(plusCalendarDays(day, reminderDaysBefore)) },
+  }));
+  return db.$transaction(async tx => {
+    await authorizedActor(tx, ownerId);
+    const rows = await tx.workTask.findMany({
+      where: {
+        ownerId,
+        status: { not: "FAIT" },
+        OR: dueConditions,
+        AND: [{
+          OR: [{ snoozedUntil: null }, { snoozedUntil: { lte: startOfDay } }],
+        }],
+      },
+      select: taskSelect,
+      orderBy: [{ dueDate: "asc" }, { id: "asc" }],
+      skip: offset, take: 101,
+    });
+    await tx.auditEvent.create({
+      data: {
+        actorId: ownerId,
+        eventType: "WORK_TASK_REMINDERS_READ",
+        purpose: "Consultation des rappels personnels arrivés à échéance",
+      },
+    });
+    return {
+      day,
+      reminders: rows.slice(0, 100).map(exposed),
+      nextOffset: rows.length > 100 ? offset + 100 : null,
+    };
   }, { isolationLevel: "Serializable" });
 }

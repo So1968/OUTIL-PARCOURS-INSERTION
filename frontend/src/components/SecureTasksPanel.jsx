@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
-  secureTaskApiEnabled, loadSecureTasks, createSecureTask, editSecureTask,
+  secureTaskApiEnabled, loadSecureTasks, loadSecureReminders, nextProfessionalDay,
+  createSecureTask, editSecureTask,
 } from "../lib/secureTasksApi";
 
 const statusLabels = {
@@ -13,6 +14,8 @@ const statusLabels = {
  */
 export function SecureTasksPanel() {
   const [tasks, setTasks] = useState([]);
+  const [reminders, setReminders] = useState([]);
+  const [professionalDay, setProfessionalDay] = useState("");
   const [ready, setReady] = useState(false);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -23,10 +26,12 @@ export function SecureTasksPanel() {
   const reload = async () => {
     setBusy(true);
     try {
-      const data = await loadSecureTasks();
+      const [data, reminderData] = await Promise.all([loadSecureTasks(), loadSecureReminders()]);
       setTasks(data);
+      setReminders(reminderData.reminders);
+      setProfessionalDay(reminderData.day);
       setReady(true);
-      setMessage(`${data.length} tâche(s) chargée(s) depuis le serveur privé.`);
+      setMessage(`${data.length} tâche(s), dont ${reminderData.reminders.length} rappel(s) à traiter.`);
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -41,8 +46,10 @@ export function SecureTasksPanel() {
     try {
       await createSecureTask(title.trim());
       setTitle("");
-      const data = await loadSecureTasks();
+      const [data, reminderData] = await Promise.all([loadSecureTasks(), loadSecureReminders()]);
       setTasks(data);
+      setReminders(reminderData.reminders);
+      setProfessionalDay(reminderData.day);
       setReady(true);
       setMessage("Tâche sauvegardée sur le serveur professionnel.");
     } catch (error) {
@@ -57,7 +64,14 @@ export function SecureTasksPanel() {
     try {
       const updated = await editSecureTask(task, changes);
       setTasks(current => current.map(item => item.id === updated.id ? updated : item));
-      setMessage("Tâche mise à jour.");
+      try {
+        const { reminders: refreshed, day } = await loadSecureReminders();
+        setReminders(refreshed);
+        setProfessionalDay(day);
+        setMessage("Tâche mise à jour.");
+      } catch {
+        setMessage("Modification enregistrée. Recharge les rappels pour actualiser la liste.");
+      }
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -78,6 +92,26 @@ export function SecureTasksPanel() {
           </label>
           <button type="submit" disabled={busy || !title.trim()}>Créer sur le serveur</button>
         </form>
+        <div aria-label="Rappels professionnels privés" className="daily-section">
+          <h3>Mes rappels sécurisés du {professionalDay || "jour"} ({reminders.length})</h3>
+          {reminders.length === 0 && <p>Rien à relancer pour le moment.</p>}
+          <ul className="daily-tasks">
+            {reminders.map(task => (
+              <li className="daily-task" key={task.id}>
+                <strong>{task.title}</strong>
+                <span>Échéance : {task.dueDate || "non définie"}</span>
+                <button type="button" disabled={busy} onClick={() => edit(task, { status: "FAIT" })}>
+                  Terminer
+                </button>
+                <button type="button" disabled={busy || !professionalDay}
+                  onClick={() => edit(task, { snoozedUntil: nextProfessionalDay(professionalDay) })}>
+                  Reporter le rappel à demain
+                </button>
+              </li>
+            ))}
+          </ul>
+          <p>Ces rappels restent dans l’espace ARTAG. Aucun email ni rendez-vous Outlook n’est envoyé.</p>
+        </div>
         <ul className="daily-tasks">
           {tasks.map(task => (
             <li className="daily-task" key={task.id}>

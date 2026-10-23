@@ -200,6 +200,7 @@ model WorkTask {
   title              String         @db.VarChar(200)
   dueDate            DateTime?      @db.Date
   reminderDaysBefore Int            @default(1)
+  snoozedUntil       DateTime?      @db.Date
   estimatedMinutes   Int?
   status             WorkTaskStatus @default(A_FAIRE)
   version            Int            @default(0)
