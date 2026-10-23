@@ -77,6 +77,26 @@ describe("bureau de charge et saisie express (démonstration)", () => {
     expect(stored["dossier-fictif"][0].status).toBe("À faire");
   });
 
+  it("affiche les trois priorités, puis masque les détails sans cacher la saisie rapide", () => {
+    localStorage.setItem("artag-taches-entretien-demo-v1", JSON.stringify({
+      "__mes_taches": [
+        { id:"a", title:"Relance prévue", status:"À faire", dueDate:workDay(), priority:"haute" },
+        { id:"b", title:"Deuxième tâche", status:"À faire", dueDate:workDay() },
+        { id:"c", title:"Troisième tâche", status:"À faire", dueDate:workDay() },
+        { id:"d", title:"Quatrième tâche", status:"À faire", dueDate:workDay() },
+      ],
+    }));
+    renderBoard();
+    expect(screen.getByRole("heading", { name:"Mes 3 priorités du jour" })).toBeInTheDocument();
+    expect(screen.getAllByRole("checkbox", { name:/Terminer la priorité/ })).toHaveLength(3);
+    fireEvent.click(screen.getByRole("button", { name:"Activer le mode Focus" }));
+    expect(screen.queryByRole("heading", { name:"Charge calculée" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name:/Saisie express/ })).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem("artag-focus-mode-demo-v1"))).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name:"Quitter le mode Focus" }));
+    expect(screen.getByRole("heading", { name:"Charge calculée" })).toBeInTheDocument();
+  });
+
   it("signale les tâches sans temps estimé plutôt que de fabriquer une durée", () => {
     localStorage.setItem("artag-taches-entretien-demo-v1", JSON.stringify({
       "dossier-demo": [{ id:"t1", title:"Relance fictive", dueDate:workDay(), status:"À faire" }],
