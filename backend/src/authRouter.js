@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { issueSession, revokeSession, sessionCookie, CLEAR_COOKIE } from "./sessions.js";
+import { createRequestLimiter } from "./authRateLimit.js";
 
 const FLOW_COOKIE = "__Host-artag-oidc";
 const FLOW_TIME_MS = 10 * 60 * 1000;
@@ -33,8 +34,9 @@ export function createAuthRouter({ db, provider, origin, redirectUri } = {}) {
   }
 
   const router = Router();
+  const authLimiter = createRequestLimiter({ maxAttempts: 20, windowMs: 10 * 60_000 });
 
-  router.get("/login", async (_req, res) => {
+  router.get("/login", authLimiter.middleware, async (_req, res) => {
     try {
       const state = randomBytes(32).toString("hex");
       const nonce = randomBytes(32).toString("hex");
@@ -51,7 +53,7 @@ export function createAuthRouter({ db, provider, origin, redirectUri } = {}) {
     }
   });
 
-  router.get("/callback", async (req, res) => {
+  router.get("/callback", authLimiter.middleware, async (req, res) => {
     // Ne pas refléter le code, le state ou le jeton dans les logs / réponses.
     res.setHeader("Set-Cookie", clear);
     const state = req.query.state;
