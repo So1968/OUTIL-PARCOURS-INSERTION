@@ -39,7 +39,7 @@ const LectureGlobaleOptimiseePage = lazyNamed(
 const ModuleDomainePage = lazyNamed(() => import("./pages/ModuleDomainePage"), "ModuleDomainePage");
 const ParcoursPage = lazyNamed(() => import("./pages/ParcoursPage"), "ParcoursPage");
 const PilotageActionsPage = lazyNamed(() => import("./pages/PilotageActionsPage"), "PilotageActionsPage");
-const BureauQuotidienPage = lazyNamed(() => import("./pages/BureauQuotidienPage"), "BureauQuotidienPage");
+const BureauTravailRoute = lazyNamed(() => import("./pages/BureauTravailRoute"), "BureauTravailRoute");
 const RendezVousSuiviPage = lazyNamed(() => import("./pages/RendezVousSuiviPage"), "RendezVousSuiviPage");
 const SasInsertisPage = lazyNamed(() => import("./pages/SasInsertisPage"), "SasInsertisPage");
 const SocleAutonomiePage = lazyNamed(() => import("./pages/SocleAutonomiePage"), "SocleAutonomiePage");
@@ -61,7 +61,7 @@ function AppRoutes() {
         <Route path="/evaluation-personne" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><EvaluationPersonnePage /></ProtectedPage>} />
         <Route path="/evaluation-personne/:dossierId" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><EvaluationPersonnePage /></ProtectedPage>} />
         <Route path="/pilotage-actions" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><PilotageActionsPage /></ProtectedPage>} />
-        <Route path="/bureau-quotidien" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><BureauQuotidienPage /></ProtectedPage>} />
+        <Route path="/bureau-quotidien" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><BureauTravailRoute /></ProtectedPage>} />
         <Route path="/pilotage-actions/dossier/:dossierId" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><DossierPersonnePage /></ProtectedPage>} />
         <Route path="/sas-insertis" element={<ProtectedPage allowedRoles={ACCOMPAGNEMENT_ROLES}><SasInsertisPage /></ProtectedPage>} />
 
