@@ -212,6 +212,7 @@ model OidcLoginAttempt {
 // L'accès dépend toujours de la session serveur et du propriétaire.
 model WorkTask {
   id                 String         @id @default(uuid())
+  requestId          String?        @db.VarChar(80)
   ownerId            String
   owner              UserAccount    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   title              String         @db.VarChar(200)
@@ -226,6 +227,7 @@ model WorkTask {
 
   @@index([ownerId, dueDate])
   @@index([ownerId, status])
+  @@unique([ownerId, requestId])
 }
 
 
