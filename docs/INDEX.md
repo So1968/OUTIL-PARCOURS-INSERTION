@@ -16,6 +16,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 10. [Correspondance aux référentiels de la Métropole](38_CORRESPONDANCE_REFERENTIELS_METROPOLE.md) — repérage des modèles de suivi social, socio-professionnel et Appui TNS, **à faire valider**.
 11. [Plan de charge quotidien et saisie express](40_PLAN_CHARGE_QUOTIDIEN.md) — rendez-vous, imprévus, tâches et estimation des temps sans données personnelles.
 12. [Tâches personnelles PostgreSQL](41_TACHES_PRIVEES_POSTGRESQL.md) — première API protégée par session, rôle, propriétaire, CSRF et audit ; inactive par défaut.
+13. [Rappels privés et reports](42_RAPPELS_PRIVES_ET_REPORTS.md) — rappels calculés sur la journée Europe/Paris, report, sécurité et tests PostgreSQL.
 11. [État de livraison et conditions de recette](39_ETAT_LIVRAISON_ET_RECETTE.md) — fonctions testées, activation bloquée et validations ARTAG indispensables.
 
 ## Grandes familles documentaires
