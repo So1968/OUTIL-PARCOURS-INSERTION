@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { DailyFocusPanel } from "../components/DailyFocusPanel";
+import { actionsMaintenant, retrouverTacheEnCours } from "../lib/dailyFocus";
 import { readStorageJson, writeStorageJson } from "../lib/storage";
 import { repartitionTaches, rappelsProfessionnels, jourDeRappel } from "../lib/entretienTasks";
 import { calculerChargeJour, dureeLisible, minutesValides, TYPES_EVENEMENTS, isDate } from "../lib/workload";
@@ -11,6 +12,7 @@ const QUICK_KEY = "artag-evenements-express-demo-v1";
 const CAPACITY_KEY = "artag-capacite-journaliere-demo-v1";
 const RDV_KEY = "artag-rendez-vous-suivi";
 const FOCUS_KEY = "artag-focus-mode-demo-v1";
+const LAST_TASK_KEY = "artag-derniere-tache-demo-v1";
 const workDay = () => {
   const d = new Date();
   const part = value => String(value).padStart(2, "0");
@@ -39,11 +41,14 @@ export function BureauQuotidienPage() {
   const [lastQuickId, setLastQuickId] = useState("");
   const [freeTask, setFreeTask] = useState("");
   const [focus, setFocus] = useState(() => readStorageJson(FOCUS_KEY, false) === true);
+  const [lastTaskPointer, setLastTaskPointer] = useState(() => readStorageJson(LAST_TASK_KEY, null));
 
   const items = useMemo(() => Object.entries(records).flatMap(([dossierId, list]) =>
     (Array.isArray(list) ? list : []).map(task => ({ ...task, dossierId }))), [records]);
   const sorted = useMemo(() => repartitionTaches(items, day), [items, day]);
   const reminders = useMemo(() => rappelsProfessionnels(items, day), [items, day]);
+  const actionsNow = useMemo(() => actionsMaintenant(items, day), [items, day]);
+  const lastTask = useMemo(() => retrouverTacheEnCours(items, lastTaskPointer), [items, lastTaskPointer]);
   const capacity = capacities[day] ?? 360;
   const charge = useMemo(() => calculerChargeJour({
     day, tasks: items, events: quick, appointments, capacityMinutes: capacity,
@@ -95,6 +100,20 @@ export function BureauQuotidienPage() {
       return;
     }
     setFocus(!focus);
+  }
+
+  function commencerTache(task) {
+    // On ne sauvegarde que les identifiants techniques, jamais le libellé.
+    const pointer = { dossierId: task.dossierId, taskId: task.id };
+    if (!writeStorageJson(LAST_TASK_KEY, pointer)) {
+      setMessage("La tâche en cours n'a pas pu être mémorisée.");
+      return;
+    }
+    setLastTaskPointer(pointer);
+    if (writeStorageJson(FOCUS_KEY, true)) {
+      setFocus(true);
+    }
+    setMessage("Tâche mise en avant. Tu peux reprendre ou terminer sans chercher dans la liste.");
   }
 
   function reporterTache(task) {
@@ -261,7 +280,17 @@ export function BureauQuotidienPage() {
       </div>
 
       <DailyFocusPanel tasks={items} today={day} focus={focus}
-        onToggle={toggleFocus} onUpdate={updateTask} />
+        onToggle={toggleFocus} onUpdate={updateTask} onStart={commencerTache} />
+
+      {lastTask && <section className="daily-section" aria-label="Reprendre une tâche">
+        <h2>Reprendre la dernière tâche interrompue</h2>
+        <p><strong>{lastTask.title}</strong></p>
+        <div className="daily-controls">
+          <button type="button" onClick={() => commencerTache(lastTask)}>Reprendre cette tâche</button>
+          <button type="button" onClick={() => updateTask(lastTask, { status: "Fait" })}>Terminer cette tâche</button>
+        </div>
+        <p>Le raccourci reste dans ce navigateur de démonstration, sans texte de note ni transfert Outlook.</p>
+      </section>}
 
       {!focus &&       <section className="daily-section" aria-labelledby="charge-header">
         <h2 id="charge-header">Charge calculée</h2>
@@ -280,11 +309,11 @@ export function BureauQuotidienPage() {
       }
 
       <section className="daily-section" aria-labelledby="rappels-header">
-        <h2 id="rappels-header">Mes rappels à traiter ({reminders.length})</h2>
-        {reminders.length === 0
-          ? <p>Aucun rappel de tâche à échéance pour cette journée. Les tâches sans date sont à planifier plus bas.</p>
+        <h2 id="rappels-header">À faire maintenant ({actionsNow.length})</h2>
+        {actionsNow.length === 0
+          ? <p>Aucune action urgente ou rappel arrivé à échéance. Les tâches sans date sont à planifier plus bas.</p>
           : <ul className="daily-tasks">
-            {reminders.map(task => (
+            {actionsNow.map(task => (
               <li key={task.dossierId + ":" + task.id} className="daily-task">
                 <label className="daily-task-title">
                   <input type="checkbox" checked={false} aria-label={`Terminer : ${task.title}`}
@@ -293,11 +322,12 @@ export function BureauQuotidienPage() {
                 </label>
                 <span>Rappel : {dateLabel(jourDeRappel(task.dueDate, task.reminderDaysBefore ?? 1))}</span>
                 <span>Échéance : {dateLabel(task.dueDate)}</span>
+                <button type="button" onClick={() => commencerTache(task)}>Commencer</button>
                 <button type="button" onClick={() => reporterTache(task)}>Reporter au lendemain</button>
               </li>
             ))}
           </ul>}
-        <p>Ces rappels apparaissent à l'ouverture de la page. Outlook n'envoie encore aucune notification.</p>
+        <p>Chaque tâche n'apparaît qu'une fois dans cette liste (retards, échéances et rappels). Les notifications Outlook ne sont pas encore actives.</p>
       </section>
 
       <section className="daily-section" aria-labelledby="new-task-header">
