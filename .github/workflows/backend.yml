@@ -31,6 +31,7 @@ jobs:
       # Base créée par le runner CI, détruite à la fin du job ; jamais ARTAG.
       DATABASE_URL: postgresql://artag_ci_demo:fictif_ci_local@127.0.0.1:5432/artag_ci_demo?schema=public
       ARTAG_DB_INTEGRATION_TEST: '1'
+      ARTAG_SCHEMA_MIGRATION_REHEARSAL: '1'
     steps:
       - name: Récupérer le dépôt
         uses: actions/checkout@v4
@@ -46,7 +47,13 @@ jobs:
         run: npm --prefix backend run db:validate
       - name: Générer le client Prisma pour la base de test
         run: npm --prefix backend run db:generate
-      - name: Initialiser la base éphémère de CI
-        run: npm --prefix backend run db:push:test
+      - name: Déployer la migration versionnée dans la base CI vide
+        run: npm --prefix backend run db:migrate:ci -- deploy
+      - name: Rejouer sans modification pour vérifier l'idempotence
+        run: npm --prefix backend run db:migrate:ci -- deploy
+      - name: Contrôler l'historique des migrations
+        run: npm --prefix backend run db:migrate:ci -- status
+      - name: Refuser toute dérive entre PostgreSQL et Prisma
+        run: npm --prefix backend run db:migrate:ci -- drift
       - name: Tester refus d'accès, requêtes PostgreSQL et audit transactionnel
         run: npm run backend:test
