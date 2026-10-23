@@ -23,6 +23,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 17. [Second audit Grok : reprise des tâches et activation sécurisée](45_AUDIT_GROK_REPRISE_ET_ACTIVATION.md) — actions immédiates dédoublonnées et verrou de recette.
 18. [Bureau privé : événements express et charge connue](46_BUREAU_PRIVE_SAISIE_EXPRESS.md) — PostgreSQL, idempotence, charge partielle, sécurité et recette fictive.
 19. [Recette de restauration PostgreSQL](47_RECETTE_RESTAURATION_POSTGRES.md) — exercice automatisé avec base fictive isolée et checklist institutionnelle.
+20. [Migrations Prisma versionnées](48_MIGRATIONS_PRISMA_VERSIONNEES.md) — migration initiale, registre, contrôle de dérive et interdiction de reprise aveugle des bases existantes.
 
 ## Grandes familles documentaires
 
