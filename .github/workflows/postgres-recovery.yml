@@ -39,7 +39,7 @@ jobs:
       - name: Extraire le code (jamais de sauvegarde réelle)
         uses: actions/checkout@v4
       - name: Installer Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
