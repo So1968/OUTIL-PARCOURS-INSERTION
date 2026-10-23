@@ -128,6 +128,17 @@ export function SecureTasksPanel() {
                     <option value={value} key={value}>{label}</option>)}
                 </select>
               </label>
+              <label>Durée estimée
+                <select disabled={busy} value={task.estimatedMinutes ?? ""}
+                  aria-label={`Durée estimée : ${task.title}`}
+                  onChange={e => edit(task, { estimatedMinutes: e.target.value ? Number(e.target.value) : null })}>
+                  <option value="">À estimer</option>
+                  {[5, 10, 15, 20, 30, 45, 60, 90, 120, 180].map(value =>
+                    <option key={value} value={value}>{value} min</option>)}
+                  {task.estimatedMinutes && ![5, 10, 15, 20, 30, 45, 60, 90, 120, 180].includes(task.estimatedMinutes) &&
+                    <option value={task.estimatedMinutes}>{task.estimatedMinutes} min</option>}
+                </select>
+              </label>
               <label>Rappel
                 <select disabled={busy} value={task.reminderDaysBefore}
                   aria-label={`Rappel protégé : ${task.title}`}
