@@ -74,6 +74,7 @@ model UserAccount {
   identityLinks   IdentityLink[]
   ownWorkTasks    WorkTask[]
   ownWorkEvents   WorkEvent[]
+  sharedRevisions SharedNoteRevision[]
 }
 
 model CaseFile {
@@ -87,6 +88,7 @@ model CaseFile {
   assignments   CaseAssignment[]
   grants        TemporaryGrant[]
   sharedNotes   SharedNote[]
+  sharedRevisions SharedNoteRevision[]
   privateNotes  PrivateNote[]
   externalLinks ExternalLink[]
   auditEvents   AuditEvent[]
@@ -131,8 +133,29 @@ model SharedNote {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   caseFile  CaseFile @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  revisions SharedNoteRevision[]
 
   @@index([caseId])
+}
+
+// Chaque contenu partagé conservé constitue une version métier datée, attribuée,
+// immuable au niveau du service. Sans accès HTTP direct ni export automatique.
+model SharedNoteRevision {
+  id          String      @id @default(uuid())
+  noteId      String
+  caseId      String
+  version     Int
+  text        String      @db.Text
+  validated   Boolean     @default(false)
+  actorId     String
+  reason      String      @db.VarChar(200)
+  createdAt   DateTime    @default(now())
+  note        SharedNote  @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  caseFile    CaseFile    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  actor       UserAccount @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@unique([noteId, version])
+  @@index([caseId, createdAt])
 }
 
 model PrivateNote {
