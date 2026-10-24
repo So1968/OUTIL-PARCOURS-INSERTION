@@ -49,6 +49,16 @@ test("PostgreSQL : notes partagées validées par ACL, version et transaction", 
     const notes = await db.sharedNote.findMany({ where: { caseId }, orderBy: { createdAt: "asc" } });
     assert.equal(notes.length, 2);
     assert.ok(notes.every(note => note.validated === false));
+    const revisions = await db.sharedNoteRevision.findMany({
+      where: { caseId }, orderBy: { createdAt: "asc" },
+    });
+    assert.equal(revisions.length, 2);
+    assert.deepEqual(new Set(revisions.map(rev => rev.noteId)),
+      new Set(notes.map(note => note.id)));
+    assert.ok(revisions.every(rev => rev.version === 1 && rev.actorId === ref
+      && rev.validated === false && rev.reason === "CREATION_BROUILLON"));
+    assert.deepEqual(new Set(revisions.map(rev => rev.text)),
+      new Set(["Brouillon factuel fictif A", "Brouillon factuel fictif B"]));
     assert.equal((await db.caseFile.findUnique({ where: { id: caseId } })).version, 2);
     const audit = await db.auditEvent.findMany({ where: { caseId } });
     assert.equal(audit.length, 2);
@@ -56,6 +66,7 @@ test("PostgreSQL : notes partagées validées par ACL, version et transaction", 
     assert.ok(audit.every(entry => entry.actorId === ref));
   } finally {
     await db.auditEvent.deleteMany({ where: { caseId } });
+    await db.sharedNoteRevision.deleteMany({ where: { caseId } });
     await db.sharedNote.deleteMany({ where: { caseId } });
     await db.caseAssignment.deleteMany({ where: { caseId } });
     await db.webSession.deleteMany({ where: { userId: { in: [ref, tns, dir] } } });
