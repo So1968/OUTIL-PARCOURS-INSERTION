@@ -40,3 +40,13 @@ Ce projet doit être traité comme une mise en œuvre stricte d'un cahier des ch
 - Les changements métier doivent être faits par blocs contrôlés, vérifiés par diff, testés, puis commités.
 - Toujours vérifier le chemin du projet avant toute commande.
 - Toujours lancer le projet depuis `frontend/` avec `npm run dev` pour contrôle visuel.
+
+## Sécurité obligatoire pour tout agent (complément)
+- Utiliser exclusivement des données fictives dans les tests, captures, journaux CI et commits. Ne jamais copier de données de bénéficiaires RSA/TNS, pièces, notes sociales, secrets ou exports dans Git.
+- Ne pas activer les connecteurs externes ni déployer en production sans autorisations ARTAG, contrôle sécurité et respect des habilitations.
+- Les autorisations de dossier doivent provenir de la session côté serveur et des droits PostgreSQL, jamais du rôle affiché dans le navigateur.
+- En mode professionnel sécurisé, maintenir la séparation entre les écrans du prototype localStorage et les données professionnelles serveur.
+- Créer une branche par lot, ajouter tests fonctionnels et d'accès, puis ouvrir une PR; ne pas fusionner une PR avec contrôles rouges.
+- Conserver les migrations de schéma additives, versionnées et réversibles autant que possible. Les décisions métier, corrections et transmissions doivent être historisées.
+- Le plan de travail opérationnel se trouve dans `docs/48_PLAN_AGENT_DEVELOPPEMENT.md` et reste subordonné à `docs/23_ORDRE_DE_TRAVAIL.md` et aux exigences validées.
+- Si une autorisation institutionnelle, un accès SSO ou un arbitrage de protection des données manque, stopper ce lot à la maquette sécurisée, sans inventer de validation.
