@@ -76,6 +76,15 @@ export async function createSharedNote({
       data: { caseId, text: text.trim(), validated: false },
       select: { id: true, version: true, validated: true },
     });
+    // Première révision immutable conservée dans la même transaction
+    // que la note et l'audit : aucun succès partiel en cas de panne.
+    await tx.sharedNoteRevision.create({
+      data: {
+        noteId: note.id, caseId, version: note.version,
+        text: text.trim(), validated: false, actorId: actor.id,
+        reason: "CREATION_BROUILLON",
+      },
+    });
     await tx.auditEvent.create({
       data: {
         caseId, actorId: actor.id, eventType: "SHARED_NOTE_CREATED",

@@ -5,6 +5,7 @@ import path from 'node:path';
 const permittedMigrations = new Set([
   "backend/prisma/migrations/20261023_initial_schema/migration.sql",
   "backend/prisma/migrations/20261023_worktask_request_id/migration.sql",
+  "backend/prisma/migrations/20261024_shared_note_revisions/migration.sql",
 ]);
 const forbiddenMigrationStatements = /\b(?:INSERT\s+INTO|UPDATE\s+\S+\s+SET|DELETE\s+FROM|COPY\s+\S+\s+(?:FROM|TO)|CREATE\s+(?:USER|ROLE|EXTENSION)|ALTER\s+ROLE|DROP\s+(?:TABLE|SCHEMA|DATABASE)|GRANT\s+|REVOKE\s+)\b/i;
 const forbiddenExtensions = new Set([
