@@ -18,34 +18,36 @@ const accesRapides = [
   { to: "/continuite-service", label: "Continuité", roles: CONTINUITE_ROLES },
 ];
 
-function liensVisibles(items, currentRole) {
-  return items
-    .filter(({ roles }) => !roles || roleIsAllowed(currentRole, roles))
-    .map(({ to, label, end }) => (
-      <NavLink
-        className={({ isActive }) => `app-navigation__link${isActive ? " is-active" : ""}`}
-        end={end}
-        key={to}
-        to={to}
-      >
-        {label}
-      </NavLink>
-    ));
+function liensVisibles(items) {
+  return items.map(({ to, label, end }) => (
+    <NavLink
+      className={({ isActive }) => `app-navigation__link${isActive ? " is-active" : ""}`}
+      end={end}
+      key={to}
+      to={to}
+    >
+      {label}
+    </NavLink>
+  ));
 }
 
 export function AppNavigation() {
   const { currentRole } = useRole();
+  const espacesVisibles = espacesPrincipaux.filter(({ roles }) => !roles || roleIsAllowed(currentRole, roles));
+  const rapidesVisibles = accesRapides.filter(({ roles }) => !roles || roleIsAllowed(currentRole, roles));
 
   return (
     <nav className="app-navigation" aria-label="Navigation principale de l’outil">
       <div className="app-navigation__inner">
         <div className="app-navigation__section" role="group" aria-label="Espaces principaux">
-          {liensVisibles(espacesPrincipaux, currentRole)}
+          {liensVisibles(espacesVisibles)}
         </div>
-        <div className="app-navigation__section app-navigation__section--quick" role="group" aria-label="Accès rapides">
-          <span className="app-navigation__section-label" aria-hidden="true">Accès rapides</span>
-          {liensVisibles(accesRapides, currentRole)}
-        </div>
+        {rapidesVisibles.length > 0 && (
+          <div className="app-navigation__section app-navigation__section--quick" role="group" aria-label="Accès rapides">
+            <span className="app-navigation__section-label" aria-hidden="true">Accès rapides</span>
+            {liensVisibles(rapidesVisibles)}
+          </div>
+        )}
       </div>
     </nav>
   );
