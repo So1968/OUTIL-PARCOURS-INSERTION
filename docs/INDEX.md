@@ -24,6 +24,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 18. [Bureau privé : événements express et charge connue](46_BUREAU_PRIVE_SAISIE_EXPRESS.md) — PostgreSQL, idempotence, charge partielle, sécurité et recette fictive.
 19. [Recette de restauration PostgreSQL](47_RECETTE_RESTAURATION_POSTGRES.md) — exercice automatisé avec base fictive isolée et checklist institutionnelle.
 20. [Migrations Prisma versionnées](48_MIGRATIONS_PRISMA_VERSIONNEES.md) — migration initiale, registre, contrôle de dérive et interdiction de reprise aveugle des bases existantes.
+21. [Notes partagées versionnées](49_NOTES_PARTAGEES_VERSIONNEES.md) — correction motivée, validation distincte, historique paginé et refus des conflits d'écriture.
 
 ## Grandes familles documentaires
 
