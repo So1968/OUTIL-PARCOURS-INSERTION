@@ -34,8 +34,15 @@ export async function lireApercuSecurise(caseId) {
   return expectJson(response);
 }
 
-export async function creerNotePartageeSecurisee({ caseId, text, expectedVersion }) {
+function notePath(caseId, noteId) {
   const path = dossierPath(caseId);
+  if (typeof noteId !== "string" || !UUID.test(noteId)) {
+    throw new ApiAccessError(422, "IDENTIFIANT_INVALIDE");
+  }
+  return `${path}/notes-partagees/${encodeURIComponent(noteId)}`;
+}
+
+async function mutateNote(path, method, body) {
   const csrfResponse = await fetch("/auth/csrf", {
     credentials: "same-origin",
     cache: "no-store",
@@ -45,13 +52,38 @@ export async function creerNotePartageeSecurisee({ caseId, text, expectedVersion
   if (!/^[a-f0-9]{64}$/.test(csrf.token ?? "")) {
     throw new ApiAccessError(503, "CSRF_INDISPONIBLE");
   }
-  const response = await fetch(path + "/notes-partagees", {
-    method: "POST",
+  const response = await fetch(path, {
+    method,
     credentials: "same-origin",
     cache: "no-store",
     redirect: "error",
     headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf.token },
-    body: JSON.stringify({ text, expectedVersion }),
+    body: JSON.stringify(body),
+  });
+  return expectJson(response);
+}
+
+export async function creerNotePartageeSecurisee({ caseId, text, expectedVersion }) {
+  return mutateNote(dossierPath(caseId) + "/notes-partagees", "POST", { text, expectedVersion });
+}
+
+export async function corrigerNotePartageeSecurisee({ caseId, noteId, text, reason, expectedVersion }) {
+  return mutateNote(notePath(caseId, noteId), "PATCH", { text, reason, expectedVersion });
+}
+
+export async function validerNotePartageeSecurisee({ caseId, noteId, expectedVersion }) {
+  return mutateNote(notePath(caseId, noteId) + "/validation", "POST", { expectedVersion });
+}
+
+export async function lireHistoriqueNotePartageeSecurise({ caseId, noteId, beforeVersion }) {
+  const path = notePath(caseId, noteId);
+  if (beforeVersion !== undefined && (!Number.isInteger(beforeVersion)
+    || beforeVersion < 1 || beforeVersion > 2147483647)) {
+    throw new ApiAccessError(422, "VERSION_INVALIDE");
+  }
+  const query = beforeVersion === undefined ? "" : `?beforeVersion=${beforeVersion}`;
+  const response = await fetch(path + "/historique" + query, {
+    credentials: "same-origin", cache: "no-store", redirect: "error",
   });
   return expectJson(response);
 }

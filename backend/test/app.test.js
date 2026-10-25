@@ -26,7 +26,12 @@ test("la santé du socle répond sans aucun détail métier", async () => {
 
 test("les routes métier ne sont jamais accessibles dans ce socle", async () => {
   await withServer(async (baseUrl) => {
-    for (const [method, uri] of [["GET", "/api/dossiers"], ["POST", "/api/dossiers"], ["GET", "/api/notes-reservees"]]) {
+    for (const [method, uri] of [
+      ["GET", "/api/dossiers"], ["POST", "/api/dossiers"], ["GET", "/api/notes-reservees"],
+      ["PATCH", "/api/dossiers/fictif/notes-partagees/fictif"],
+      ["POST", "/api/dossiers/fictif/notes-partagees/fictif/validation"],
+      ["GET", "/api/dossiers/fictif/notes-partagees/fictif/historique"],
+    ]) {
       const response = await fetch(`${baseUrl}${uri}`, { method });
       assert.equal(response.status, 503);
       assert.deepEqual(await response.json(), { error: "METIER_NON_ACTIVE" });
