@@ -45,4 +45,6 @@ Le client reste préparatoire : **aucun écran localStorage n'est migré ou acti
 
 Les tests locaux couvrent le cycle complet, les profils refusés, l'isolation entre dossiers, la pagination, les entrées invalides, le retrait de validation et les pannes. La recette PostgreSQL/HTTP ajoutée au workflow backend vérifie également les écritures concurrentes et le rollback réel lors d'une panne de révision ou d'audit. Elle s'exécute uniquement dans le runner GitHub Actions sur données fictives, selon les verrous existants.
 
+Le workflow conserve la sortie TAP et le code de sortie natif du runner Node ; un reporter complémentaire rend les assertions échouées visibles dans les annotations de la PR, même lorsque les archives de journaux sont inaccessibles.
+
 Restent à réaliser : reprise encadrée des éventuelles notes sans historique, modèle dossier complet, migration des écrans, validation institutionnelle du partage, recette SSO réelle, politique de conservation et revue de sécurité indépendante. Aucun connecteur ni accès de production n'est activé.

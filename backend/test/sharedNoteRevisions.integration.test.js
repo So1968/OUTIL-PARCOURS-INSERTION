@@ -131,7 +131,11 @@ test("PostgreSQL/HTTP : corrections, relecture, historique et transactions des n
         webSession: db.webSession,
         $transaction: (operation, options) => db.$transaction(tx => operation(new Proxy(tx, {
           get(target, key) {
-            if (key === failingModel) return { create: async () => { throw new Error("PANNE_FICTIVE"); } };
+            if (key === failingModel) return new Proxy(target[key], {
+              get(model, method) {
+                return method === "create" ? async () => { throw new Error("PANNE_FICTIVE"); } : model[method];
+              },
+            });
             return target[key];
           },
         })), options),
