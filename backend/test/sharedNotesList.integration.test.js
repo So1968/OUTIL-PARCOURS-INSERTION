@@ -67,6 +67,8 @@ test("PostgreSQL/HTTP : liste des notes paginée, autorisée et auditée sans es
     assert.equal(await db.auditEvent.count({ where: { caseId, eventType: "SHARED_NOTES_READ" } }), 2);
     const broken = {
       webSession: db.webSession,
+      oidcLoginAttempt: db.oidcLoginAttempt,
+      identityLink: db.identityLink,
       $transaction: (operation, options) => db.$transaction(tx => operation(new Proxy(tx, {
         get(target, key) {
           return key === "auditEvent" ? { create: async () => { throw new Error("PANNE_AUDIT_FICTIVE"); } } : target[key];
