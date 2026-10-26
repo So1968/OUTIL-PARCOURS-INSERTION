@@ -87,3 +87,13 @@ export async function lireHistoriqueNotePartageeSecurise({ caseId, noteId, befor
   });
   return expectJson(response);
 }
+
+export async function lireNotesPartageesSecurisees({ caseId, offset = 0 }) {
+  const path = dossierPath(caseId);
+  if (!Number.isSafeInteger(offset) || offset < 0 || offset > 100000) {
+    throw new ApiAccessError(422, "PAGINATION_INVALIDE");
+  }
+  return expectJson(await fetch(`${path}/notes-partagees?offset=${offset}`, {
+    credentials: "same-origin", cache: "no-store", redirect: "error",
+  }));
+}
