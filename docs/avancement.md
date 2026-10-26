@@ -1,5 +1,15 @@
 # Avancement du projet — Outil ARTAG
 
+## 2026-10-26 — Attribution et correction versionnées du numéro ARTAG
+
+- **Décidé :** préparer l'identification du dossier existant avant toute création ou reprise. Limiter ce premier service à la référente titulaire ; une délégation de rédaction de notes n'élargit pas les droits d'identification.
+- **Créé :** API de lecture/historique et de correction motivée, table de révisions additive, tests unitaires et PostgreSQL/HTTP. Voir [le contrat et les limites](52_REFERENCE_ARTAG_VERSIONNEE.md).
+- **Modifié :** empreinte de restauration fictive pour inclure révision, auteur et ancienne valeur. Le contrôle de confidentialité autorise uniquement le chemin précis de cette nouvelle migration DDL.
+- **Conservé :** dossiers et notes existants, version de dossier commune, audit atomique, restrictions SSO/HTTPS/CSRF et activation désactivée par défaut. Aucun rapprochement de personne, référence générée, import ou migration institutionnelle.
+- **Vérifications :** 124 tests frontend et 72 tests backend réussis localement ; 17 recettes PostgreSQL ignorées localement selon leurs verrous. Schéma et client Prisma, lint, build, contrôle de confidentialité et diff conformes. Vite lancé depuis `frontend/`, affichage de l'accueil existant vérifié dans Chromium ; aucun écran modifié. CI réelle PostgreSQL, migrations, restauration et CodeQL à confirmer sur la PR.
+- **À poursuivre :** parcours d'identification fiable, écran de correction/historique et création contrôlée ; identité minimale, statut/clôture et recette institutionnelle autorisée.
+- **Vigilances :** aucun formulaire d'attribution depuis la liste des dossiers sans numéro, car plusieurs entrées peuvent y être confondues. Le service exige un dossier préalablement identifié. La PR est construite sur le lot #44 encore ouvert, sans fusionner les PR précédentes.
+
 ## 2026-10-26 — File active serveur et ouverture des notes
 
 - **Décidé :** relier le bureau professionnel aux notes par une liste de dossiers serveur autorisés en rédaction. Ajouter le numéro ARTAG prévu par le cadrage sans inventer de référence pour les dossiers existants.

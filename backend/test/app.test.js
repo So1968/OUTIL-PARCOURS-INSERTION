@@ -30,6 +30,8 @@ test("les routes métier ne sont jamais accessibles dans ce socle", async () => 
       ["GET", "/api/dossiers"], ["POST", "/api/dossiers"], ["GET", "/api/notes-reservees"],
       ["GET", "/api/dossiers/fictif/notes-partagees"],
       ["GET", "/api/mes-dossiers"],
+      ["GET", "/api/dossiers/fictif/reference-artag"],
+      ["PATCH", "/api/dossiers/fictif/reference-artag"],
       ["PATCH", "/api/dossiers/fictif/notes-partagees/fictif"],
       ["POST", "/api/dossiers/fictif/notes-partagees/fictif/validation"],
       ["GET", "/api/dossiers/fictif/notes-partagees/fictif/historique"],
@@ -49,6 +51,27 @@ test("readiness indisponible sans PostgreSQL privé configuré", async () => {
     assert.equal(response.status, 503);
     assert.deepEqual(await response.json(), { status: "unavailable" });
   });
+});
+
+test("les références ARTAG restent fermées si un seul prérequis de recette manque", async () => {
+  const complete = { privateDb: { oidcLoginAttempt: {}, identityLink: {} },
+    oidc: { origin: "https://artag.example.org", redirectUri: "https://artag.example.org/auth/callback",
+      provider: { authorizationUrl: async () => "https://idp.example.org", verifyCallback: async () => ({}) } },
+    enableSharedWrites: true, csrfSecret: "secret-de-recette-fictive-plus-de-32-caracteres" };
+  for (const missing of [{ privateDb: null }, { oidc: null }, { enableSharedWrites: false },
+    { csrfSecret: "court" }]) {
+    const server = createApp({ ...complete, ...missing }).listen(0, "127.0.0.1");
+    await once(server, "listening");
+    try {
+      for (const method of ["GET", "PATCH"]) {
+        const response = await fetch(`http://127.0.0.1:${server.address().port}/api/dossiers/fictif/reference-artag`, { method });
+        assert.equal(response.status, 503);
+        assert.deepEqual(await response.json(), { error: "METIER_NON_ACTIVE" });
+      }
+    } finally { await new Promise(resolve => server.close(resolve)); }
+  }
+  assert.throws(() => createApp({ ...complete, oidc: { ...complete.oidc, origin: "http://artag.example.org" } }),
+    /AUTHENTIFICATION_NON_CONFIGUREE/);
 });
 
 async function withPrivateServer(privateDb, check) {
