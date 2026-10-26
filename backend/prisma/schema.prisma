@@ -77,6 +77,7 @@ model UserAccount {
   sharedRevisions SharedNoteRevision[]
   referenceRevisions CaseReferenceRevision[]
   caseCreationRequests CaseCreationRequest[]
+  identityRevisions CaseIdentityRevision[]
 }
 
 model CaseFile {
@@ -97,6 +98,40 @@ model CaseFile {
   auditEvents   AuditEvent[]
   referenceRevisions CaseReferenceRevision[]
   creationRequest CaseCreationRequest?
+  identity CaseIdentity?
+  identityRevisions CaseIdentityRevision[]
+}
+
+// État minimal du même dossier ; aucune correspondance automatique de personne.
+model CaseIdentity {
+  caseId         String   @id
+  dossierVersion Int
+  lastName       String?  @db.VarChar(200)
+  firstName      String?  @db.VarChar(200)
+  insertisNumber String?  @db.VarChar(255)
+  age            Int?
+  caseFile       CaseFile @relation(fields: [caseId], references: [id], onDelete: Cascade)
+}
+
+model CaseIdentityRevision {
+  id                     String      @id @default(uuid())
+  caseId                 String
+  dossierVersion         Int
+  previousLastName       String?     @db.VarChar(200)
+  previousFirstName      String?     @db.VarChar(200)
+  previousInsertisNumber String?     @db.VarChar(255)
+  previousAge            Int?
+  lastName               String?     @db.VarChar(200)
+  firstName              String?     @db.VarChar(200)
+  insertisNumber         String?     @db.VarChar(255)
+  age                    Int?
+  actorId                String
+  reason                 String      @db.VarChar(200)
+  createdAt              DateTime    @default(now())
+  caseFile               CaseFile    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  actor                  UserAccount @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@unique([caseId, dossierVersion])
 }
 
 // Demande de création immuable : la même clé ne crée jamais un autre dossier.

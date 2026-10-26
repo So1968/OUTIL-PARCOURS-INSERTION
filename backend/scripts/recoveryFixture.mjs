@@ -32,6 +32,7 @@ const eventRequestId = "00000000-0000-4000-8000-000000000050";
 const caseId = "00000000-0000-4000-8000-000000000051";
 const referenceActorId = "00000000-0000-4000-8000-000000000052";
 const creationRequestId = "00000000-0000-4000-8000-000000000053";
+const recoveryIdentity = { lastName: "FICTIF RESTAURATION", firstName: "Recette", insertisNumber: "INSERTIS-RECETTE-FICTIVE", age: 40 };
 
 async function seed(db, env) {
   if (ensureEphemeralRecoveryTarget(env) !== "artag_ci_demo") {
@@ -68,7 +69,7 @@ async function seed(db, env) {
     role: "REFERENTE", enabled: true,
   } });
   await db.caseFile.create({ data: {
-    id: caseId, referentId: referenceActorId, artagReference: "ARTAG-RECETTE-FICTIVE", version: 1,
+    id: caseId, referentId: referenceActorId, artagReference: "ARTAG-RECETTE-FICTIVE", version: 2,
   } });
   await db.caseReferenceRevision.create({ data: {
     caseId, dossierVersion: 1, previousReference: null, artagReference: "ARTAG-RECETTE-FICTIVE",
@@ -82,13 +83,20 @@ async function seed(db, env) {
     caseId, actorId: referenceActorId, eventType: "CASE_CREATED",
     purpose: "Création d'un dossier identifié par sa référente titulaire",
   } });
+  await db.caseIdentity.create({ data: { caseId, dossierVersion: 2, ...recoveryIdentity } });
+  await db.caseIdentityRevision.create({ data: { caseId, dossierVersion: 2, previousLastName: null,
+    previousFirstName: null, previousInsertisNumber: null, previousAge: null, ...recoveryIdentity,
+    actorId: referenceActorId, reason: "Saisie d’identité strictement fictive" } });
+  await db.auditEvent.create({ data: { caseId, actorId: referenceActorId, eventType: "CASE_IDENTITY_UPDATED",
+    purpose: "Modification versionnée du bloc identité du dossier" } });
   await db.auditEvent.create({
     data: { actorId: userId, eventType: "RECOVERY_FIXTURE", purpose: "Recette fictive de restauration" },
   });
 }
 
 async function snapshot(db) {
-  const [user, tasks, events, auditCount, caseFile, referenceRevisions, referenceActor, creationRequest, creationAuditCount] = await Promise.all([
+  const [user, tasks, events, auditCount, caseFile, referenceRevisions, referenceActor, creationRequest, creationAuditCount,
+    caseIdentity, identityRevisions, identityAuditCount] = await Promise.all([
     db.userAccount.findUnique({
       where: { id: userId }, select: { id: true, role: true, enabled: true },
     }),
@@ -116,12 +124,19 @@ async function snapshot(db) {
       actorId: true, requestId: true, caseId: true, referenceDigest: true, createdAt: true,
     } }),
     db.auditEvent.count({ where: { caseId, actorId: referenceActorId, eventType: "CASE_CREATED" } }),
+    db.caseIdentity.findUnique({ where: { caseId }, select: { caseId: true, dossierVersion: true,
+      lastName: true, firstName: true, insertisNumber: true, age: true } }),
+    db.caseIdentityRevision.findMany({ where: { caseId }, orderBy: { dossierVersion: "asc" }, select: {
+      dossierVersion: true, previousLastName: true, previousFirstName: true, previousInsertisNumber: true, previousAge: true,
+      lastName: true, firstName: true, insertisNumber: true, age: true, actorId: true, reason: true, createdAt: true,
+    } }),
+    db.auditEvent.count({ where: { caseId, actorId: referenceActorId, eventType: "CASE_IDENTITY_UPDATED" } }),
   ]);
   if (!user?.enabled || user.role !== "APPUI_TNS" ||
       tasks.length !== 2 || events.length !== 1 || auditCount !== 1 ||
       tasks[0].id !== taskIds[0] || tasks[1].id !== taskIds[1] ||
       events[0].requestId !== eventRequestId || caseFile?.artagReference !== "ARTAG-RECETTE-FICTIVE" ||
-      caseFile.version !== 1 || caseFile.referentId !== referenceActorId ||
+      caseFile.version !== 2 || caseFile.referentId !== referenceActorId ||
       !referenceActor?.enabled || referenceActor.role !== "REFERENTE" ||
       referenceRevisions.length !== 1 || referenceRevisions[0].dossierVersion !== 1 ||
       referenceRevisions[0].previousReference !== null || referenceRevisions[0].artagReference !== caseFile.artagReference ||
@@ -130,7 +145,14 @@ async function snapshot(db) {
       creationRequest.caseId !== caseId || creationRequest.referenceDigest !== createHash("sha256").update("ARTAG-RECETTE-FICTIVE").digest("hex")) {
     throw new Error("DONNEES_FICTIVES_ABSENTES_OU_CORROMPUES");
   }
-  return { user, tasks, events, auditCount, caseFile, referenceRevisions, referenceActor, creationRequest, creationAuditCount };
+  if (caseIdentity?.dossierVersion !== 2 || identityRevisions.length !== 1 || identityRevisions[0].dossierVersion !== 2
+    || Object.entries(recoveryIdentity).some(([field, value]) => caseIdentity[field] !== value || identityRevisions[0][field] !== value)
+    || ["previousLastName", "previousFirstName", "previousInsertisNumber", "previousAge"].some(field => identityRevisions[0][field] !== null)
+    || identityRevisions[0].actorId !== referenceActorId || identityRevisions[0].reason !== "Saisie d’identité strictement fictive" || identityAuditCount !== 1) {
+    throw new Error("IDENTITE_FICTIVE_ABSENTE_OU_CORROMPUE");
+  }
+  return { user, tasks, events, auditCount, caseFile, referenceRevisions, referenceActor, creationRequest, creationAuditCount,
+    caseIdentity, identityRevisions, identityAuditCount };
 }
 
 export function fingerprint(data) {

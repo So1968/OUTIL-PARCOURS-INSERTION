@@ -23,6 +23,7 @@ describe("file active accessible en rédaction", () => {
     const link = await screen.findByRole("link", { name: "Ouvrir les notes partagées" });
     expect(link).toHaveAttribute("href", `/dossiers/${id}/notes-partagees`);
     expect(screen.getByRole("link", { name: "Numéro ARTAG et historique" })).toHaveAttribute("href", `/dossiers/${id}/reference-artag`);
+    expect(screen.getByRole("link", { name: "Identité" })).toHaveAttribute("href", `/dossiers/${id}/identite`);
     expect(screen.getByRole("heading", { name: "Numéro ARTAG : ARTAG-FICTIF" })).toBeInTheDocument();
     expect(screen.queryByText(id)).not.toBeInTheDocument();
     expect(read).not.toHaveBeenCalled(); expect(write).not.toHaveBeenCalled();
@@ -54,12 +55,14 @@ describe("file active accessible en rédaction", () => {
     await screen.findByRole("heading", { name: "Numéro ARTAG non renseigné" });
     expect(screen.queryByRole("link", { name: "Ouvrir les notes partagées" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Numéro ARTAG et historique" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Identité" })).not.toBeInTheDocument();
   });
   it("une délégation de rédaction ne propose pas de correction de l'identification", async () => {
     loadWritableCases.mockResolvedValue({ cases: [{ ...row, canManageReference: false }], nextCursor: null });
     renderDirectory(); load();
     await screen.findByRole("link", { name: "Ouvrir les notes partagées" });
     expect(screen.queryByRole("link", { name: "Numéro ARTAG et historique" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Identité" })).not.toBeInTheDocument();
   });
   it.each([401, 403, 404])("efface les références affichées lorsque l'accès est retiré (%s)", async status => {
     renderDirectory(); load();
