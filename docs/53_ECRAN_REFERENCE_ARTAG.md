@@ -48,4 +48,6 @@ Les tests vérifient le parcours file → correction → file actualisée → no
 
 Chromium vérifie sur une fixture locale strictement fictive : seul le dossier identifié titulaire possède le lien ; correction et historique ; réponse perdue retrouvée sans doublon ; notes portant le numéro rechargé ; formulaire à 390 px sans débordement. Cette fixture est retirée après contrôle et n'active ni drapeau institutionnel, ni SSO simulé en production.
 
+Sur le commit de code `b4f2ac3` de la PR #46, les contrôles GitHub confirment 151 tests frontend, 89 tests backend PostgreSQL sans échec ni test ignoré, migrations/idempotence/dérive, restauration, confidentialité et CodeQL conformes. Localement : 151 tests frontend et 72 tests backend réussis ; 17 recettes PostgreSQL ignorées selon leurs verrous ; schéma Prisma, lint, build et diff conformes.
+
 Le lot n'ajoute aucune migration, dépendance, reprise de données ou activation de connecteur. Le module reste en préparation sécurisée ; recette SSO et validation métier ARTAG restent nécessaires. L'identité minimale, la création des dossiers et l'attribution initiale depuis un parcours de rapprochement fiable restent à construire. Les PR précédentes doivent être intégrées dans l'ordre ; aucune fusion n'est effectuée ici.
