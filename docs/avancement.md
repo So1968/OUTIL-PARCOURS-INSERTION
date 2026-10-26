@@ -1,5 +1,15 @@
 # Avancement du projet — Outil ARTAG
 
+## 2026-10-26 — Création contrôlée du dossier serveur
+
+- **Décidé :** préparer la création prévue au cadrage ergonomique avec un numéro ARTAG déjà attribué, sans inventer de numérotation ou de rapprochement. La référente connectée devient titulaire du seul nouveau dossier.
+- **Créé :** API de création transactionnelle, demande personnelle immuable, première révision de référence et audit ; formulaire depuis une file autorisée, vérification d'une réponse perdue avec la même demande et liens vers les notes/historique. Voir [le contrat et les limites](54_CREATION_DOSSIER_CONTROLEE.md).
+- **Modifié :** migration additive sans reprise des anciens dossiers ; restauration fictive pour conserver aussi la demande initiale. Un refus de création efface la file et invalide une lecture antérieure encore en vol.
+- **Conservé :** données existantes, contrôles de session/rôle/CSRF, séparation du prototype localStorage, thème/logo et activation désactivée par défaut. Aucun compte, nom/prénom ou connecteur créé ; aucun accès au dossier d'autrui par collision de référence.
+- **Vérifications :** 165 tests frontend et 79 tests backend réussis localement ; 22 recettes PostgreSQL ignorées localement selon leurs verrous. Client et schéma Prisma, lint, build conformes. Chromium : demande perdue retrouvée sans doublon, historique initial, notes et référence de 80 caractères à 390 px sans débordement. CI réelle PostgreSQL, confidentialité, migration/restauration et CodeQL à confirmer sur la PR.
+- **À poursuivre :** identité minimale, reprise et identification fiable des anciens dossiers, règles de cycle des numéros ARTAG, statut/clôture et espaces métier ; recette SSO et validation ARTAG.
+- **Vigilances :** une clé n'ouvre pas un dossier archivé/réaffecté ; aucune nouvelle création automatique après conflit. La clé reste en mémoire du composant, sans stockage navigateur : après rechargement, retrouver le dossier avant toute autre création en cas de doute. Le lot dépend de la PR #46 encore ouverte ; aucune fusion ni mise en production.
+
 ## 2026-10-26 — Écran Identité / références sur dossier identifié
 
 - **Décidé :** relier la file active à la correction et à l'historique du numéro ARTAG existant. L'attribution initiale reste fermée depuis la liste des dossiers non identifiés.

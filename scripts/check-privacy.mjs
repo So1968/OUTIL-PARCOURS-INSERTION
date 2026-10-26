@@ -8,6 +8,7 @@ const permittedMigrations = new Set([
   "backend/prisma/migrations/20261024_shared_note_revisions/migration.sql",
   "backend/prisma/migrations/20261026_case_artag_reference/migration.sql",
   "backend/prisma/migrations/20261026_case_reference_revisions/migration.sql",
+  "backend/prisma/migrations/20261026_dossier_creation_requests/migration.sql",
 ]);
 const forbiddenMigrationStatements = /\b(?:INSERT\s+INTO|UPDATE\s+\S+\s+SET|DELETE\s+FROM|COPY\s+\S+\s+(?:FROM|TO)|CREATE\s+(?:USER|ROLE|EXTENSION)|ALTER\s+ROLE|DROP\s+(?:TABLE|SCHEMA|DATABASE)|GRANT\s+|REVOKE\s+)\b/i;
 const forbiddenExtensions = new Set([

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ApiAccessError } from "../lib/secureApi";
 import { loadWritableCases, hasUsableArtagReference } from "../lib/secureCaseDirectoryApi";
 import "./secureCaseDirectory.css";
+import { SecureCaseCreationPanel } from "./SecureCaseCreationPanel";
 
 export function SecureCaseDirectory() {
   const [data, setData] = useState(null);
@@ -10,21 +11,26 @@ export function SecureCaseDirectory() {
   const [error, setError] = useState("");
   const alive = useRef(false);
   const locked = useRef(false);
+  const accessEpoch = useRef(0);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
+  const clearAccess = () => {
+    accessEpoch.current++; setData(null);
+    setError("Session ou accès à la file active indisponible. Reconnectez-vous avant de poursuivre.");
+  };
 
   const load = async (more = false) => {
     if (locked.current) return;
     locked.current = true; setBusy(true); setError("");
+    const epoch = accessEpoch.current;
     try {
       const page = await loadWritableCases(more ? data.nextCursor : undefined);
-      if (!alive.current) return;
+      if (!alive.current || epoch !== accessEpoch.current) return;
       if (more && page.cases.some(row => data.cases.some(known => known.id === row.id))) throw new ApiAccessError(409);
       setData(more ? { ...page, cases: [...data.cases, ...page.cases] } : page);
     } catch (failure) {
-      if (!alive.current) return;
+      if (!alive.current || epoch !== accessEpoch.current) return;
       if ([401, 403, 404].includes(failure.status)) {
-        setData(null);
-        setError("Session ou accès à la file active indisponible. Reconnectez-vous avant de poursuivre.");
+        clearAccess();
       } else if (failure.status === 409) {
         setError("La file active a changé. Rechargez-la avant de poursuivre.");
       } else {
@@ -56,6 +62,7 @@ export function SecureCaseDirectory() {
         </p>}
       </li>)}</ul>
       {data.nextCursor !== null && <button type="button" disabled={busy} onClick={() => load(true)}>Voir d’autres dossiers</button>}
+      <SecureCaseCreationPanel onAccessLost={clearAccess} />
     </>}
   </section>;
 }

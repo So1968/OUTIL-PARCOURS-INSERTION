@@ -1,4 +1,5 @@
 import express from "express";
+import { createCase, InvalidCaseCreation, CaseCreationConflict } from "./caseCreationService.js";
 import helmet from "helmet";
 import { listWritableCases, InvalidCaseDirectoryQuery, CaseDirectoryChanged } from "./caseDirectoryService.js";
 import {
@@ -111,6 +112,22 @@ export function createApp({
   }
 
   if (canWrite) {
+    app.post("/api/dossiers", express.json({ limit: "2kb", type: "application/json", strict: false }), async (req, res) => {
+      if (!validCsrf({ secret: csrfSecret, cookieHeader: req.headers.cookie,
+        csrfHeader: req.get("X-CSRF-Token"), origin: req.get("Origin"), allowedOrigin: oidc.origin })) {
+        return res.status(403).json({ error: "CSRF_REFUSE" });
+      }
+      try {
+        if (Object.keys(req.query).length) throw new InvalidCaseCreation();
+        const result = await createCase({ db: privateDb, cookieHeader: req.headers.cookie, input: req.body });
+        return res.status(result.created ? 201 : 200).json(result);
+      } catch (error) {
+        if (error instanceof CaseAccessDenied) return res.status(404).json({ error: "DOSSIER_INDISPONIBLE" });
+        if (error instanceof InvalidCaseCreation) return res.status(422).json({ error: "CREATION_DOSSIER_INVALIDE" });
+        if (error instanceof CaseCreationConflict) return res.status(409).json({ error: "CREATION_DOSSIER_EN_CONFLIT" });
+        return res.status(503).json({ error: "SERVICE_INDISPONIBLE" });
+      }
+    });
     const handleReferenceError = (error, res) => {
       if (error instanceof CaseAccessDenied) return res.status(404).json({ error: "DOSSIER_INDISPONIBLE" });
       if (error instanceof DossierVersionConflict) return res.status(409).json({ error: "DOSSIER_MODIFIE_ENTRE_TEMPS" });
