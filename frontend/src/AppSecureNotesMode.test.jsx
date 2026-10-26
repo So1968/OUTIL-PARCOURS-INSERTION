@@ -30,6 +30,32 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe("route des notes professionnelles", () => {
+  it("crée depuis une file vide autorisée puis ouvre les notes du nouveau dossier", async () => {
+    let created = false;
+    fetch.mockImplementation(async (url, options = {}) => {
+      if (url === "/api/mes-dossiers") return new Response(JSON.stringify({ cases: [], nextCursor: null }));
+      if (url === "/auth/csrf") return new Response(JSON.stringify({ token: "a".repeat(64) }));
+      if (url === "/api/dossiers" && options.method === "POST") {
+        const input = JSON.parse(options.body);
+        expect(Object.keys(input).sort()).toEqual(["artagReference", "requestId"]);
+        expect(input.artagReference).toBe("ARTAG-CREATION-FICTIVE");
+        created = true;
+        return new Response(JSON.stringify({ requestId: input.requestId, created: true, caseId: first,
+          artagReference: input.artagReference, dossierVersion: 1 }), { status: 201 });
+      }
+      return new Response(JSON.stringify({ dossierVersion: 1, artagReference: "ARTAG-CREATION-FICTIVE", notes: [], nextOffset: null }));
+    });
+    const read = vi.spyOn(Storage.prototype, "getItem"), write = vi.spyOn(Storage.prototype, "setItem");
+    render(<MemoryRouter initialEntries={["/dossiers"]}><App /></MemoryRouter>);
+    fireEvent.click(await screen.findByRole("button", { name: "Charger ma file active" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Préparer un dossier" }));
+    fireEvent.change(screen.getByLabelText("Numéro ARTAG du nouveau dossier"), { target: { value: "ARTAG-CREATION-FICTIVE" } });
+    fireEvent.click(screen.getByRole("button", { name: "Créer le dossier" }));
+    fireEvent.click(await screen.findByRole("link", { name: "Ouvrir les notes du dossier" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Charger les notes partagées" }));
+    await screen.findByRole("heading", { name: "Numéro ARTAG : ARTAG-CREATION-FICTIVE" });
+    expect(created).toBe(true); expect(read).not.toHaveBeenCalled(); expect(write).not.toHaveBeenCalled();
+  });
   it("ouvre l'identification depuis la file, corrige puis retrouve le numéro rechargé dans les notes", async () => {
     const stamp = "2026-10-26T10:00:00Z";
     let reference = "ARTAG-FICTIF-A", version = 0, history = [];

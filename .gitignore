@@ -76,3 +76,4 @@ beneficiaires/
 !backend/prisma/migrations/20261023_initial_schema/migration.sql
 !backend/prisma/migrations/20261026_case_artag_reference/migration.sql
 !backend/prisma/migrations/20261026_case_reference_revisions/migration.sql
+!backend/prisma/migrations/20261026_dossier_creation_requests/migration.sql

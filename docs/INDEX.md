@@ -29,6 +29,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 23. [File active serveur](51_FILE_ACTIVE_SERVEUR.md) — dossiers accessibles en rédaction, identification ARTAG et entrée vers les notes.
 24. [Numéro ARTAG versionné](52_REFERENCE_ARTAG_VERSIONNEE.md) — API d'attribution/correction sur dossier identifié, historique, contrôle de concurrence et limites du rapprochement.
 25. [Écran du numéro ARTAG](53_ECRAN_REFERENCE_ARTAG.md) — correction et historique sur dossier déjà identifié, reprise après conflit, droits et absence d'attribution en aveugle.
+26. [Création contrôlée d'un dossier](54_CREATION_DOSSIER_CONTROLEE.md) — numéro déjà attribué, titulaire serveur, première révision, audit atomique et réessai sans doublon.
 
 ## Grandes familles documentaires
 
