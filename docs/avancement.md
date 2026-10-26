@@ -1,5 +1,15 @@
 # Avancement du projet — Outil ARTAG
 
+## 2026-10-26 — File active serveur et ouverture des notes
+
+- **Décidé :** relier le bureau professionnel aux notes par une liste de dossiers serveur autorisés en rédaction. Ajouter le numéro ARTAG prévu par le cadrage sans inventer de référence pour les dossiers existants.
+- **Créé :** liste serveur filtrée et auditée, pagination stable par curseur, écran de file active et liens de dossier, migration additive de `CaseFile.artagReference`, tests de droits et de navigation. Voir [le contrat du lot](51_FILE_ACTIVE_SERVEUR.md).
+- **Modifié :** bureau, retour depuis les notes et rappel de numéro ARTAG ; recette de restauration pour vérifier la conservation d'une référence fictive. Le contrôle de confidentialité autorise uniquement le nouveau chemin précis de migration DDL.
+- **Conservé :** données et droits existants, séparation des notes réservées, thème et intitulés ; mode institutionnel toujours désactivé par défaut. Aucun compte, rôle ni identifiant de dossier n'est repris du navigateur.
+- **Vérifications locales :** 124 tests frontend et 64 tests backend réussis ; 12 recettes PostgreSQL ignorées localement selon leurs verrous. Client Prisma généré, schéma, lint et build conformes. Chromium : ouverture du bon dossier, référence manquante signalée et absence de débordement à 390 px. La CI doit confirmer migrations, PostgreSQL, restauration et CodeQL sur le commit livré.
+- **À poursuivre :** provisionnement et création contrôlée des dossiers, identité minimale, statut/clôture et versionnement de leurs modifications ; autres vues selon les habilitations ; recette institutionnelle SSO et ARTAG.
+- **Vigilances :** un dossier sans numéro reste conservé mais n'est pas ouvert depuis la liste ; aucune correspondance avec des fichiers locaux ou des noms de personnes. La migration n'est appliquée que dans la CI fictive. La PR dépend de #43 puis #42 et ne les fusionne pas.
+
 ## 2026-10-26 — Écran de notes partagées relié aux API de recette
 
 - **Décidé :** préparer un écran de dossier utilisant les notes serveur versionnées du lot précédent, avec activation explicite, sans migrer les dossiers locaux ni activer les accès ARTAG.
