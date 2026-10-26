@@ -36,7 +36,7 @@ test("la file renvoie uniquement les repères du dossier et trace chaque référ
   const f = fixture({ rows: [row] });
   const data = await f.run({ actorId: otherId, role: "DIRECTION" });
   assert.deepEqual(data, { cases: [{ id: row.id, artagReference: "ARTAG-FICTIF", version: 0,
-    createdAt: now, updatedAt: now }], nextCursor: null });
+    createdAt: now, updatedAt: now, canManageReference: true }], nextCursor: null });
   assert.deepEqual(f.calls.audits.map(event => event.caseId), [row.id]);
   assert.ok(f.calls.audits.every(event => event.actorId === actorId && event.eventType === "CASE_DIRECTORY_READ"));
   assert.doesNotMatch(JSON.stringify(data), /Réservé|Texte fictif|referentId|assignments/);
@@ -51,7 +51,9 @@ test("la rédaction déléguée exige une affectation active et ne se déduit pa
   }
   const f = fixture({ rows: [{ ...record(), referentId: otherId,
     assignments: [{ userId: actorId, active: true, capability: "SHARED_WRITE" }] }] });
-  assert.equal((await f.run()).cases.length, 1);
+  const data = await f.run();
+  assert.equal(data.cases.length, 1);
+  assert.equal(data.cases[0].canManageReference, false);
 });
 
 test("les autres profils, comptes désactivés et sessions expirées ne déclenchent aucune lecture", async () => {

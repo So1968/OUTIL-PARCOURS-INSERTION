@@ -6,7 +6,7 @@ const validDate = value => typeof value === "string" && Number.isFinite(Date.par
 export function hasUsableArtagReference(value) {
   if (typeof value !== "string") return false;
   const characters = Array.from(value);
-  return characters.length > 0 && characters.length <= 80 && value === value.trim()
+  return characters.length > 0 && characters.length <= 80 && value.isWellFormed() && value === value.trim()
     && characters.every(char => char.codePointAt(0) > 31 && char.codePointAt(0) !== 127);
 }
 
@@ -23,6 +23,7 @@ export async function loadWritableCases(before) {
     || new Set(data.cases.map(row => row?.id)).size !== data.cases.length
     || !data.cases.every(row => row && typeof row.id === "string" && UUID.test(row.id)
       && (row.artagReference === null || hasUsableArtagReference(row.artagReference))
+      && typeof row.canManageReference === "boolean"
       && Number.isInteger(row.version) && row.version >= 0 && row.version <= 2147483647
       && validDate(row.createdAt) && validDate(row.updatedAt))
     || (data.nextCursor !== null && (typeof data.nextCursor !== "string"

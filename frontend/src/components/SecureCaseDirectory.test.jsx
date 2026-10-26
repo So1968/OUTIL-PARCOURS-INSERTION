@@ -7,7 +7,7 @@ import { ApiAccessError } from "../lib/secureApi";
 vi.mock("../lib/secureCaseDirectoryApi", async original => ({ ...await original(), loadWritableCases: vi.fn() }));
 const id = "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa";
 const row = { id, artagReference: "ARTAG-FICTIF", version: 0,
-  createdAt: "2026-10-26T08:00:00Z", updatedAt: "2026-10-26T08:00:00Z" };
+  createdAt: "2026-10-26T08:00:00Z", updatedAt: "2026-10-26T08:00:00Z", canManageReference: true };
 const renderDirectory = () => render(<MemoryRouter><SecureCaseDirectory /></MemoryRouter>);
 const load = () => fireEvent.click(screen.getByRole("button", { name: "Charger ma file active" }));
 beforeEach(() => { vi.resetAllMocks(); loadWritableCases.mockResolvedValue({ cases: [row], nextCursor: null }); });
@@ -20,6 +20,7 @@ describe("file active accessible en rédaction", () => {
     expect(loadWritableCases).not.toHaveBeenCalled(); load();
     const link = await screen.findByRole("link", { name: "Ouvrir les notes partagées" });
     expect(link).toHaveAttribute("href", `/dossiers/${id}/notes-partagees`);
+    expect(screen.getByRole("link", { name: "Numéro ARTAG et historique" })).toHaveAttribute("href", `/dossiers/${id}/reference-artag`);
     expect(screen.getByRole("heading", { name: "Numéro ARTAG : ARTAG-FICTIF" })).toBeInTheDocument();
     expect(screen.queryByText(id)).not.toBeInTheDocument();
     expect(read).not.toHaveBeenCalled(); expect(write).not.toHaveBeenCalled();
@@ -29,6 +30,13 @@ describe("file active accessible en rédaction", () => {
     renderDirectory(); load();
     await screen.findByRole("heading", { name: "Numéro ARTAG non renseigné" });
     expect(screen.queryByRole("link", { name: "Ouvrir les notes partagées" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Numéro ARTAG et historique" })).not.toBeInTheDocument();
+  });
+  it("une délégation de rédaction ne propose pas de correction de l'identification", async () => {
+    loadWritableCases.mockResolvedValue({ cases: [{ ...row, canManageReference: false }], nextCursor: null });
+    renderDirectory(); load();
+    await screen.findByRole("link", { name: "Ouvrir les notes partagées" });
+    expect(screen.queryByRole("link", { name: "Numéro ARTAG et historique" })).not.toBeInTheDocument();
   });
   it.each([401, 403, 404])("efface les références affichées lorsque l'accès est retiré (%s)", async status => {
     renderDirectory(); load();
