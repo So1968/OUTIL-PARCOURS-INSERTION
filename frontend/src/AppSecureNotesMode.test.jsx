@@ -26,6 +26,25 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe("route des notes professionnelles", () => {
+  it("relie le bureau à la file active puis aux notes du dossier choisi", async () => {
+    const stamp = "2026-10-26T08:00:00Z";
+    fetch.mockImplementation(async url => new Response(JSON.stringify(url === "/api/mes-dossiers" ? {
+      cases: [{ id: first, artagReference: "ARTAG-FICTIF", version: 0, createdAt: stamp, updatedAt: stamp }], nextCursor: null,
+    } : { dossierVersion: 0, artagReference: "ARTAG-FICTIF", notes: [], nextOffset: null })));
+    const read = vi.spyOn(Storage.prototype, "getItem");
+    render(<MemoryRouter initialEntries={["/bureau-quotidien"]}><App /></MemoryRouter>);
+    fireEvent.click(await screen.findByRole("link", { name: "Ouvrir ma file active" }));
+    await screen.findByRole("heading", { name: "File active" });
+    expect(fetch).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Charger ma file active" }));
+    fireEvent.click(await screen.findByRole("link", { name: "Ouvrir les notes partagées" }));
+    await screen.findByRole("heading", { name: "Notes partagées" });
+    fireEvent.click(screen.getByRole("button", { name: "Charger les notes partagées" }));
+    await screen.findByLabelText("Texte de la note");
+    expect(screen.getByRole("heading", { name: "Numéro ARTAG : ARTAG-FICTIF" })).toBeInTheDocument();
+    expect(fetch).toHaveBeenLastCalledWith(`/api/dossiers/${first}/notes-partagees?offset=0`, expect.any(Object));
+    expect(read).not.toHaveBeenCalled();
+  });
   it("ouvre le module seul sans monter les écrans locaux ni le sélecteur de rôle", async () => {
     const read = vi.spyOn(Storage.prototype, "getItem");
     const write = vi.spyOn(Storage.prototype, "setItem");

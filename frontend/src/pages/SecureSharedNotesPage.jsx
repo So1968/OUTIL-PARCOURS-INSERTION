@@ -10,7 +10,7 @@ export function SecureSharedNotesPage() {
   return <main className="secure-notes-page">
     <header>
       <img src="/logo-artag.png" alt="ARTAG" />
-      <div><h1>Notes partagées</h1><Link to="/bureau-quotidien">Retour au bureau professionnel</Link></div>
+      <div><h1>Notes partagées</h1><Link to="/dossiers">Retour à la file active</Link></div>
     </header>
     <SecureSharedNotesPanel key={caseId} caseId={caseId} />
   </main>;

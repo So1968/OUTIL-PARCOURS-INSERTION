@@ -72,5 +72,6 @@ beneficiaires/
 *.jsonl
 *.ndjson
 
-# UNIQUE exception de DDL Prisma généré et revu : aucun export SQL autorisé.
+# Exceptions ciblées de DDL Prisma généré et revu : aucun export SQL autorisé.
 !backend/prisma/migrations/20261023_initial_schema/migration.sql
+!backend/prisma/migrations/20261026_case_artag_reference/migration.sql

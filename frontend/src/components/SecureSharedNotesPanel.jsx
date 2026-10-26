@@ -4,6 +4,7 @@ import {
   creerNotePartageeSecurisee, corrigerNotePartageeSecurisee, validerNotePartageeSecurisee,
 } from "../lib/secureApi";
 import "./secureSharedNotes.css";
+import { hasUsableArtagReference } from "../lib/secureCaseDirectoryApi";
 
 const dateLabel = value => new Date(value).toLocaleString("fr-FR", { timeZone: "Europe/Paris" });
 const validVersion = value => Number.isInteger(value) && value >= 0 && value <= 2147483647;
@@ -167,6 +168,7 @@ export function SecureSharedNotesPanel({ caseId }) {
 
   return (
     <section className="secure-notes" aria-label="Notes partagées du dossier" aria-busy={busy}>
+      {catalog && hasUsableArtagReference(catalog.artagReference) && <h2>Numéro ARTAG : {catalog.artagReference}</h2>}
       <p>Seuls les éléments utiles au dossier partagé ont leur place ici. Les notes professionnelles réservées restent séparées.</p>
       <button type="button" disabled={busy} onClick={reload}>
         {catalog ? "Recharger les notes" : "Charger les notes partagées"}

@@ -29,12 +29,13 @@ const taskIds = [
   "00000000-0000-4000-8000-000000000049",
 ];
 const eventRequestId = "00000000-0000-4000-8000-000000000050";
+const caseId = "00000000-0000-4000-8000-000000000051";
 
 async function seed(db, env) {
   if (ensureEphemeralRecoveryTarget(env) !== "artag_ci_demo") {
     throw new Error("SEMIS_AUTORISE_SUR_BASE_ORIGINE_UNIQUEMENT");
   }
-  // Le schéma est créé par db:push:test dans GitHub Actions, jamais ici.
+  // Le schéma est déployé par les migrations dans GitHub Actions, jamais ici.
   await db.userAccount.create({
     data: {
       id: userId, email: "recovery-fixture" + String.fromCharCode(64) + "example.org",
@@ -60,13 +61,14 @@ async function seed(db, env) {
       kind: "APPEL", state: "EFFECTUE", minutes: 10,
     },
   });
+  await db.caseFile.create({ data: { id: caseId, artagReference: "ARTAG-RECETTE-FICTIVE" } });
   await db.auditEvent.create({
     data: { actorId: userId, eventType: "RECOVERY_FIXTURE", purpose: "Recette fictive de restauration" },
   });
 }
 
 async function snapshot(db) {
-  const [user, tasks, events, auditCount] = await Promise.all([
+  const [user, tasks, events, auditCount, caseFile] = await Promise.all([
     db.userAccount.findUnique({
       where: { id: userId }, select: { id: true, role: true, enabled: true },
     }),
@@ -86,14 +88,15 @@ async function snapshot(db) {
     db.auditEvent.count({
       where: { actorId: userId, eventType: "RECOVERY_FIXTURE" },
     }),
+    db.caseFile.findUnique({ where: { id: caseId }, select: { id: true, artagReference: true } }),
   ]);
   if (!user?.enabled || user.role !== "APPUI_TNS" ||
       tasks.length !== 2 || events.length !== 1 || auditCount !== 1 ||
       tasks[0].id !== taskIds[0] || tasks[1].id !== taskIds[1] ||
-      events[0].requestId !== eventRequestId) {
+      events[0].requestId !== eventRequestId || caseFile?.artagReference !== "ARTAG-RECETTE-FICTIVE") {
     throw new Error("DONNEES_FICTIVES_ABSENTES_OU_CORROMPUES");
   }
-  return { user, tasks, events, auditCount };
+  return { user, tasks, events, auditCount, caseFile };
 }
 
 export function fingerprint(data) {
