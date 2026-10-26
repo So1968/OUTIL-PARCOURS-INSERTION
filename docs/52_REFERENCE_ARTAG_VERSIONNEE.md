@@ -54,6 +54,8 @@ La migration Prisma `20261026_case_reference_revisions` ajoute uniquement la tab
 
 Les tests couvrent attribution, correction, valeur antérieure, droits réels par session, délégation insuffisante, CSRF, corps strict, unicité, concurrence sur un dossier et entre dossiers, pagination malgré une correction intercalaire, révocation, expiration, dérive hors service et annulation transactionnelle en cas de panne. La recette de restauration vérifie aussi l'auteur et la révision d'une référence strictement fictive.
 
+Sur le commit de code `b11864f` de la PR #45, les contrôles GitHub confirment 89 tests backend PostgreSQL réussis sans test ignoré, 124 tests frontend, migration/idempotence/dérive, restauration fictive, confidentialité et CodeQL conformes. Localement : 72 tests backend et 124 tests frontend réussis ; 17 recettes PostgreSQL ignorées selon leurs verrous, schéma/client Prisma, lint et build conformes. Aucun contrôle n'est neutralisé pour simuler une recette locale.
+
 ## Limites et suite
 
 Ce lot est une API de préparation sécurisée, **sans nouveau formulaire utilisateur**. Plusieurs dossiers sans numéro peuvent être indistinguables dans la liste actuelle. L'attribution ne doit donc pas être proposée en aveugle à partir de leur rang ou de leur date. Le parcours d'identification devra permettre de vérifier de façon fiable quel dossier existant est concerné, dans un processus ARTAG autorisé.
