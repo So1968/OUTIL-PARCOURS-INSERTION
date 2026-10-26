@@ -20,6 +20,10 @@ function ChangeReferenceCase() {
   const navigate = useNavigate();
   return <button onClick={() => navigate(`/dossiers/${second}/reference-artag`)}>Autre référence fictive</button>;
 }
+function ChangeIdentityCase() {
+  const navigate = useNavigate();
+  return <button onClick={() => navigate(`/dossiers/${second}/identite`)}>Autre identité fictive</button>;
+}
 
 beforeEach(() => {
   flags.notes = true; flags.requested = true; flags.tasks = false;
@@ -30,6 +34,55 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe("route des notes professionnelles", () => {
+  it("ouvre l'identité depuis la file et conserve la modification dans le dossier sans données locales", async () => {
+    const stamp = "2026-10-26T18:00:00Z", reference = "ARTAG-IDENTITE-FICTIVE";
+    let identity = { lastName: null, firstName: null, insertisNumber: null, age: null }, version = 1, history = [];
+    fetch.mockImplementation(async (url, options = {}) => {
+      if (url === "/api/mes-dossiers") return new Response(JSON.stringify({ cases: [{ id: first, artagReference: reference,
+        version, createdAt: stamp, updatedAt: stamp, canManageReference: true }], nextCursor: null }));
+      if (url === "/auth/csrf") return new Response(JSON.stringify({ token: "a".repeat(64) }));
+      if (options.method === "PATCH") {
+        const body = JSON.parse(options.body); expect(body.expectedVersion).toBe(1);
+        history = [{ dossierVersion: 2, previousIdentity: identity, identity: body.identity, actorId: second, reason: body.reason, createdAt: stamp }];
+        identity = body.identity; version = 2; return new Response(JSON.stringify({ caseId: first, dossierVersion: version }));
+      }
+      return new Response(JSON.stringify({ caseId: first, artagReference: reference, dossierVersion: version,
+        identityVersion: history.length ? 2 : 0, identity, history, nextBeforeVersion: null }));
+    });
+    const reads = vi.spyOn(Storage.prototype, "getItem"), writes = vi.spyOn(Storage.prototype, "setItem");
+    render(<MemoryRouter initialEntries={["/dossiers"]}><App /></MemoryRouter>);
+    fireEvent.click(await screen.findByRole("button", { name: "Charger ma file active" }));
+    fireEvent.click(await screen.findByRole("link", { name: "Identité" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Charger l’identité et l’historique" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Compléter ou corriger l’identité" }));
+    fireEvent.change(screen.getByLabelText("Nom"), { target: { value: "FICTIF D’EXEMPLE" } });
+    fireEvent.change(screen.getByLabelText("Âge"), { target: { value: "0" } });
+    fireEvent.change(screen.getByLabelText("Motif de modification"), { target: { value: "Saisie fictive vérifiée" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enregistrer l’identité" }));
+    await screen.findByText("Identité enregistrée. Les valeurs précédentes restent dans l’historique.");
+    expect(identity).toEqual({ lastName: "FICTIF D’EXEMPLE", firstName: null, insertisNumber: null, age: 0 });
+    expect(reads).not.toHaveBeenCalled(); expect(writes).not.toHaveBeenCalled();
+  });
+  it("un changement de dossier détruit la saisie nominale, et la route reste fermée hors module", async () => {
+    fetch.mockImplementation(async url => new Response(JSON.stringify({ caseId: url.includes(second) ? second : first,
+      artagReference: "ARTAG-IDENTITE-FICTIVE", dossierVersion: 1, identityVersion: 0,
+      identity: { lastName: null, firstName: null, insertisNumber: null, age: null }, history: [], nextBeforeVersion: null })));
+    const view = render(<MemoryRouter initialEntries={[`/dossiers/${first}/identite`]}><ChangeIdentityCase /><App /></MemoryRouter>);
+    fireEvent.click(await screen.findByRole("button", { name: "Charger l’identité et l’historique" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Compléter ou corriger l’identité" }));
+    fireEvent.change(screen.getByLabelText("Nom"), { target: { value: "FICTIF PREMIER DOSSIER" } });
+    fireEvent.click(screen.getByRole("button", { name: "Autre identité fictive" }));
+    expect(screen.queryByLabelText("Nom")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Charger l’identité et l’historique" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Compléter ou corriger l’identité" }));
+    expect(screen.getByLabelText("Nom")).toHaveValue("");
+    view.unmount(); flags.notes = false; flags.requested = false; flags.tasks = true;
+    render(<MemoryRouter initialEntries={[`/dossiers/${first}/identite`]}><App /></MemoryRouter>);
+    expect(screen.getByRole("heading", { name: "Module non activé en mode professionnel sécurisé" })).toBeInTheDocument();
+    cleanup(); flags.notes = true; flags.requested = true; flags.tasks = false; fetch.mockClear();
+    render(<MemoryRouter initialEntries={["/dossiers/invalide/identite"]}><App /></MemoryRouter>);
+    await screen.findByRole("heading", { name: "Dossier indisponible" }); expect(fetch).not.toHaveBeenCalled();
+  });
   it("crée depuis une file vide autorisée puis ouvre les notes du nouveau dossier", async () => {
     let created = false;
     fetch.mockImplementation(async (url, options = {}) => {

@@ -1,5 +1,15 @@
 # Avancement du projet — Outil ARTAG
 
+## 2026-10-26 — Bloc identité minimal versionné
+
+- **Décidé :** préparer les quatre champs validés Nom, Prénom, Numéro Insertis et Âge sur le même dossier serveur identifié, sans valeur inventée, rapprochement automatique ou accès par délégation de notes.
+- **Créé :** état courant et révisions avant/après, API titularité/CSRF et historique paginé, écran de saisie motivée, liens depuis file/création/référence, tests de droits, concurrence, reprise et absence de diffusion aux autres API. Voir [le contrat et les limites](55_IDENTITE_MINIMALE_VERSIONNEE.md).
+- **Modifié :** migration additive sans reprise d'identités ni modification des dossiers existants ; restauration fictive pour conserver les champs, la révision, les anciennes valeurs nulles et l'audit.
+- **Conservé :** numérotation ARTAG, droits des autres espaces, noms/prénoms absents de la file générale, logo/thème, séparation du prototype localStorage et activation désactivée par défaut. Aucun âge calculé, date de naissance, compte ou connecteur ajouté.
+- **Vérifications :** 185 tests frontend et 86 tests backend réussis localement ; 26 recettes PostgreSQL ignorées selon leurs verrous. Sur le commit de code/recette `dfe2e84` de la PR #48, la CI confirme **112 tests backend avec PostgreSQL, sans échec ni test ignoré**, frontend, migration additive/idempotence/dérive, restauration de l'identité fictive, confidentialité et CodeQL conformes. Client/schéma Prisma, lint, build et diff conformes. Chromium : conflit relu, réponse perdue retrouvée sans réécriture, retrait d'accès et affichage à 390 px avec numéro Insertis de 255 caractères sans débordement. La recette des refus d'une clé connue prépare désormais explicitement son dossier persistant et vérifie sa reconnaissance avant les refus, sans supposer le succès d'une création.
+- **À poursuivre :** repères de parcours, statut/clôture et espaces métier, reprise autorisée des anciens dossiers ; cadrage institutionnel de conservation, plausibilité métier et accès élargis ; recette SSO et validation ARTAG.
+- **Vigilances :** toute modification exige un motif et la version globale relue ; vider un champ ne purge pas ses versions anciennes. Aucun champ nominal n'est transmis automatiquement à un autre espace ou partenaire. Le lot dépend de la PR #47 encore ouverte ; aucune fusion ni mise en production.
+
 ## 2026-10-26 — Création contrôlée du dossier serveur
 
 - **Décidé :** préparer la création prévue au cadrage ergonomique avec un numéro ARTAG déjà attribué, sans inventer de numérotation ou de rapprochement. La référente connectée devient titulaire du seul nouveau dossier.

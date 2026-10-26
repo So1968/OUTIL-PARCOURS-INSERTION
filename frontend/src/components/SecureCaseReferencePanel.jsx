@@ -103,6 +103,7 @@ export function SecureCaseReferencePanel({ caseId }) {
         {!identified && <p>Ce dossier doit être identifié dans le processus autorisé avant toute attribution. Cet écran permet uniquement de corriger un numéro déjà renseigné.</p>}
         {identified && <>
           <p><Link to={`/dossiers/${caseId}/notes-partagees`}>Ouvrir les notes partagées</Link></p>
+          <p><Link to={`/dossiers/${caseId}/identite`}>Identité du dossier</Link></p>
           {!editing && <button type="button" disabled={busy || !!review || data.dossierVersion === 2147483647}
             onClick={() => { setEditing(true); setReference(data.artagReference); setReason(""); setMessage(""); }}>Corriger le numéro ARTAG</button>}
         </>}
