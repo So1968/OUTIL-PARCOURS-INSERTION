@@ -67,13 +67,15 @@ test("PostgreSQL/HTTP : file active cloisonnée, références uniques et paginat
     const first = await firstResponse.json();
     assert.equal(first.cases.length, 25);
     assert.match(first.nextCursor, /^[A-Za-z0-9_-]+$/);
-    assert.deepEqual(Object.keys(first.cases[0]).sort(), ["artagReference", "createdAt", "id", "updatedAt", "version"]);
+    assert.deepEqual(Object.keys(first.cases[0]).sort(), ["artagReference", "canManageReference", "createdAt", "id", "updatedAt", "version"]);
     await db.caseFile.create({ data: inserted });
     const second = await (await directory(0, `?before=${first.nextCursor}`)).json();
     assert.equal(second.cases.length, 2); assert.equal(second.nextCursor, null);
     const combined = [...first.cases, ...second.cases];
     assert.deepEqual(combined.map(row => row.id), [...own, assigned].map(row => row.id).sort().reverse());
     assert.equal(combined.filter(row => row.artagReference === null).length, 2);
+    assert.ok(combined.filter(row => row.id !== assigned.id).every(row => row.canManageReference === true));
+    assert.equal(combined.find(row => row.id === assigned.id).canManageReference, false);
     assert.doesNotMatch(JSON.stringify(combined), /Analyse réservée|Texte partagé|assignments|referentId|email/);
     const latest = await (await directory()).json();
     assert.equal(latest.cases[0].id, inserted.id);

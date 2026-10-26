@@ -50,6 +50,8 @@ La [file active serveur du même module](docs/51_FILE_ACTIVE_SERVEUR.md) permet 
 
 L'[API du numéro ARTAG versionné](docs/52_REFERENCE_ARTAG_VERSIONNEE.md) prépare son attribution/correction par la référente titulaire sur un dossier existant identifié. Elle conserve ancienne valeur, auteur et motif, refuse les conflits et ne propose pas d'attribution en aveugle depuis la liste.
 
+L'[écran Identité / références](docs/53_ECRAN_REFERENCE_ARTAG.md) relie maintenant la file active à la correction motivée et à l'historique d'un numéro déjà renseigné. Le module de recette reste désactivé par défaut ; une coupure réseau ne provoque aucun renvoi automatique.
+
 ## Démarrage local
 
 Depuis la racine du dépôt :

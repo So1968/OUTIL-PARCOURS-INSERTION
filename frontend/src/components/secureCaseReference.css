@@ -1,0 +1,5 @@
+.secure-case-reference section { margin-top: 20px; }
+.secure-case-reference h2, .secure-case-reference h3, .secure-case-reference p, .secure-case-reference li { overflow-wrap: anywhere; }
+.secure-case-reference input { min-width: 0; }
+.secure-case-reference strong { white-space: pre-wrap; }
+.secure-case-reference a:focus-visible { outline: 3px solid #a8b08d; outline-offset: 3px; }

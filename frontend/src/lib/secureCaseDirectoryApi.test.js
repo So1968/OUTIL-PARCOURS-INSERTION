@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { loadWritableCases, hasUsableArtagReference } from "./secureCaseDirectoryApi";
 const id = "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa";
 const row = { id, artagReference: "ARTAG-FICTIF", version: 0,
-  createdAt: "2026-10-26T08:00:00Z", updatedAt: "2026-10-26T08:00:00Z" };
+  createdAt: "2026-10-26T08:00:00Z", updatedAt: "2026-10-26T08:00:00Z", canManageReference: true };
 afterEach(() => vi.unstubAllGlobals());
 
 describe("client de la file active serveur", () => {
@@ -17,7 +17,7 @@ describe("client de la file active serveur", () => {
   it("accepte un numéro manquant sans inventer de référence", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ cases: [{ ...row, artagReference: null }], nextCursor: null }))));
     expect((await loadWritableCases()).cases[0].artagReference).toBeNull();
-    for (const value of [null, "", "  ", " ARTAG", "a".repeat(81), "ARTAG\nFICTIF"]) expect(hasUsableArtagReference(value)).toBe(false);
+    for (const value of [null, "", "  ", " ARTAG", "a".repeat(81), "ARTAG\nFICTIF", "\ud800"]) expect(hasUsableArtagReference(value)).toBe(false);
   });
   it("refuse un curseur arbitraire sans requête", async () => {
     const mock = vi.fn(); vi.stubGlobal("fetch", mock);
@@ -27,6 +27,7 @@ describe("client de la file active serveur", () => {
   it("refuse des données incomplètes, répétées ou une pagination qui boucle", async () => {
     for (const payload of [{}, { cases: [row, row], nextCursor: null },
       { cases: [{ ...row, artagReference: {} }], nextCursor: null },
+      { cases: [{ ...row, canManageReference: "true" }], nextCursor: null },
       { cases: [], nextCursor: "idem" }]) {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify(payload))));
       await expect(loadWritableCases("idem")).rejects.toMatchObject({ status: 503 });
