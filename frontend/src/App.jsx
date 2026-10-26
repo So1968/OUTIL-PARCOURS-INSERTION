@@ -17,6 +17,7 @@ import { AccessDeniedPage } from "./pages/AccessDeniedPage";
 import { AccueilPage } from "./pages/AccueilPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { secureTaskApiEnabled } from "./lib/secureTasksApi";
+import { secureNotesApiEnabled, secureNotesModeRequested } from "./lib/secureNotesMode";
 
 function lazyNamed(importer, exportName) {
   return lazy(() => importer().then((module) => ({ default: module[exportName] })));
@@ -47,6 +48,7 @@ const SocleAutonomiePage = lazyNamed(() => import("./pages/SocleAutonomiePage"),
 const TnsCoordinationPage = lazyNamed(() => import("./pages/TnsCoordinationPage"), "TnsCoordinationPage");
 const TnsFicheMinutePage = lazyNamed(() => import("./pages/TnsFicheMinutePage"), "TnsFicheMinutePage");
 const TnsPage = lazyNamed(() => import("./pages/TnsPage"), "TnsPage");
+const SecureSharedNotesPage = lazyNamed(() => import("./pages/SecureSharedNotesPage"), "SecureSharedNotesPage");
 
 function ProtectedPage({ allowedRoles, children }) {
   return <RequireRole allowedRoles={allowedRoles}>{children}</RequireRole>;
@@ -105,6 +107,7 @@ function SecureWorkApp() {
         <Routes>
           <Route path="/" element={<Navigate to="/bureau-quotidien" replace />} />
           <Route path="/bureau-quotidien" element={<BureauTravailRoute />} />
+          {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/notes-partagees" element={<SecureSharedNotesPage />} />}
           <Route path="*" element={
             <main className="page-shell">
               <h1>Module non activé en mode professionnel sécurisé</h1>
@@ -119,7 +122,11 @@ function SecureWorkApp() {
 }
 
 export default function App() {
-  if (secureTaskApiEnabled()) return <SecureWorkApp />;
+  if (secureNotesModeRequested() && !secureNotesApiEnabled()) {
+    return <main className="page-shell"><h1>Connexion HTTPS requise</h1>
+      <p>Ouvrez l’adresse sécurisée de l’application pour accéder à l’espace professionnel.</p></main>;
+  }
+  if (secureTaskApiEnabled() || secureNotesApiEnabled()) return <SecureWorkApp />;
   return (
     <RoleProvider>
       <PrototypeProfileBanner />

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   ApiAccessError, creerNotePartageeSecurisee, lireApercuSecurise,
   corrigerNotePartageeSecurisee, validerNotePartageeSecurisee, lireHistoriqueNotePartageeSecurise,
+  lireNotesPartageesSecurisees,
 } from "./secureApi";
 
 const id = "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa";
@@ -9,6 +10,23 @@ const noteId = "bbbbbbbb-bbbb-4bbb-bbbb-bbbbbbbbbbbb";
 afterEach(() => vi.unstubAllGlobals());
 
 describe("adaptateur API métier same-origin (non activé dans le prototype)", () => {
+  it("charge une page de notes uniquement dans le dossier demandé", async () => {
+    const payload = { dossierVersion: 2, notes: [], nextOffset: null };
+    const mock = vi.fn().mockResolvedValue(new Response(JSON.stringify(payload)));
+    vi.stubGlobal("fetch", mock);
+    expect(await lireNotesPartageesSecurisees({ caseId: id, offset: 25 })).toEqual(payload);
+    expect(mock).toHaveBeenCalledExactlyOnceWith(`/api/dossiers/${id}/notes-partagees?offset=25`, {
+      credentials: "same-origin", cache: "no-store", redirect: "error",
+    });
+  });
+
+  it("refuse une pagination invalide avant tout appel", async () => {
+    const mock = vi.fn(); vi.stubGlobal("fetch", mock);
+    for (const offset of [-1, 1.5, "25", 100001]) {
+      await expect(lireNotesPartageesSecurisees({ caseId: id, offset })).rejects.toMatchObject({ status: 422 });
+    }
+    expect(mock).not.toHaveBeenCalled();
+  });
   it("lit uniquement la ressource demandée sans en-tête d'usurpation de rôle", async () => {
     const mock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ id, version: 1 }), {
       status: 200, headers: { "Content-Type": "application/json" },

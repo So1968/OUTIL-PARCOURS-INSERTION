@@ -5,7 +5,7 @@ import { resolveSessionUserId } from "./sessions.js";
 import { createAuthRouter } from "./authRouter.js";
 import { issueCsrfToken, validCsrf } from "./csrf.js";
 import {
-  createSharedNote, correctSharedNote, validateSharedNote, readSharedNoteHistory,
+  createSharedNote, correctSharedNote, validateSharedNote, readSharedNoteHistory, readSharedNotes,
   DossierVersionConflict, InvalidSharedNote, SharedNoteHistoryUnavailable,
 } from "./sharedNoteService.js";
 import { listOwnTasks, listOwnReminders, createOwnTask, updateOwnTask, WorkTaskAccessDenied, WorkTaskInvalid, WorkTaskConflict } from "./workTaskService.js";
@@ -150,6 +150,19 @@ export function createApp({
       },
     ];
     const notesPath = "/api/dossiers/:caseId/notes-partagees";
+    app.get(notesPath, async (req, res) => {
+      try {
+        if (Object.keys(req.query).some(key => key !== "offset")
+          || (req.query.offset !== undefined && (typeof req.query.offset !== "string"
+            || !/^(0|[1-9][0-9]{0,5})$/.test(req.query.offset)))) throw new InvalidSharedNote();
+        return res.status(200).json(await readSharedNotes({
+          db: privateDb, cookieHeader: req.headers.cookie, caseId: req.params.caseId,
+          offset: req.query.offset === undefined ? 0 : Number(req.query.offset),
+        }));
+      } catch (error) {
+        return handleNoteError(error, res);
+      }
+    });
     app.post(notesPath, ...noteMutation(["expectedVersion", "text"], createSharedNote, 201));
     app.patch(notesPath + "/:noteId",
       ...noteMutation(["expectedVersion", "text", "reason"], correctSharedNote));

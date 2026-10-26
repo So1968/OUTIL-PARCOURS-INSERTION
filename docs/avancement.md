@@ -1,5 +1,15 @@
 # Avancement du projet — Outil ARTAG
 
+## 2026-10-26 — Écran de notes partagées relié aux API de recette
+
+- **Décidé :** préparer un écran de dossier utilisant les notes serveur versionnées du lot précédent, avec activation explicite, sans migrer les dossiers locaux ni activer les accès ARTAG.
+- **Créé :** composant de rédaction/relecture/historique, route de dossier protégée par le mode de recette, drapeau frontend désactivé par défaut, liste serveur paginée et auditée, tests d'accès et de reprise après erreur. Voir [le contrat et les limites du lot](50_ECRAN_NOTES_PARTAGEES.md).
+- **Modifié :** client API, sélection du mode professionnel et bureau pour permettre le module notes indépendamment des tâches. Le mode notes demandé en HTTP est bloqué sans retour au prototype.
+- **Conservé :** intitulés métier, thème et logo ARTAG ; droits serveur, protection CSRF, historique et séparation des notes réservées. Aucun changement de schéma, de dépendance ni migration automatique des données.
+- **Vérifications locales :** 111 tests frontend et 58 tests backend réussis ; 11 recettes PostgreSQL ignorées localement selon leurs verrous. Build et lint conformes. Contrôle Chromium sur données fictives : lecture, correction, validation et affichage mobile sans débordement. La CI du lot doit compléter les preuves PostgreSQL et CodeQL sur le commit livré.
+- **À poursuivre :** répertoire de dossiers professionnels, ouverture de ce module depuis la file active serveur, modèle dossier complet, continuité à lecture restreinte et recette institutionnelle SSO.
+- **Vigilances :** perte d'accès = effacement des contenus affichés ; conflit = recharge, comparaison et reprise explicite ; réponse incertaine = aucune réémission automatique. Une saisie ne passe jamais d'un dossier à l'autre. La PR dépend du lot #42 encore ouvert et ne l'intègre pas automatiquement dans main.
+
 ## 2026-10-25 — Corrections et validations versionnées des notes partagées
 
 - **Décidé :** compléter le cycle du brouillon partagé existant sans modifier les parcours validés ni activer la recette institutionnelle. Une correction exige un motif et retire la validation ; la relecture est validée séparément.

@@ -1,0 +1,24 @@
+.secure-notes-page { max-width: 1120px; margin: auto; padding: 24px; background: #faf6ef; color: #3f372f; min-height: 100vh; }
+.secure-notes-page > header { display: flex; align-items: center; gap: 18px; }
+.secure-notes-page > header img { width: 72px; height: 72px; object-fit: contain; }
+.secure-notes { margin-top: 24px; color: #3f372f; }
+.secure-notes h2, .secure-notes h3, .secure-notes-page h1 { color: #3f372f; }
+.secure-notes__layout { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr); align-items: start; gap: 24px; margin-top: 24px; }
+.secure-notes section, .secure-notes form, .secure-notes nav { border: 1px solid #dccfbe; border-radius: 12px; padding: 18px; background: inherit; color: inherit; margin-bottom: 20px; }
+.secure-notes label { display: grid; gap: 8px; margin: 16px 0; font-weight: 700; }
+.secure-notes textarea, .secure-notes input { width: 100%; box-sizing: border-box; background: #faf6ef; color: #3f372f; border: 1px solid #6f6559; border-radius: 6px; padding: 12px; font: inherit; }
+.secure-notes textarea { min-height: 180px; resize: vertical; }
+.secure-notes button { border: 1px solid #7a845f; border-radius: 8px; background: #faf6ef; color: #3f372f; padding: 10px 14px; min-height: 44px; cursor: pointer; font: inherit; }
+.secure-notes button:disabled { opacity: .6; cursor: default; }
+.secure-notes button:focus-visible, .secure-notes input:focus-visible, .secure-notes textarea:focus-visible { outline: 3px solid #3f372f; outline-offset: 3px; }
+.secure-notes [aria-current="true"] { outline: 2px solid #a8b08d; outline-offset: 2px; }
+.secure-notes nav ul { list-style: none; padding: 0; }
+.secure-notes nav li { margin: 12px 0; }
+.secure-notes nav li button { display: grid; gap: 8px; width: 100%; text-align: left; overflow-wrap: anywhere; }
+.secure-notes__actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+.secure-notes__text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.secure-notes__review, .secure-notes [role="alert"] { border-left: 4px solid #c2974a; padding: 12px 18px; background: inherit; }
+.secure-notes details { overflow-wrap: anywhere; }
+.secure-notes ol { padding-left: 24px; }
+.secure-notes ol li { border-bottom: 1px solid #dccfbe; padding: 8px 0; }
+@media (max-width: 720px) { .secure-notes__layout { grid-template-columns: 1fr; } .secure-notes-page { padding: 16px; } }
