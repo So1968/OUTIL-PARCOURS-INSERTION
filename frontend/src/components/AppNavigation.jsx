@@ -8,7 +8,7 @@ const navigationItems = [
   { to: "/pilotage-actions", label: "File active", roles: ACCOMPAGNEMENT_ROLES },
   { to: "/bureau-quotidien", label: "Mes tâches", roles: ACCOMPAGNEMENT_ROLES },
   { to: "/parcours-social-socio-professionnel", label: "Parcours", roles: PARCOURS_ROLES },
-  { to: "/accompagnement-global", label: "Accompagnement", roles: ACCOMPAGNEMENT_ROLES },
+  { to: "/accompagnement-global", label: "Appui TNS", roles: ACCOMPAGNEMENT_ROLES },
   { to: "/continuite-service", label: "Continuité", roles: CONTINUITE_ROLES },
   { to: "/direction", label: "Direction", roles: PORTE_DIRECTION_ROLES },
 ];

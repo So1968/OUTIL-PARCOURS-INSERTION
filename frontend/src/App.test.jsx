@@ -26,6 +26,8 @@ describe("navigation principale", () => {
     expect(screen.getByRole("heading", { name: "Qu’est-ce que je fais maintenant ?" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "ARTAG" })).toHaveAttribute("src", "/logo-artag.png");
     expect(screen.getByRole("link", { name: /Ouvrir la file active/ })).toHaveAttribute("href", "/pilotage-actions");
+    expect(screen.getByRole("heading", { name: "Parcours social socio-professionnel" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Appui TNS" })).toBeInTheDocument();
   });
 
   it("refuse une page professionnelle au profil accueil", async () => {
@@ -50,4 +52,27 @@ describe("navigation principale", () => {
 
     expect(await screen.findByRole("heading", { name: "Fiche minute après contact" })).toBeInTheDocument();
   });
+
+  it("ouvre le parcours depuis la carte principale", async () => {
+    renderApp();
+    fireEvent.click(screen.getByRole("link", { name: /Ouvrir le parcours/ }));
+    expect(await screen.findByRole("heading", { name: "Parcours social / socio-professionnel" })).toBeInTheDocument();
+  });
+
+  it("ouvre Appui TNS depuis sa carte et conserve le retour à l’accueil", async () => {
+    renderApp();
+    fireEvent.click(screen.getByRole("link", { name: /Ouvrir l’appui TNS/ }));
+    expect(await screen.findByRole("heading", { name: /Accompagnement global/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("link", { name: "Accueil" }));
+    expect(screen.getByRole("heading", { name: "Appui TNS" })).toBeInTheDocument();
+  });
+
+  it.each(["accueil", "relais-logement-habitat", "direction", "gouvernance-ca"])(
+    "ne propose pas les cartes professionnelles au profil %s", (role) => {
+      localStorage.setItem("artag-prototype-current-role", role);
+      renderApp();
+      expect(screen.queryByRole("heading", { name: "Appui TNS" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("heading", { name: "Parcours social socio-professionnel" })).not.toBeInTheDocument();
+    },
+  );
 });

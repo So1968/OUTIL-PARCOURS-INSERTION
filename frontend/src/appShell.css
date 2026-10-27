@@ -77,8 +77,21 @@
 .accueil-simple {
   min-height: calc(100vh - 110px);
   padding: 34px 22px 56px;
-  background: #faf6ef;
-  color: #3f372f;
+  /* Préserver la palette validée de l'accueil face aux styles sombres globaux. */
+  background: #faf6ef !important;
+  color: #3f372f !important;
+  color-scheme: light;
+}
+
+.accueil-simple h1,
+.accueil-simple__card h2,
+.accueil-simple__aide strong {
+  color: #3f372f !important;
+}
+
+.accueil-simple__grid {
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .accueil-simple__wrap {
@@ -156,6 +169,7 @@
   margin: 0;
   color: #3f372f;
   font-size: 1.55rem;
+  text-align: center;
 }
 
 .accueil-simple__card p {
@@ -198,8 +212,8 @@
   padding: 16px 18px;
   border: 1px solid #dccfbe;
   border-radius: 18px;
-  background: #fffaf4;
-  color: #6f6559;
+  background: #fffaf4 !important;
+  color: #6f6559 !important;
   line-height: 1.5;
 }
 

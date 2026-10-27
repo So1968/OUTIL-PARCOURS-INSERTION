@@ -4,24 +4,25 @@ import { useRole } from "../auth/useRole";
 
 const entreesPrincipales = [
   {
-    titre: "Je suis avec une personne",
-    texte: "Faire l’évaluation avec elle, sans afficher les notes professionnelles.",
-    lien: "/evaluation-personne",
-    bouton: "Ouvrir l’évaluation",
-    roles: ACCOMPAGNEMENT_ROLES,
+    titre: <>Parcours social <br />socio-professionnel</>,
+    texte: "Retrouver un suivi et choisir le cadre du parcours.",
+    lien: "/parcours-social-socio-professionnel",
+    bouton: "Ouvrir le parcours",
+    roles: PARCOURS_ROLES,
   },
   {
-    titre: "Je regarde ma file active",
-    texte: "Voir les urgences, les actions à faire, les échéances et les traces Insertis.",
-    lien: "/pilotage-actions",
-    bouton: "Ouvrir la file active",
+    titre: "Appui TNS",
+    texte: "Ouvrir l’appui spécialisé sur l’activité indépendante, en lien avec le parcours.",
+    lien: "/appui-tns",
+    bouton: "Ouvrir l’appui TNS",
     roles: ACCOMPAGNEMENT_ROLES,
   },
 ];
 
 const raccourcis = [
-  { label: "Parcours social / socio-professionnel", to: "/parcours-social-socio-professionnel", roles: PARCOURS_ROLES },
-  { label: "Accompagnement global", to: "/accompagnement-global", roles: ACCOMPAGNEMENT_ROLES },
+  { label: "Je suis avec une personne", to: "/evaluation-personne", roles: ACCOMPAGNEMENT_ROLES },
+  { label: "Ouvrir la file active", to: "/pilotage-actions", roles: ACCOMPAGNEMENT_ROLES },
+  { label: "Mes tâches", to: "/bureau-quotidien", roles: ACCOMPAGNEMENT_ROLES },
   { label: "Continuité de service", to: "/continuite-service", roles: CONTINUITE_ROLES },
   { label: "Direction", to: "/direction", roles: PORTE_DIRECTION_ROLES },
 ];
