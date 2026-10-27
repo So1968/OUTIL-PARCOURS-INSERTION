@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { readStorageJson, removeStorageItem, writeStorageJson } from "../lib/storage";
+import { copyText } from "../lib/clipboard";
 
 const STORAGE_KEY = "artag-accompagnement-global-fiche-minute-test";
 
@@ -129,8 +130,11 @@ export function TnsFicheMinutePage() {
     setMessage("Fiche conservée dans ce navigateur.");
   }
 
-  function copier(texte, libelle) {
-    navigator.clipboard.writeText(texte);
+  async function copier(texte, libelle) {
+    if (!await copyText(texte)) {
+      setMessage("Copie impossible : sélectionnez le texte pour le copier manuellement.");
+      return;
+    }
     setMessage(`${libelle} copié.`);
   }
 

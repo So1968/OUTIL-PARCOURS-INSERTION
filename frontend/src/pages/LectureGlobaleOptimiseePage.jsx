@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { readStorageJson, removeStorageItem, writeStorageJson } from "../lib/storage";
+import { copyText } from "../lib/clipboard";
 
 const STORAGE_KEY = "artag-lecture-globale-optimisee-v1";
 
@@ -200,8 +201,11 @@ export function LectureGlobaleOptimiseePage() {
     setMessage(`${domaine.titre} ajouté à la note et à la prochaine action.`);
   }
 
-  function copier(texte, libelle) {
-    navigator.clipboard.writeText(texte);
+  async function copier(texte, libelle) {
+    if (!await copyText(texte)) {
+      setMessage("Copie impossible : sélectionnez le texte pour le copier manuellement.");
+      return;
+    }
     setMessage(`${libelle} copié.`);
   }
 

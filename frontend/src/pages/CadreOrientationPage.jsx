@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { copyText } from "../lib/clipboard";
 
 const cadreInitial = {
   rsa: "A verifier",
@@ -83,8 +84,11 @@ export function CadreOrientationPage() {
     setMessage("");
   }
 
-  function copierPhrase() {
-    navigator.clipboard.writeText(phrase);
+  async function copierPhrase() {
+    if (!await copyText(phrase)) {
+      setMessage("Copie impossible : sélectionnez le texte pour le copier manuellement.");
+      return;
+    }
     setMessage("Phrase d'orientation copiee.");
   }
 

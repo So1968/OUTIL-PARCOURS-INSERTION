@@ -7,6 +7,7 @@ import {
   modulesDomainesTravail,
 } from "../data/modulesDomainesTravail";
 import { readStorageJson, writeStorageJson } from "../lib/storage";
+import { copyText } from "../lib/clipboard";
 
 const STORAGE_KEY = "artag-dossier-parcours-brouillon";
 const REPERES_STORAGE_KEY = "artag-reperes-autonomie-brouillon";
@@ -280,6 +281,7 @@ export function DossierPage({ mode = "complet" }) {
   const [dossier, setDossier] = useState(getInitialDossier);
   const [reperes] = useState(getInitialReperes);
   const [messageValidation, setMessageValidation] = useState("");
+  const [messageCopie, setMessageCopie] = useState("");
   const isContinuiteMode = mode === "continuite";
 
   const valeursSuiviContinuite = {
@@ -668,15 +670,15 @@ export function DossierPage({ mode = "complet" }) {
                 <button
                   className="secondary-button"
                   type="button"
-                  onClick={() => {
+                  onClick={async () => {
                     const zone = document.getElementById("synthese-insertis");
-                    if (zone) {
-                      navigator.clipboard.writeText(zone.value);
-                    }
+                    const copied = zone && await copyText(zone.value);
+                    setMessageCopie(copied ? "Synthèse copiée." : "Copie impossible : sélectionnez le texte pour le copier manuellement.");
                   }}
                 >
                   Copier la synthèse
                 </button>
+                {messageCopie && <p role="status">{messageCopie}</p>}
               </div>
 
               <p className="section-help">
