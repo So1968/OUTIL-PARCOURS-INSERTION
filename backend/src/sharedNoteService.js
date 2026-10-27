@@ -96,5 +96,11 @@ export async function createSharedNote({
       noteId: note.id, validated: note.validated,
       dossierVersion: expectedVersion + 1,
     });
-  }, { isolationLevel: "Serializable" });
+  }, { isolationLevel: "Serializable" }).catch(error => {
+    // PostgreSQL peut refuser la transaction avant que updateMany retourne
+    // son compteur. Présenter ce conflit comme les autres versions périmées,
+    // sans rejouer automatiquement le brouillon sur une nouvelle version.
+    if (error?.code === "P2034") throw new DossierVersionConflict();
+    throw error;
+  });
 }
