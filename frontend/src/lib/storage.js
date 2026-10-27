@@ -30,7 +30,9 @@ export function readStorageJson(key, fallback) {
 
 export function writeStorageItem(key, value) {
   try {
-    getStorage()?.setItem(key, String(value));
+    const storage = getStorage();
+    if (!storage) return false;
+    storage.setItem(key, String(value));
     return true;
   } catch {
     return false;
@@ -47,7 +49,9 @@ export function writeStorageJson(key, value) {
 
 export function removeStorageItem(key) {
   try {
-    getStorage()?.removeItem(key);
+    const storage = getStorage();
+    if (!storage) return false;
+    storage.removeItem(key);
     return true;
   } catch {
     return false;

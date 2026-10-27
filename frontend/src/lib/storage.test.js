@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   readStorageItem,
   readStorageJson,
@@ -8,6 +8,10 @@ import {
 } from "./storage";
 
 describe("stockage local sécurisé", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
   beforeEach(() => {
     localStorage.clear();
     vi.restoreAllMocks();
@@ -36,5 +40,20 @@ describe("stockage local sécurisé", () => {
     });
 
     expect(writeStorageJson("dossier", { id: 42 })).toBe(false);
+  });
+
+  it("signale l'échec si l'accès au stockage est interdit", () => {
+    vi.spyOn(window, "localStorage", "get").mockImplementation(() => {
+      throw new DOMException("Accès refusé", "SecurityError");
+    });
+    expect(writeStorageJson("dossier", { id: "fictif" })).toBe(false);
+    expect(removeStorageItem("dossier")).toBe(false);
+    expect(readStorageJson("dossier", null)).toBeNull();
+  });
+
+  it("ne confirme aucune modification sans navigateur", () => {
+    vi.stubGlobal("window", undefined);
+    expect(writeStorageItem("dossier", "fictif")).toBe(false);
+    expect(removeStorageItem("dossier")).toBe(false);
   });
 });

@@ -140,8 +140,11 @@ export function EvaluationPersonnePage() {
   function updateAutonomie(champ, v) {
     const nextAutonomie = { ...autonomie, [champ]: v };
     const next = { ...autonomies, [idCourant]: nextAutonomie };
+    if (!writeStorageJson(STORAGE_AUTONOMIE, next)) {
+      setMessage("Réponse non enregistrée : stockage indisponible dans ce navigateur.");
+      return;
+    }
     setAutonomies(next);
-    writeStorageJson(STORAGE_AUTONOMIE, next);
     setMessage("Réponse enregistrée.");
   }
 

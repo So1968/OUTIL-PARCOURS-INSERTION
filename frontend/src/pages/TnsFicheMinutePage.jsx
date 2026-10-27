@@ -122,7 +122,10 @@ export function TnsFicheMinutePage() {
   }
 
   function enregistrer() {
-    writeStorageJson(STORAGE_KEY, fiche);
+    if (!writeStorageJson(STORAGE_KEY, fiche)) {
+      setMessage("Fiche non enregistrée : stockage indisponible dans ce navigateur.");
+      return;
+    }
     setMessage("Fiche conservée dans ce navigateur.");
   }
 
@@ -132,7 +135,10 @@ export function TnsFicheMinutePage() {
   }
 
   function vider() {
-    removeStorageItem(STORAGE_KEY);
+    if (!removeStorageItem(STORAGE_KEY)) {
+      setMessage("Fiche non effacée : stockage indisponible dans ce navigateur.");
+      return;
+    }
     setFiche(ficheVide);
     setMessage("Fiche remise à zéro.");
   }

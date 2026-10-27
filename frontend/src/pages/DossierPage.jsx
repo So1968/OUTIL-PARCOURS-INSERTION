@@ -321,7 +321,10 @@ export function DossierPage({ mode = "complet" }) {
       derniereMiseAJour: dateDuJour,
     };
 
-    writeStorageJson(STORAGE_KEY, dossierValide);
+    if (!writeStorageJson(STORAGE_KEY, dossierValide)) {
+      setMessageValidation("Parcours non enregistré : stockage indisponible dans ce navigateur.");
+      return;
+    }
     setDossier(dossierValide);
     setMessageValidation("Parcours validé et conservé dans ce navigateur.");
   }

@@ -169,8 +169,12 @@ export function LectureGlobaleOptimiseePage() {
   }
 
   function sauvegarder(next = form) {
-    writeStorageJson(STORAGE_KEY, next);
+    if (!writeStorageJson(STORAGE_KEY, next)) {
+      setMessage("Lecture globale non enregistrée : stockage indisponible dans ce navigateur.");
+      return false;
+    }
     setMessage("Lecture globale enregistrée dans ce navigateur.");
+    return true;
   }
 
   function repartirDesNotes() {
@@ -180,7 +184,7 @@ export function LectureGlobaleOptimiseePage() {
     }
     const next = { ...form, faits: ajouterTexte(form.faits, form.notesBrutes) };
     setForm(next);
-    sauvegarder(next);
+    if (!sauvegarder(next)) return;
     setMessage("Notes brutes ajoutées aux éléments de situation. Tu peux ensuite répartir dans les 6 blocs.");
   }
 
@@ -192,7 +196,7 @@ export function LectureGlobaleOptimiseePage() {
       suitePrevue: ajouterTexte(form.suitePrevue, domaine.action),
     };
     setForm(next);
-    sauvegarder(next);
+    if (!sauvegarder(next)) return;
     setMessage(`${domaine.titre} ajouté à la note et à la prochaine action.`);
   }
 
@@ -202,7 +206,10 @@ export function LectureGlobaleOptimiseePage() {
   }
 
   function vider() {
-    removeStorageItem(STORAGE_KEY);
+    if (!removeStorageItem(STORAGE_KEY)) {
+      setMessage("Lecture globale non effacée : stockage indisponible dans ce navigateur.");
+      return;
+    }
     setForm(INITIAL);
     setMessage("Lecture globale remise à zéro.");
   }

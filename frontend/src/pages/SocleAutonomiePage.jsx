@@ -138,22 +138,23 @@ export function SocleAutonomiePage() {
   }
 
   function noterRepere(item) {
-    setReperes((current) => {
-      const updated = {
-        ...current,
-        reponses: {
-          ...current.reponses,
-          [item.id]: {
-            ...getReponse(item.id),
-            ...(current.reponses[item.id] || {}),
-            valide: true,
-          },
+    const updated = {
+      ...reperes,
+      reponses: {
+        ...reperes.reponses,
+        [item.id]: {
+          ...getReponse(item.id),
+          ...(reperes.reponses[item.id] || {}),
+          valide: true,
         },
-      };
+      },
+    };
 
-      writeStorageJson(STORAGE_KEY, updated);
-      return updated;
-    });
+    if (!writeStorageJson(STORAGE_KEY, updated)) {
+      setMessage("Repère non enregistré : stockage indisponible dans ce navigateur.");
+      return;
+    }
+    setReperes(updated);
 
     setMessage(`Repère noté : ${item.axe}`);
   }
@@ -164,7 +165,10 @@ export function SocleAutonomiePage() {
       derniereValidation: dateDuJour,
     };
 
-    writeStorageJson(STORAGE_KEY, updated);
+    if (!writeStorageJson(STORAGE_KEY, updated)) {
+      setMessage("Repères non enregistrés : stockage indisponible dans ce navigateur.");
+      return;
+    }
     setReperes(updated);
     setMessage("Les repères ont été enregistrés.");
   }
