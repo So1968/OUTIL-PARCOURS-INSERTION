@@ -14,6 +14,9 @@ test("HTTP : révision protégée par session, CSRF, droits et versions", {
   const origin = "https://artag.example.org";
   const oidc = { origin, redirectUri: origin + "/auth/callback", provider: {
     issuer: "https://idp.example.org",
+    generateVerifier: () => "fictif",
+    authorizationUrl: async () => "https://idp.example.org/authorize",
+    verifyCallback: async () => ({ issuer: "https://idp.example.org", subject: "fictif" }),
   } };
   let server;
   try {
