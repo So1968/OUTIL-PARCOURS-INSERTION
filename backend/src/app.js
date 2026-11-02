@@ -5,6 +5,7 @@ import { resolveSessionUserId } from "./sessions.js";
 import { createAuthRouter } from "./authRouter.js";
 import { issueCsrfToken, validCsrf } from "./csrf.js";
 import { createSharedNote, DossierVersionConflict, InvalidSharedNote } from "./sharedNoteService.js";
+import { reviseSharedNote } from "./sharedNoteRevisionService.js";
 import { listOwnTasks, listOwnReminders, createOwnTask, updateOwnTask, WorkTaskAccessDenied, WorkTaskInvalid, WorkTaskConflict } from "./workTaskService.js";
 import { listOwnEvents, createOwnEvent, updateOwnEvent, WorkEventDenied, WorkEventInvalid, WorkEventConflict } from "./workEventService.js";
 
@@ -124,6 +125,52 @@ export function createApp({
             text: req.body?.text,
           });
           return res.status(201).json(note);
+        } catch (error) {
+          if (error instanceof CaseAccessDenied) {
+            return res.status(404).json({ error: "DOSSIER_INDISPONIBLE" });
+          }
+          if (error instanceof DossierVersionConflict) {
+            return res.status(409).json({ error: "DOSSIER_MODIFIE_ENTRE_TEMPS" });
+          }
+          if (error instanceof InvalidSharedNote) {
+            return res.status(422).json({ error: "NOTE_INVALIDE" });
+          }
+          return res.status(503).json({ error: "SERVICE_INDISPONIBLE" });
+        }
+      });
+  }
+
+  // L'édition des brouillons partagés réutilise le verrou de recette existant.
+  if (canWrite) {
+    app.patch("/api/dossiers/:caseId/notes-partagees/:noteId",
+      express.json({ limit: "8kb", type: "application/json" }),
+      async (req, res) => {
+        if (!validCsrf({
+          secret: csrfSecret,
+          cookieHeader: req.headers.cookie,
+          csrfHeader: req.get("X-CSRF-Token"),
+          origin: req.get("Origin"),
+          allowedOrigin: oidc.origin,
+        })) return res.status(403).json({ error: "CSRF_REFUSE" });
+
+        try {
+          const allowedKeys = [
+            "expectedDossierVersion", "expectedNoteVersion",
+            "text", "validated", "reason",
+          ];
+          const keys = Object.keys(req.body || {});
+          if (keys.length !== allowedKeys.length || keys.some(k => !allowedKeys.includes(k))) {
+            throw new InvalidSharedNote();
+          }
+          const revised = await reviseSharedNote({
+            db: privateDb, cookieHeader: req.headers.cookie,
+            caseId: req.params.caseId, noteId: req.params.noteId,
+            expectedDossierVersion: req.body.expectedDossierVersion,
+            expectedNoteVersion: req.body.expectedNoteVersion,
+            text: req.body.text, validated: req.body.validated, reason: req.body.reason,
+            now: clock(),
+          });
+          return res.status(200).json(revised);
         } catch (error) {
           if (error instanceof CaseAccessDenied) {
             return res.status(404).json({ error: "DOSSIER_INDISPONIBLE" });
