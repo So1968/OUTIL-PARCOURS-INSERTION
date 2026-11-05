@@ -40,6 +40,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 34. [Suggestions après entretien](62_SUGGESTIONS_SUITE_ENTRETIEN.md) — six libellés en un clic, toujours à confirmer et jamais générés automatiquement.
 35. [Tâche et rappel en une saisie](63_TACHE_SAISIE_UNIQUE_ECHEANCE_RAPPEL.md) — titre seul ou échéance, rappel et durée facultatifs enregistrés ensemble.
 36. [Bloc relation d’aide réservé et versionné](64_RELATION_AIDE_RESERVEE_VERSIONNEE.md) — six axes, réflexion privée par autrice, historique et test de transmission sans fuite.
+37. [Écran réservé relation d’aide](65_ECRAN_RELATION_AIDE_RESERVEE.md) — six axes, historique privé, relecture après conflit et purge de la vue après refus.
 
 ## Grandes familles documentaires
 

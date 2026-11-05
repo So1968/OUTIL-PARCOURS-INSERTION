@@ -130,6 +130,24 @@ function cheminBlocCourt(caseId, type) {
   return dossierPath(caseId) + "/blocs-courts/" + type;
 }
 
+// Espace strictement réservé à son autrice. Jamais la route partagée des synthèses.
+export async function lireReflexionProfessionnelleSecurisee({ caseId, beforeVersion }) {
+  if (beforeVersion !== undefined && (!Number.isInteger(beforeVersion)
+    || beforeVersion < 1 || beforeVersion > 2147483647)) {
+    throw new ApiAccessError(422, "VERSION_INVALIDE");
+  }
+  const path = dossierPath(caseId) + "/reflexion-professionnelle";
+  return expectJson(await fetch(path + (beforeVersion === undefined ? "" : `?beforeVersion=${beforeVersion}`), {
+    credentials: "same-origin", cache: "no-store", redirect: "error",
+  }));
+}
+
+export async function modifierReflexionProfessionnelleSecurisee({ caseId, expectedVersion, content, reason }) {
+  return mutateDossier(dossierPath(caseId) + "/reflexion-professionnelle", "PATCH", {
+    expectedVersion, content, reason,
+  });
+}
+
 export async function lireBlocCourtSecurise({ caseId, type, beforeVersion }) {
   if (beforeVersion !== undefined && (!Number.isInteger(beforeVersion)
     || beforeVersion < 1 || beforeVersion > 2147483647)) {

@@ -91,6 +91,7 @@ export function SecureCaseIdentityPanel({ caseId }) {
         <p><Link to={`/dossiers/${caseId}/socle-autonomie`}>Repères d’autonomie</Link></p>
         <p><Link to={`/dossiers/${caseId}/synthese-courte`}>Synthèse courte</Link></p>
         <p><Link to={`/dossiers/${caseId}/note-continuite`}>Note de continuité</Link></p>
+        <p><Link to={`/dossiers/${caseId}/relation-aide`}>Bloc professionnel — relation d’aide (réservé)</Link></p>
         {!editing && <button type="button" disabled={busy || !!review || data.dossierVersion === 2147483647} onClick={() => {
           setEditing(true); setDraft(toDraft(data.identity)); setReason(""); setMessage("");
         }}>Compléter ou corriger l’identité</button>}
