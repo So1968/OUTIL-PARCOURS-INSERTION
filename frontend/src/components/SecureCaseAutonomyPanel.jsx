@@ -9,7 +9,7 @@ import "./secureSharedNotes.css";
 import "./secureCaseAutonomy.css";
 
 const validReason = value => typeof value === "string" && value.isWellFormed() && value.trim()
-  && value.length <= 200 && !/[\u0000-\u001f\u007f]/u.test(value);
+  && value.length <= 200 && !Array.from(value).some(char => char.codePointAt(0) < 32 || char.codePointAt(0) === 127);
 
 function AnswersSummary({ questions, reponses }) {
   return <dl className="secure-case-autonomy__summary">{questions.filter(q => Object.hasOwn(reponses, q.id)).map(q =>
