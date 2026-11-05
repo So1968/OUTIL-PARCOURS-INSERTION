@@ -1,5 +1,15 @@
 # Avancement du projet — Outil ARTAG
 
+## 2026-10-26 — Écran Identité / références sur dossier identifié
+
+- **Décidé :** relier la file active à la correction et à l'historique du numéro ARTAG existant. L'attribution initiale reste fermée depuis la liste des dossiers non identifiés.
+- **Créé :** écran de référence, formulaire motivé, historique paginé contrôlé, reprise après conflit et réponse perdue, tests de navigation et d'isolation entre dossiers. Voir [le contrat du lot](53_ECRAN_REFERENCE_ARTAG.md).
+- **Modifié :** client API CSRF commun ; liste serveur pour indiquer la titularité via un booléen et proposer le lien au bon périmètre. Chaque opération de référence revérifie ses droits serveur.
+- **Conservé :** migrations et dépendances, intitulés métier, logo, notes et données existantes, séparation du prototype localStorage, activation désactivée par défaut et limites institutionnelles.
+- **Vérifications :** 151 tests frontend et 72 tests backend réussis localement ; 17 recettes PostgreSQL ignorées localement selon leurs verrous. Sur le commit de code `b4f2ac3` de la PR #46, la CI confirme **89 tests backend avec PostgreSQL, sans échec ni test ignoré**, frontend, migrations/idempotence/dérive, restauration, confidentialité et CodeQL conformes. Schéma Prisma, lint, build et diff conformes. Chromium vérifie correction, historique, réponse perdue retrouvée sans doublon, notes actualisées et affichage à 390 px sans débordement.
+- **À poursuivre :** parcours d'identification fiable et création contrôlée, identité minimale, statut/clôture et autres espaces selon les habilitations ; recette ARTAG et SSO autorisée.
+- **Vigilances :** aucun droit déduit du rôle navigateur ni du booléen de lien ; aucune saisie transférée d'un dossier à l'autre. La branche dépend de la PR #45 encore ouverte ; aucune fusion ni mise en production.
+
 ## 2026-10-26 — Attribution et correction versionnées du numéro ARTAG
 
 - **Décidé :** préparer l'identification du dossier existant avant toute création ou reprise. Limiter ce premier service à la référente titulaire ; une délégation de rédaction de notes n'élargit pas les droits d'identification.

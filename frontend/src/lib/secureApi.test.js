@@ -3,6 +3,7 @@ import {
   ApiAccessError, creerNotePartageeSecurisee, lireApercuSecurise,
   corrigerNotePartageeSecurisee, validerNotePartageeSecurisee, lireHistoriqueNotePartageeSecurise,
   lireNotesPartageesSecurisees,
+  lireReferenceArtagSecurisee, corrigerReferenceArtagSecurisee,
 } from "./secureApi";
 
 const id = "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa";
@@ -10,6 +11,31 @@ const noteId = "bbbbbbbb-bbbb-4bbb-bbbb-bbbbbbbbbbbb";
 afterEach(() => vi.unstubAllGlobals());
 
 describe("adaptateur API métier same-origin (non activé dans le prototype)", () => {
+  it("lit l'historique de référence sans CSRF et transmet une correction exacte avec CSRF", async () => {
+    const csrf = "a".repeat(64);
+    const mock = vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({ history: [] })))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ token: csrf })))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ caseId: id, artagReference: "ARTAG-FICTIF-C", dossierVersion: 3 })));
+    vi.stubGlobal("fetch", mock);
+    await lireReferenceArtagSecurisee({ caseId: id, beforeVersion: 8 });
+    expect(mock).toHaveBeenNthCalledWith(1, `/api/dossiers/${id}/reference-artag?beforeVersion=8`, {
+      credentials: "same-origin", cache: "no-store", redirect: "error",
+    });
+    await corrigerReferenceArtagSecurisee({ caseId: id, artagReference: "ARTAG-FICTIF-C", reason: "Correction fictive", expectedVersion: 2 });
+    expect(mock.mock.calls[2]).toEqual([`/api/dossiers/${id}/reference-artag`, {
+      method: "PATCH", credentials: "same-origin", cache: "no-store", redirect: "error",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
+      body: JSON.stringify({ expectedVersion: 2, artagReference: "ARTAG-FICTIF-C", reason: "Correction fictive" }),
+    }]);
+  });
+  it("refuse les identifiants et curseurs de référence invalides sans réseau", async () => {
+    const mock = vi.fn(); vi.stubGlobal("fetch", mock);
+    await expect(corrigerReferenceArtagSecurisee({ caseId: "../autre" })).rejects.toMatchObject({ status: 422 });
+    for (const beforeVersion of [0, "3", -1, 2147483648]) {
+      await expect(lireReferenceArtagSecurisee({ caseId: id, beforeVersion })).rejects.toMatchObject({ status: 422 });
+    }
+    expect(mock).not.toHaveBeenCalled();
+  });
   it("charge une page de notes uniquement dans le dossier demandé", async () => {
     const payload = { dossierVersion: 2, notes: [], nextOffset: null };
     const mock = vi.fn().mockResolvedValue(new Response(JSON.stringify(payload)));

@@ -64,6 +64,7 @@ export async function listWritableCases({ db, cookieHeader, before, now = new Da
       const cases = rows.slice(0, PAGE_SIZE).map(row => ({
         id: row.id, artagReference: row.artagReference, version: row.version,
         createdAt: row.createdAt, updatedAt: row.updatedAt,
+        canManageReference: row.referentId === actor.id,
       }));
       await tx.auditEvent.createMany({
         data: (cases.length ? cases.map(row => row.id) : [null]).map(caseId => ({

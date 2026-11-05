@@ -28,6 +28,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 22. [Écran des notes partagées](50_ECRAN_NOTES_PARTAGEES.md) — interface API désactivée par défaut, reprise après conflit et isolation des dossiers.
 23. [File active serveur](51_FILE_ACTIVE_SERVEUR.md) — dossiers accessibles en rédaction, identification ARTAG et entrée vers les notes.
 24. [Numéro ARTAG versionné](52_REFERENCE_ARTAG_VERSIONNEE.md) — API d'attribution/correction sur dossier identifié, historique, contrôle de concurrence et limites du rapprochement.
+25. [Écran du numéro ARTAG](53_ECRAN_REFERENCE_ARTAG.md) — correction et historique sur dossier déjà identifié, reprise après conflit, droits et absence d'attribution en aveugle.
 
 ## Grandes familles documentaires
 

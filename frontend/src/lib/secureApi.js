@@ -42,7 +42,7 @@ function notePath(caseId, noteId) {
   return `${path}/notes-partagees/${encodeURIComponent(noteId)}`;
 }
 
-async function mutateNote(path, method, body) {
+async function mutateDossier(path, method, body) {
   const csrfResponse = await fetch("/auth/csrf", {
     credentials: "same-origin",
     cache: "no-store",
@@ -64,15 +64,30 @@ async function mutateNote(path, method, body) {
 }
 
 export async function creerNotePartageeSecurisee({ caseId, text, expectedVersion }) {
-  return mutateNote(dossierPath(caseId) + "/notes-partagees", "POST", { text, expectedVersion });
+  return mutateDossier(dossierPath(caseId) + "/notes-partagees", "POST", { text, expectedVersion });
 }
 
 export async function corrigerNotePartageeSecurisee({ caseId, noteId, text, reason, expectedVersion }) {
-  return mutateNote(notePath(caseId, noteId), "PATCH", { text, reason, expectedVersion });
+  return mutateDossier(notePath(caseId, noteId), "PATCH", { text, reason, expectedVersion });
 }
 
 export async function validerNotePartageeSecurisee({ caseId, noteId, expectedVersion }) {
-  return mutateNote(notePath(caseId, noteId) + "/validation", "POST", { expectedVersion });
+  return mutateDossier(notePath(caseId, noteId) + "/validation", "POST", { expectedVersion });
+}
+
+export async function lireReferenceArtagSecurisee({ caseId, beforeVersion }) {
+  const path = dossierPath(caseId) + "/reference-artag";
+  if (beforeVersion !== undefined && (!Number.isInteger(beforeVersion) || beforeVersion < 1 || beforeVersion > 2147483647)) {
+    throw new ApiAccessError(422, "VERSION_INVALIDE");
+  }
+  const response = await fetch(path + (beforeVersion === undefined ? "" : `?beforeVersion=${beforeVersion}`), {
+    credentials: "same-origin", cache: "no-store", redirect: "error",
+  });
+  return expectJson(response);
+}
+
+export async function corrigerReferenceArtagSecurisee({ caseId, artagReference, reason, expectedVersion }) {
+  return mutateDossier(dossierPath(caseId) + "/reference-artag", "PATCH", { expectedVersion, artagReference, reason });
 }
 
 export async function lireHistoriqueNotePartageeSecurise({ caseId, noteId, beforeVersion }) {

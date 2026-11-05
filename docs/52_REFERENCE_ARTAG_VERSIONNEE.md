@@ -58,6 +58,8 @@ Sur le commit de code `b11864f` de la PR #45, les contrôles GitHub confirment 8
 
 ## Limites et suite
 
+Le lot d'interface suivant ajoute l'[écran de correction et d'historique](53_ECRAN_REFERENCE_ARTAG.md) pour les dossiers déjà identifiés. Il ne propose toujours pas d'attribution depuis la liste des dossiers sans numéro.
+
 Ce lot est une API de préparation sécurisée, **sans nouveau formulaire utilisateur**. Plusieurs dossiers sans numéro peuvent être indistinguables dans la liste actuelle. L'attribution ne doit donc pas être proposée en aveugle à partir de leur rang ou de leur date. Le parcours d'identification devra permettre de vérifier de façon fiable quel dossier existant est concerné, dans un processus ARTAG autorisé.
 
 Restent la création contrôlée des dossiers, le cadrage de leur identité minimale et de son rapprochement, l'écran de correction/historique, le statut/clôture et les autres espaces du parcours. Les données de démonstration ne valent pas validation institutionnelle. Les PR précédentes restent à intégrer dans l'ordre ; aucune fusion ni activation de production n'est effectuée ici.

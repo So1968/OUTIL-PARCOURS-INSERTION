@@ -12,6 +12,8 @@ L'entrée reste dans le module `VITE_ARTAG_SECURE_NOTES`, désactivé par défau
 
 `CaseFile.artagReference` ajoute le **numéro ARTAG** prévu par le cadrage du dossier unique. Le champ est optionnel, unique lorsqu'il est renseigné et limité à 80 caractères. Aucun format institutionnel, préfixe ou numéro séquentiel n'est inventé. L'application ne propose pas encore de création ni de modification de cette référence : son provisionnement et son éventuelle correction devront faire l'objet d'une reprise autorisée et tracée.
 
+Cette description correspond au lot initial. L'[API versionnée](52_REFERENCE_ARTAG_VERSIONNEE.md) et l'[écran de correction sur dossier identifié](53_ECRAN_REFERENCE_ARTAG.md) complètent depuis la gestion de la référence ; l'attribution initiale depuis la liste reste fermée.
+
 La migration `20261026_case_artag_reference` est générée par Prisma : ajout d'une colonne nullable et d'un index unique, sans DML, copie ou suppression de données. Les dossiers existants restent présents avec une référence nulle. Plusieurs valeurs nulles sont permises.
 
 Un dossier sans numéro reste visible dans la liste avec la mention **Numéro ARTAG non renseigné**. Son lien d'ouverture est absent pour éviter de le confondre avec un autre dossier. Cette retenue d'interface ne remplace pas les droits serveur : les routes de notes existantes continuent de vérifier leurs propres habilitations.
@@ -26,7 +28,7 @@ La transaction sérialisable résout la session, relit le compte actif et son r�
 
 La liste concerne le périmètre de rédaction des notes : l'Appui TNS, l'Accueil, les relais, la Direction, le CA et l'administration ne reçoivent pas cette liste par un droit de lecture ou une dérogation. Il ne s'agit ni de la file globale ARTAG ni de la vue de continuité partagée. Les modules de lecture ou TNS devront utiliser leurs champs et droits propres, sur le même dossier unique.
 
-La réponse contient uniquement `cases` et `nextCursor`. Chaque ligne comprend `id`, `artagReference`, `version`, `createdAt`, `updatedAt`. Aucun texte de note, détail d'affectation ou courriel n'est renvoyé ; aucun effectif global n'est calculé.
+La réponse contient uniquement `cases` et `nextCursor`. Chaque ligne comprend `id`, `artagReference`, `version`, `createdAt`, `updatedAt` et désormais `canManageReference`, une indication de titularité pour présenter le lien d'identification. Les routes de référence vérifient leurs propres droits. Aucun texte de note, détail d'affectation ou courriel n'est renvoyé ; aucun effectif global n'est calculé.
 
 ## Pagination et audit
 

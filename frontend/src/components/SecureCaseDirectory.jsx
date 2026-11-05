@@ -51,6 +51,9 @@ export function SecureCaseDirectory() {
         {hasUsableArtagReference(row.artagReference)
           ? <Link to={`/dossiers/${row.id}/notes-partagees`}>Ouvrir les notes partagées</Link>
           : <p>L’identification du dossier doit être complétée avant son ouverture depuis cette liste.</p>}
+        {hasUsableArtagReference(row.artagReference) && row.canManageReference && <p>
+          <Link to={`/dossiers/${row.id}/reference-artag`}>Numéro ARTAG et historique</Link>
+        </p>}
       </li>)}</ul>
       {data.nextCursor !== null && <button type="button" disabled={busy} onClick={() => load(true)}>Voir d’autres dossiers</button>}
     </>}
