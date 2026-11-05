@@ -59,6 +59,20 @@ describe("bureau professionnel sans stockage local", () => {
     expect(onToggleFocus).toHaveBeenCalledOnce();
   });
 
+  it("annule sur le serveur une fin de tâche avec le bon numéro de version", async () => {
+    render(<SecureTasksPanel focus={false} onToggleFocus={vi.fn()} />);
+    await screen.findByRole("heading",{name:"Mes 3 priorités du jour"});
+    fireEvent.click(screen.getAllByRole("button",{name:"Terminer"})[0]);
+    await waitFor(() => expect(api.editSecureTask).toHaveBeenCalledWith(
+      expect.objectContaining({id:"a",version:0}), {status:"FAIT"}
+    ));
+    fireEvent.click(screen.getByRole("button",{name:"Annuler la dernière modification de tâche"}));
+    await waitFor(() => expect(api.editSecureTask).toHaveBeenCalledWith(
+      expect.objectContaining({id:"a",version:1}), {status:"EN_COURS"}
+    ));
+    expect(await screen.findByText("Dernière modification annulée sur le serveur.")).toBeInTheDocument();
+  });
+
   it("en Focus masque les réglages longs, mais garde rappels et création", async () => {
     render(<SecureTasksPanel focus={true} onToggleFocus={vi.fn()} />);
     await screen.findByRole("heading",{name:"Mes 3 priorités du jour"});
