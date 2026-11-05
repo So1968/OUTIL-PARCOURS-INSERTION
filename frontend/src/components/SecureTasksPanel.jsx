@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { secureDailyPriorities, secureTaskCounts } from "../lib/secureDailyPriorities";
+import "./secureDailyFocus.css";
 import {
   secureTaskApiEnabled, loadSecureTasks, loadSecureReminders, nextProfessionalDay,
   createSecureTask, editSecureTask,
@@ -12,7 +14,7 @@ const statusLabels = {
  * Affiché UNIQUEMENT si un hébergement HTTPS professionnel active explicitement
  * l'intégration. La liste du prototype local reste séparée, sans import implicite.
  */
-export function SecureTasksPanel() {
+export function SecureTasksPanel({ focus = false, onToggleFocus }) {
   const [tasks, setTasks] = useState([]);
   const [reminders, setReminders] = useState([]);
   const [professionalDay, setProfessionalDay] = useState("");
@@ -21,8 +23,22 @@ export function SecureTasksPanel() {
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [retryTask, setRetryTask] = useState(null);
+  const [startedId, setStartedId] = useState(null);
+  const autoLoaded = useRef(false);
+
+  useEffect(() => {
+    if (secureTaskApiEnabled() && !autoLoaded.current) {
+      autoLoaded.current = true;
+      void reload();
+    }
+  }, []);
 
   if (!secureTaskApiEnabled()) return null;
+
+  const priorities = secureDailyPriorities(tasks, professionalDay);
+  const counts = secureTaskCounts(tasks, reminders);
+  const activeTask = tasks.find(task => task.id === startedId && task.status === "EN_COURS")
+    || tasks.find(task => task.status === "EN_COURS");
 
   const reload = async () => {
     setBusy(true);
@@ -80,15 +96,25 @@ export function SecureTasksPanel() {
         const { reminders: refreshed, day } = await loadSecureReminders();
         setReminders(refreshed);
         setProfessionalDay(day);
-        setMessage("Tâche mise à jour.");
+        setMessage("Tâche mise à jour sur le serveur.");
       } catch {
         setMessage("Modification enregistrée. Recharge les rappels pour actualiser la liste.");
       }
+      return true;
     } catch (error) {
       setMessage(error.message);
+      return false;
     } finally {
       setBusy(false);
     }
+  };
+
+  const beginTask = async task => {
+    if (busy) return;
+    if (task.status !== "EN_COURS" && !(await edit(task, { status: "EN_COURS" }))) return;
+    setStartedId(task.id);
+    if (!focus) onToggleFocus?.();
+    setMessage("Tâche mise en avant. Avance une action à la fois.");
   };
 
   return (
@@ -97,6 +123,34 @@ export function SecureTasksPanel() {
       <p>Ces tâches sont accessibles uniquement avec une session institutionnelle vérifiée. Elles sont séparées de la liste de démonstration ; aucune donnée n'est importée automatiquement.</p>
       <button type="button" disabled={busy} onClick={reload}>Charger mes tâches protégées</button>
       {ready && <>
+        <div className="secure-daily-priorities" aria-label="Mes trois priorités protégées">
+          <div className="secure-daily-priorities__header">
+            <h3>Mes 3 priorités du jour</h3>
+            <button type="button" disabled={busy} aria-pressed={focus} onClick={onToggleFocus}>
+              {focus ? "Quitter le mode Focus" : "Activer le mode Focus"}
+            </button>
+          </div>
+          <p>{counts.reminders} rappel(s) à traiter · {counts.open} tâche(s) ouvertes. Ce n’est pas un score de performance.</p>
+          {priorities.length === 0 ? <p>Aucune action prioritaire enregistrée pour cette journée.</p> :
+            <ol className="secure-daily-priorities__list">{priorities.map(task =>
+              <li key={task.id} className="secure-daily-priorities__item">
+                <strong>{task.title}</strong>
+                <span>Échéance : {task.dueDate || "non définie"}</span>
+                <div className="secure-daily-priorities__actions">
+                  <button type="button" disabled={busy} onClick={() => edit(task, { status: "FAIT" })}>Terminer</button>
+                  <button type="button" disabled={busy || !professionalDay || !task.dueDate}
+                    onClick={() => edit(task, { snoozedUntil: nextProfessionalDay(professionalDay) })}>
+                    Reporter le rappel
+                  </button>
+                  <button type="button" disabled={busy} onClick={() => void beginTask(task)}>
+                    {task.status === "EN_COURS" ? "Reprendre cette tâche" : "Commencer"}
+                  </button>
+                </div>
+              </li>)}</ol>}
+          {activeTask && <p>À reprendre : <strong>{activeTask.title}</strong>. Cette tâche reste « En cours » sur le serveur.</p>}
+          <p>Ordre : tâche en cours, retards, échéances du jour, autres. Le marquage manuel n’est pas encore activé dans le mode sécurisé.</p>
+        </div>
+        {message && <p role="status" className="secure-daily-feedback">{message}</p>}
         <form onSubmit={add} className="daily-controls">
           <label>Nouvelle tâche personnelle
             <input value={title} maxLength={200} onChange={e => setTitle(e.target.value)}
@@ -133,7 +187,7 @@ export function SecureTasksPanel() {
           </ul>
           <p>Ces rappels restent dans l’espace ARTAG. Aucun email ni rendez-vous Outlook n’est envoyé.</p>
         </div>
-        <ul className="daily-tasks">
+        {!focus && <ul className="daily-tasks">
           {tasks.map(task => (
             <li className="daily-task" key={task.id}>
               <strong className="daily-task-title">{task.title}</strong>
@@ -170,10 +224,10 @@ export function SecureTasksPanel() {
               </label>
             </li>
           ))}
-        </ul>
+        </ul>}
         {tasks.length === 0 && <p>Aucune tâche personnelle dans cet espace.</p>}
       </>}
-      {message && <p role="status">{message}</p>}
+      {!ready && message && <p role="status">{message}</p>}
     </section>
   );
 }
