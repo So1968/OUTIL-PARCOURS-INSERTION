@@ -74,7 +74,7 @@ test("PostgreSQL/HTTP : réflexion professionnelle réservée à l'autrice, hist
     assert.deepEqual((await initial.json()).content, blank);
     assert.equal((await read(sessionB.token)).status, 404);
     assert.equal((await read(sessionTns.token)).status, 404);
-    assert.equal((await read("session-invalide")).status, 404);
+    assert.equal((await read("absent")).status, 404);
     assert.equal((await write(sessionTns.token, csrfTns, {
       expectedVersion: 1, content: contentB, reason: "Interdit au TNS",
     })).status, 404);
