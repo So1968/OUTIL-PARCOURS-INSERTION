@@ -1,0 +1,7 @@
+.secure-professional-reflection textarea { min-height:105px; width:100%; }
+.secure-professional-reflection section { margin:16px 0; }
+.secure-professional-reflection p, .secure-professional-reflection dd { overflow-wrap:anywhere; }
+.secure-professional-reflection button { min-height:44px; }
+.secure-professional-reflection button:focus-visible { outline:3px solid #594f35; outline-offset:3px; }
+.secure-professional-reflection details summary { cursor:pointer; min-height:44px; align-content:center; }
+@media(max-width:620px) { .secure-professional-reflection { padding:12px; } .secure-professional-reflection button { min-height:48px; } }
