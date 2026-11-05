@@ -28,6 +28,7 @@ test("les routes métier ne sont jamais accessibles dans ce socle", async () => 
   await withServer(async (baseUrl) => {
     for (const [method, uri] of [
       ["GET", "/api/dossiers"], ["POST", "/api/dossiers"], ["GET", "/api/notes-reservees"],
+      ["GET", "/api/dossiers/fictif/notes-partagees"],
       ["PATCH", "/api/dossiers/fictif/notes-partagees/fictif"],
       ["POST", "/api/dossiers/fictif/notes-partagees/fictif/validation"],
       ["GET", "/api/dossiers/fictif/notes-partagees/fictif/historique"],

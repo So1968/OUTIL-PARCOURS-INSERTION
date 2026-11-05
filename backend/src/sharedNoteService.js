@@ -26,6 +26,7 @@ export class SharedNoteHistoryUnavailable extends Error {
 
 const MAX_VERSION = 2147483647;
 const HISTORY_PAGE_SIZE = 50;
+const NOTES_PAGE_SIZE = 25;
 
 function validVersion(version) {
   return Number.isInteger(version) && version >= 0 && version < MAX_VERSION;
@@ -255,6 +256,30 @@ export async function readSharedNoteHistory({
       noteId, noteVersion: note.version, validated: note.validated,
       dossierVersion: dossier.version, history,
       nextBeforeVersion: revisions.length > HISTORY_PAGE_SIZE ? history.at(-1).version : null,
+    });
+  });
+}
+
+/** Liste limitée au même périmètre de rédaction que les brouillons. */
+export async function readSharedNotes({
+  db, cookieHeader, caseId, offset = 0, now = new Date(),
+} = {}) {
+  if (!Number.isSafeInteger(offset) || offset < 0 || offset > 100000) throw new InvalidSharedNote();
+  checkNoteContext(db, caseId, now);
+  return noteTransaction(db, async tx => {
+    const { actor, dossier } = await authorizedWriter(tx, cookieHeader, caseId, now);
+    const notes = await tx.sharedNote.findMany({
+      where: { caseId }, orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      skip: offset, take: NOTES_PAGE_SIZE + 1,
+      select: { id: true, text: true, version: true, validated: true, createdAt: true, updatedAt: true },
+    });
+    await tx.auditEvent.create({
+      data: { caseId, actorId: actor.id, eventType: "SHARED_NOTES_READ",
+        purpose: "Consultation des notes partagées du dossier" },
+    });
+    return Object.freeze({
+      dossierVersion: dossier.version, notes: notes.slice(0, NOTES_PAGE_SIZE),
+      nextOffset: notes.length > NOTES_PAGE_SIZE ? offset + NOTES_PAGE_SIZE : null,
     });
   });
 }

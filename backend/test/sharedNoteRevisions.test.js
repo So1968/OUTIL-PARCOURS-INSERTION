@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import {
-  correctSharedNote, validateSharedNote, readSharedNoteHistory,
+  correctSharedNote, validateSharedNote, readSharedNoteHistory, readSharedNotes,
   DossierVersionConflict, InvalidSharedNote, SharedNoteHistoryUnavailable,
 } from "../src/sharedNoteService.js";
 import { CaseAccessDenied } from "../src/caseAccessService.js";
@@ -41,6 +41,12 @@ function fixture({ role = "REFERENTE", assigned = true, archived = false,
           },
         },
         sharedNote: {
+          findMany: async ({ where, skip, take, select, orderBy }) => {
+            assert.equal(where.caseId, caseId);
+            assert.deepEqual(orderBy, [{ createdAt: "desc" }, { id: "desc" }]);
+            assert.equal(select.privateNotes, undefined);
+            return (draft.list ?? []).slice(skip, skip + take);
+          },
           findFirst: async ({ where }) => where.id === noteId && where.caseId === caseId ? draft.note : null,
           updateMany: async ({ where, data }) => {
             if (where.version !== draft.note.version) return { count: 0 };
@@ -106,11 +112,34 @@ test("brouillons et historique refusés aux autres profils, même affectés en l
     const f = fixture({ role });
     f.state().dossier.assignments = [{ userId, capability: "SHARED_READ", active: true }];
     await assert.rejects(readSharedNoteHistory(f.args), CaseAccessDenied);
+    await assert.rejects(readSharedNotes(f.args), CaseAccessDenied);
     await assert.rejects(validateSharedNote({ ...f.args, expectedVersion: 1 }), CaseAccessDenied);
     await assert.rejects(correctSharedNote({ ...f.args, expectedVersion: 1,
       text: "Exemple fictif", reason: "Correction fictive" }), CaseAccessDenied);
     assert.equal(f.state().audit.length, 0);
   }
+});
+
+test("la liste pagine les brouillons sans modifier les versions et trace sa lecture", async () => {
+  const f = fixture();
+  f.state().list = Array.from({ length: 28 }, (_, i) => ({
+    id: randomUUID(), text: `Note fictive ${i}`, version: 1, validated: false, createdAt: now, updatedAt: now,
+  }));
+  const first = await readSharedNotes(f.args);
+  assert.equal(first.notes.length, 25);
+  assert.equal(first.nextOffset, 25);
+  const next = await readSharedNotes({ ...f.args, offset: first.nextOffset });
+  assert.equal(next.notes.length, 3);
+  assert.equal(next.nextOffset, null);
+  assert.equal(new Set([...first.notes, ...next.notes].map(note => note.id)).size, 28);
+  assert.equal(f.state().dossier.version, 1);
+  assert.ok(f.state().audit.every(entry => entry.eventType === "SHARED_NOTES_READ"));
+  for (const offset of [-1, 1.2, "1", 100001]) {
+    await assert.rejects(readSharedNotes({ ...f.args, offset }), InvalidSharedNote);
+  }
+  const broken = fixture({ auditError: true });
+  await assert.rejects(readSharedNotes(broken.args), /AUDIT_FICTIVEMENT_INDISPONIBLE/);
+  assert.equal(broken.state().audit.length, 0);
 });
 
 test("refus des notes hors dossier, dossiers archivés et affectations absentes", async () => {

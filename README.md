@@ -44,6 +44,8 @@ Un socle séparé `backend/` est en préparation sur GitHub : Express, schéma P
 
 Le frontend existant reste en mode prototype et n'est pas relié à cette API. Ne pas y saisir de données réelles.
 
+Un [écran de notes partagées pour la recette privée](docs/50_ECRAN_NOTES_PARTAGEES.md) prépare le chargement, la correction, la validation et l'historique via l'API. Il est désactivé par défaut, exige HTTPS et ne reprend aucune donnée locale du prototype.
+
 ## Démarrage local
 
 Depuis la racine du dépôt :
