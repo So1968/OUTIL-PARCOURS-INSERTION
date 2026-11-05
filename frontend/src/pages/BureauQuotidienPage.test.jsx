@@ -141,7 +141,7 @@ describe("bureau de charge et saisie express (démonstration)", () => {
     expect(titles.indexOf("Saisie express — 1 clic pour un événement courant"))
       .toBeLessThan(titles.indexOf("Charge calculée"));
     expect(screen.getByRole("button", { name:"Reporter la priorité : Préparer une réponse fictive" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name:"Commencer cette tâche" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name:"Commencer cette tâche" })).toHaveLength(2);
     expect(screen.getAllByRole("checkbox", { name:/Terminer la priorité/ })).toHaveLength(2);
     fireEvent.click(screen.getByRole("button", { name:"Reporter la priorité : Préparer une réponse fictive" }));
     const stored = JSON.parse(localStorage.getItem("artag-taches-entretien-demo-v1"));
