@@ -39,6 +39,7 @@ export function BureauQuotidienPage() {
   const [captureStatus, setCaptureStatus] = useState("Fait");
   const [message, setMessage] = useState("");
   const [lastQuickId, setLastQuickId] = useState("");
+  const [lastTaskUndo, setLastTaskUndo] = useState(null);
   const [freeTask, setFreeTask] = useState("");
   const [focus, setFocus] = useState(() => readStorageJson(FOCUS_KEY, false) === true);
   const [lastTaskPointer, setLastTaskPointer] = useState(() => readStorageJson(LAST_TASK_KEY, null));
@@ -67,11 +68,38 @@ export function BureauQuotidienPage() {
   }
 
   function updateTask(task, changes) {
-    saveRecords({
+    const list = records[task.dossierId] || [];
+    const previous = list.find(entry => entry.id === task.id);
+    if (!previous) {
+      setMessage("Cette tâche n'est plus disponible. Vérifie la liste.");
+      return;
+    }
+    const success = changes.status === "Fait" ? "Tâche terminée. Ce geste peut être annulé."
+      : changes.dueDate ? "Tâche reportée. Ce geste peut être annulé."
+        : "Tâche mise à jour. Ce geste peut être annulé.";
+    if (saveRecords({
       ...records,
-      [task.dossierId]: (records[task.dossierId] || []).map(entry =>
-        entry.id === task.id ? { ...entry, ...changes } : entry),
-    }, "Tâche mise à jour.");
+      [task.dossierId]: list.map(entry => entry.id === task.id ? { ...entry, ...changes } : entry),
+    }, success)) {
+      setLastTaskUndo({ dossierId: task.dossierId, taskId: task.id, previous });
+    }
+  }
+
+  function undoLastTaskChange() {
+    if (!lastTaskUndo) return;
+    const list = records[lastTaskUndo.dossierId] || [];
+    if (!list.some(entry => entry.id === lastTaskUndo.taskId)) {
+      setMessage("Annulation indisponible : cette tâche n'existe plus.");
+      setLastTaskUndo(null);
+      return;
+    }
+    if (saveRecords({
+      ...records,
+      [lastTaskUndo.dossierId]: list.map(entry =>
+        entry.id === lastTaskUndo.taskId ? lastTaskUndo.previous : entry),
+    }, "Dernière modification de tâche annulée.")) {
+      setLastTaskUndo(null);
+    }
   }
 
   function ajouterTacheLibre(event) {
@@ -280,7 +308,7 @@ export function BureauQuotidienPage() {
       </div>
 
       <DailyFocusPanel tasks={items} today={day} focus={focus}
-        onToggle={toggleFocus} onUpdate={updateTask} onStart={commencerTache} />
+        onToggle={toggleFocus} onUpdate={updateTask} onStart={commencerTache} onSnooze={reporterTache} />
 
       {lastTask && <section className="daily-section" aria-label="Reprendre une tâche">
         <h2>Reprendre la dernière tâche interrompue</h2>
@@ -376,7 +404,7 @@ export function BureauQuotidienPage() {
         </form>
         {lastQuickId && <button type="button" onClick={undoLastQuick}>Annuler la dernière saisie</button>}
         <p>La durée proposée est une estimation modifiable. Pour protéger les personnes accompagnées, ne note pas de nom, téléphone ni information confidentielle dans la saisie express.</p>
-        {dailyQuick.length > 0 && <ul className="daily-tasks">
+        {!focus && dailyQuick.length > 0 && <ul className="daily-tasks">
           {dailyQuick.map(e => <li className="daily-task" key={e.id}>
             <strong>{e.type} — {e.title}</strong>
             <span>{dureeLisible(e.minutes)}</span>
