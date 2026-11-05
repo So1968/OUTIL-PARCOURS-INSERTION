@@ -27,7 +27,7 @@ export const BRIEF_TYPES = Object.freeze({
     ]),
   }),
 });
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX = 2147483647;
 const SAME_KEYS = (item, keys) => Object.keys(item).sort().join("|") === keys.slice().sort().join("|");
 const validDate = value => typeof value === "string" && Number.isFinite(Date.parse(value));
