@@ -31,6 +31,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 25. [Écran du numéro ARTAG](53_ECRAN_REFERENCE_ARTAG.md) — correction et historique sur dossier déjà identifié, reprise après conflit, droits et absence d'attribution en aveugle.
 26. [Création contrôlée d'un dossier](54_CREATION_DOSSIER_CONTROLEE.md) — numéro déjà attribué, titulaire serveur, première révision, audit atomique et réessai sans doublon.
 27. [Bloc identité minimal versionné](55_IDENTITE_MINIMALE_VERSIONNEE.md) — Nom, Prénom, Numéro Insertis, Âge, valeurs inconnues et modifications historisées sous titularité serveur.
+28. [Socle autonomie versionné](56_SOCLE_AUTONOMIE_VERSIONNE.md) — huit questions inchangées, état et versions PostgreSQL, accès réservé à la référente et recette.
 
 ## Grandes familles documentaires
 

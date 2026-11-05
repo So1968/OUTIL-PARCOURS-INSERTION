@@ -1,6 +1,7 @@
 import express from "express";
 import { createCase, InvalidCaseCreation, CaseCreationConflict } from "./caseCreationService.js";
 import { readCaseIdentity, updateCaseIdentity, InvalidCaseIdentity, CaseIdentityHistoryUnavailable } from "./caseIdentityService.js";
+import { readCaseAutonomy, updateCaseAutonomy, InvalidCaseAutonomy, CaseAutonomyHistoryUnavailable } from "./caseAutonomyService.js";
 import helmet from "helmet";
 import { listWritableCases, InvalidCaseDirectoryQuery, CaseDirectoryChanged } from "./caseDirectoryService.js";
 import {
@@ -110,6 +111,38 @@ export function createApp({
       }
     });
 
+  }
+
+  if (canWrite) {
+    const autonomyError = (error, res) => {
+      if (error instanceof CaseAccessDenied) return res.status(404).json({ error: "DOSSIER_INDISPONIBLE" });
+      if (error instanceof InvalidCaseAutonomy) return res.status(422).json({ error: "SOCLE_AUTONOMIE_INVALIDE" });
+      if (error instanceof DossierVersionConflict) return res.status(409).json({ error: "DOSSIER_MODIFIE_ENTRE_TEMPS" });
+      if (error instanceof CaseAutonomyHistoryUnavailable) return res.status(409).json({ error: "HISTORIQUE_AUTONOMIE_INDISPONIBLE" });
+      return res.status(503).json({ error: "SERVICE_INDISPONIBLE" });
+    };
+    const autonomyPath = "/api/dossiers/:caseId/socle-autonomie";
+    app.get(autonomyPath, async (req, res) => {
+      try {
+        if (Object.keys(req.query).some(key => key !== "beforeVersion")
+          || (req.query.beforeVersion !== undefined && (typeof req.query.beforeVersion !== "string"
+            || !/^[1-9][0-9]{0,9}$/.test(req.query.beforeVersion)))) throw new InvalidCaseAutonomy();
+        return res.status(200).json(await readCaseAutonomy({
+          db: privateDb, cookieHeader: req.headers.cookie, caseId: req.params.caseId,
+          beforeVersion: req.query.beforeVersion === undefined ? undefined : Number(req.query.beforeVersion),
+        }));
+      } catch (error) { return autonomyError(error, res); }
+    });
+    app.patch(autonomyPath, express.json({ limit: "24kb", type: "application/json", strict: false }), async (req, res) => {
+      if (!validCsrf({ secret: csrfSecret, cookieHeader: req.headers.cookie,
+        csrfHeader: req.get("X-CSRF-Token"), origin: req.get("Origin"), allowedOrigin: oidc.origin })) return res.status(403).json({ error: "CSRF_REFUSE" });
+      try {
+        if (Object.keys(req.query).length) throw new InvalidCaseAutonomy();
+        return res.status(200).json(await updateCaseAutonomy({
+          db: privateDb, cookieHeader: req.headers.cookie, caseId: req.params.caseId, input: req.body,
+        }));
+      } catch (error) { return autonomyError(error, res); }
+    });
   }
 
   if (canWrite) {
