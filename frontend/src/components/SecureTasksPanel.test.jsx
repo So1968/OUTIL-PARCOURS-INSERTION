@@ -73,6 +73,16 @@ describe("bureau professionnel sans stockage local", () => {
     expect(await screen.findByText("Dernière modification annulée sur le serveur.")).toBeInTheDocument();
   });
 
+  it("vide immédiatement les tâches visibles si le serveur refuse les droits", async () => {
+    render(<SecureTasksPanel focus={false} onToggleFocus={vi.fn()} />);
+    await screen.findByRole("heading",{name:"Mes 3 priorités du jour"});
+    api.editSecureTask.mockRejectedValueOnce(Object.assign(new Error("Autorisation refusée."),{status:403}));
+    fireEvent.click(screen.getAllByRole("button",{name:"Terminer"})[0]);
+    expect(await screen.findByText(/Accès professionnel indisponible/)).toBeInTheDocument();
+    expect(screen.queryByText("Dossier fictif à poursuivre")).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading",{name:"Mes 3 priorités du jour"})).not.toBeInTheDocument();
+  });
+
   it("en Focus masque les réglages longs, mais garde rappels et création", async () => {
     render(<SecureTasksPanel focus={true} onToggleFocus={vi.fn()} />);
     await screen.findByRole("heading",{name:"Mes 3 priorités du jour"});
