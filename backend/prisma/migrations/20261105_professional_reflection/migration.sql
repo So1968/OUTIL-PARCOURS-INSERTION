@@ -19,7 +19,7 @@ CREATE TABLE "CaseProfessionalReflectionRevision" (
     CONSTRAINT "CaseProfessionalReflectionRevision_pkey" PRIMARY KEY ("id")
 );
 
-CREATE UNIQUE INDEX "CaseProfessionalReflectionRevision_caseId_ownerId_dossierVersion_key"
+CREATE UNIQUE INDEX "CaseProfReflectionRev_version_key"
 ON "CaseProfessionalReflectionRevision"("caseId","ownerId","dossierVersion");
 
 ALTER TABLE "CaseProfessionalReflection" ADD CONSTRAINT "CaseProfessionalReflection_caseId_fkey"
