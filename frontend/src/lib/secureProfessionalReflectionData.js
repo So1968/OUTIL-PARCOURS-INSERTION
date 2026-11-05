@@ -61,7 +61,7 @@ export function checkedReflectionPage(page, caseId, beforeVersion) {
       || sameAuthor !== null && sameAuthor !== version.actorId
       || typeof version.reason !== "string" || !version.reason.trim()
       || version.reason.length > 200 || !version.reason.isWellFormed()
-      || !Number.isFinite(Date.parse(version.createdAt))
+      || typeof version.createdAt !== "string" || !Number.isFinite(Date.parse(version.createdAt))
       || checkedReflectionContent(version.content) === null
       || checkedReflectionContent(version.previousContent) === null) invalid();
     if (preceding !== null && !sameReflectionContent(preceding, version.content)) invalid();
