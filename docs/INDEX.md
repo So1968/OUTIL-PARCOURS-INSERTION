@@ -37,6 +37,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 31. [Écrans sécurisés de synthèse et continuité](59_ECRANS_BLOCS_COURTS.md) — saisie courte, historique, relecture après conflit et absence de stockage local.
 32. [Ergonomie du bureau et mode Focus](60_ERGONOMIE_BUREAU_FOCUS.md) — trois priorités visibles, gestes courts, annulation et Focus allégé en démonstration.
 33. [Bureau sécurisé et mode Focus](61_BUREAU_SECURISE_FOCUS.md) — priorités depuis PostgreSQL, reprises EN_COURS, Focus sans localStorage et annulation versionnée.
+34. [Suggestions après entretien](62_SUGGESTIONS_SUITE_ENTRETIEN.md) — six libellés en un clic, toujours à confirmer et jamais générés automatiquement.
 
 ## Grandes familles documentaires
 
