@@ -41,6 +41,18 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
   const activeTask = tasks.find(task => task.id === startedId && task.status === "EN_COURS")
     || tasks.find(task => task.status === "EN_COURS");
 
+  const handleAccessLost = error => {
+    if (![401, 403, 404].includes(error?.status)) return false;
+    setReady(false);
+    setTasks([]);
+    setReminders([]);
+    setStartedId(null);
+    setLastUndo(null);
+    setRetryTask(null);
+    setMessage("Accès professionnel indisponible. Reconnectez-vous avant de poursuivre.");
+    return true;
+  };
+
   const reload = async () => {
     setBusy(true);
     try {
@@ -51,7 +63,7 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
       setReady(true);
       setMessage(`${data.length} tâche(s), dont ${reminderData.reminders.length} rappel(s) à traiter.`);
     } catch (error) {
-      setMessage(error.message);
+      if (!handleAccessLost(error)) setMessage(error.message);
     } finally {
       setBusy(false);
     }
@@ -75,8 +87,10 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
         setMessage("Tâche enregistrée. Recharge la liste pour vérifier son affichage.");
       }
     } catch (error) {
-      setRetryTask(payload);
-      setMessage(error.message + " Réessaie avec la même demande pour éviter tout doublon.");
+      if (!handleAccessLost(error)) {
+        setRetryTask(payload);
+        setMessage(error.message + " Réessaie avec la même demande pour éviter tout doublon.");
+      }
     } finally {
       setBusy(false);
     }
@@ -107,7 +121,7 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
       return updated;
     } catch (error) {
       if (isUndo) setLastUndo(null);
-      setMessage(error.message);
+      if (!handleAccessLost(error)) setMessage(error.message);
       return null;
     } finally {
       setBusy(false);
