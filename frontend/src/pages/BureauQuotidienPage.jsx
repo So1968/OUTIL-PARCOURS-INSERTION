@@ -302,7 +302,7 @@ export function BureauQuotidienPage() {
         onToggle={toggleFocus} onUpdate={updateTask} onStart={commencerTache} onSnooze={reporterTache} />
 
       {message && <p role="status" className="daily-feedback">{message}</p>}
-      {lastTaskUndo && <div className="daily-undo"><button type="button" onClick={undoLastTaskChange}>Annuler la dernière modification de tâche</button></div>
+      {lastTaskUndo && <div className="daily-undo"><button type="button" onClick={undoLastTaskChange}>Annuler la dernière modification de tâche</button></div>}
       {lastTask && <section className="daily-section" aria-label="Reprendre une tâche">
         <h2>Reprendre la dernière tâche interrompue</h2>
         <p><strong>{lastTask.title}</strong></p>
