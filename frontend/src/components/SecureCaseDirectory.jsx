@@ -61,6 +61,7 @@ export function SecureCaseDirectory() {
           <Link to={`/dossiers/${row.id}/reference-artag`}>Numéro ARTAG et historique</Link>
         </p>}
         {hasUsableArtagReference(row.artagReference) && row.canManageReference && <p><Link to={`/dossiers/${row.id}/identite`}>Identité</Link></p>}
+        {hasUsableArtagReference(row.artagReference) && row.canManageReference && <p><Link to={`/dossiers/${row.id}/socle-autonomie`}>Repères d’autonomie</Link></p>}
       </li>)}</ul>
       {data.nextCursor !== null && <button type="button" disabled={busy} onClick={() => load(true)}>Voir d’autres dossiers</button>}
       <SecureCaseCreationPanel onAccessLost={clearAccess} />

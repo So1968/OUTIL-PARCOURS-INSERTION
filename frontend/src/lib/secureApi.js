@@ -107,6 +107,22 @@ export async function modifierIdentiteSecurisee({ caseId, expectedVersion, ident
   return mutateDossier(dossierPath(caseId) + "/identite", "PATCH", { expectedVersion, identity, reason });
 }
 
+export async function lireSocleAutonomieSecurise({ caseId, beforeVersion }) {
+  if (beforeVersion !== undefined && (!Number.isInteger(beforeVersion) || beforeVersion < 1 || beforeVersion > 2147483647)) {
+    throw new ApiAccessError(422, "VERSION_INVALIDE");
+  }
+  const path = dossierPath(caseId) + "/socle-autonomie";
+  return expectJson(await fetch(path + (beforeVersion === undefined ? "" : `?beforeVersion=${beforeVersion}`), {
+    credentials: "same-origin", cache: "no-store", redirect: "error",
+  }));
+}
+
+export async function modifierSocleAutonomieSecurise({ caseId, expectedVersion, reponses, reason }) {
+  return mutateDossier(dossierPath(caseId) + "/socle-autonomie", "PATCH", {
+    expectedVersion, reponses, reason,
+  });
+}
+
 export async function lireHistoriqueNotePartageeSecurise({ caseId, noteId, beforeVersion }) {
   const path = notePath(caseId, noteId);
   if (beforeVersion !== undefined && (!Number.isInteger(beforeVersion)

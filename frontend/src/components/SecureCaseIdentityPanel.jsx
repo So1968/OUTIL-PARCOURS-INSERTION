@@ -88,6 +88,7 @@ export function SecureCaseIdentityPanel({ caseId }) {
         <p>L’âge est renseigné manuellement. Vérifiez-le au besoin ; il n’est pas recalculé automatiquement.</p>
         <p><Link to={`/dossiers/${caseId}/reference-artag`}>Numéro ARTAG et historique</Link></p>
         <p><Link to={`/dossiers/${caseId}/notes-partagees`}>Ouvrir les notes partagées</Link></p>
+        <p><Link to={`/dossiers/${caseId}/socle-autonomie`}>Repères d’autonomie</Link></p>
         {!editing && <button type="button" disabled={busy || !!review || data.dossierVersion === 2147483647} onClick={() => {
           setEditing(true); setDraft(toDraft(data.identity)); setReason(""); setMessage("");
         }}>Compléter ou corriger l’identité</button>}
