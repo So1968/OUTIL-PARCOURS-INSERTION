@@ -50,6 +50,19 @@ describe("bureau privé : saisie rapide et reprise sans doublon", () => {
       .toEqual(api.createSecureWorkEvent.mock.calls[1][0]);
   });
 
+  it("en Focus garde la saisie express et masque la charge longue sans localStorage", async () => {
+    const spy = vi.spyOn(Storage.prototype,"getItem");
+    render(<SecureWorkEventsPanel compact />);
+    expect(await screen.findByRole("button",{name:"+ Imprévu · 15 min"})).toBeInTheDocument();
+    expect(screen.getByRole("button",{name:"+ Appel · 10 min"})).toBeInTheDocument();
+    expect(screen.getByRole("button",{name:"Enregistrer"})).toBeInTheDocument();
+    expect(screen.queryByText(/de charge connue le/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading",{name:/Activités enregistrées/})).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Date du plan")).not.toBeInTheDocument();
+    expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
   it("n'affiche pas les activités annulées dans la charge connue", async () => {
     api.loadSecureWorkEvents.mockResolvedValue({
       day:"2026-10-23",
