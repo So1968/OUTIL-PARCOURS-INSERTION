@@ -78,6 +78,7 @@ model UserAccount {
   referenceRevisions CaseReferenceRevision[]
   caseCreationRequests CaseCreationRequest[]
   identityRevisions CaseIdentityRevision[]
+  autonomyRevisions CaseAutonomyRevision[]
 }
 
 model CaseFile {
@@ -100,6 +101,7 @@ model CaseFile {
   creationRequest CaseCreationRequest?
   identity CaseIdentity?
   identityRevisions CaseIdentityRevision[]
+  autonomy CaseAutonomy?
 }
 
 // État minimal du même dossier ; aucune correspondance automatique de personne.
@@ -130,6 +132,30 @@ model CaseIdentityRevision {
   createdAt              DateTime    @default(now())
   caseFile               CaseFile    @relation(fields: [caseId], references: [id], onDelete: Cascade)
   actor                  UserAccount @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@unique([caseId, dossierVersion])
+}
+
+// Repères d'autonomie issus exclusivement des huit questions du cahier des charges.
+// Aucune notation automatique ni transfert vers un autre espace.
+model CaseAutonomy {
+  caseId         String   @id
+  dossierVersion Int
+  reponses       Json     @db.JsonB
+  caseFile       CaseFile @relation(fields: [caseId], references: [id], onDelete: Cascade)
+}
+
+model CaseAutonomyRevision {
+  id                String      @id @default(uuid())
+  caseId            String
+  dossierVersion    Int
+  previousReponses  Json        @db.JsonB
+  reponses          Json        @db.JsonB
+  actorId           String
+  reason            String      @db.VarChar(200)
+  createdAt         DateTime    @default(now())
+  caseFile          CaseFile    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  actor             UserAccount @relation(fields: [actorId], references: [id], onDelete: Restrict)
 
   @@unique([caseId, dossierVersion])
 }
