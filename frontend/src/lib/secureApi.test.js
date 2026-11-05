@@ -4,6 +4,8 @@ import {
   corrigerNotePartageeSecurisee, validerNotePartageeSecurisee, lireHistoriqueNotePartageeSecurise,
   lireNotesPartageesSecurisees,
   lireReferenceArtagSecurisee, corrigerReferenceArtagSecurisee,
+  creerDossierSecurise,
+  lireIdentiteSecurisee, modifierIdentiteSecurisee,
 } from "./secureApi";
 
 const id = "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa";
@@ -11,6 +13,39 @@ const noteId = "bbbbbbbb-bbbb-4bbb-bbbb-bbbbbbbbbbbb";
 afterEach(() => vi.unstubAllGlobals());
 
 describe("adaptateur API métier same-origin (non activé dans le prototype)", () => {
+  it("lit l'identité par page et transmet une modification explicite avec CSRF", async () => {
+    const identity = { lastName: "FICTIF", firstName: null, insertisNumber: null, age: 0 };
+    const mock = vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({ history: [] })))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ token: "a".repeat(64) })))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ caseId: id, dossierVersion: 3 })));
+    vi.stubGlobal("fetch", mock);
+    await lireIdentiteSecurisee({ caseId: id, beforeVersion: 5 });
+    expect(mock.mock.calls[0]).toEqual([`/api/dossiers/${id}/identite?beforeVersion=5`, { credentials: "same-origin", cache: "no-store", redirect: "error" }]);
+    await modifierIdentiteSecurisee({ caseId: id, expectedVersion: 2, identity, reason: "Saisie fictive vérifiée" });
+    expect(mock.mock.calls[2][0]).toBe(`/api/dossiers/${id}/identite`);
+    expect(mock.mock.calls[2][1]).toMatchObject({ method: "PATCH", headers: { "X-CSRF-Token": "a".repeat(64) },
+      body: JSON.stringify({ expectedVersion: 2, identity, reason: "Saisie fictive vérifiée" }) });
+  });
+  it("refuse des identifiants ou curseurs arbitraires pour l'identité sans réseau", async () => {
+    const mock = vi.fn(); vi.stubGlobal("fetch", mock);
+    await expect(modifierIdentiteSecurisee({ caseId: "../autre" })).rejects.toMatchObject({ status: 422 });
+    for (const beforeVersion of [0, "1", 2147483648]) await expect(lireIdentiteSecurisee({ caseId: id, beforeVersion })).rejects.toMatchObject({ status: 422 });
+    expect(mock).not.toHaveBeenCalled();
+  });
+  it("crée avec une clé conservée par l'appelant et un CSRF sans imposer de référente navigateur", async () => {
+    const token = "a".repeat(64), requestId = noteId;
+    const mock = vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({ token })))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ created: true }), { status: 201 }));
+    vi.stubGlobal("fetch", mock);
+    await creerDossierSecurise({ requestId, artagReference: "ARTAG-NOUVEAU-FICTIF" });
+    expect(mock.mock.calls[1]).toEqual(["/api/dossiers", {
+      method: "POST", credentials: "same-origin", cache: "no-store", redirect: "error",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
+      body: JSON.stringify({ requestId, artagReference: "ARTAG-NOUVEAU-FICTIF" }),
+    }]);
+    await expect(creerDossierSecurise({ requestId: "../autre" })).rejects.toMatchObject({ status: 422 });
+    expect(mock).toHaveBeenCalledTimes(2);
+  });
   it("lit l'historique de référence sans CSRF et transmet une correction exacte avec CSRF", async () => {
     const csrf = "a".repeat(64);
     const mock = vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({ history: [] })))

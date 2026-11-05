@@ -51,6 +51,7 @@ const TnsPage = lazyNamed(() => import("./pages/TnsPage"), "TnsPage");
 const SecureSharedNotesPage = lazyNamed(() => import("./pages/SecureSharedNotesPage"), "SecureSharedNotesPage");
 const SecureCaseDirectoryPage = lazyNamed(() => import("./pages/SecureCaseDirectoryPage"), "SecureCaseDirectoryPage");
 const SecureCaseReferencePage = lazyNamed(() => import("./pages/SecureCaseReferencePage"), "SecureCaseReferencePage");
+const SecureCaseIdentityPage = lazyNamed(() => import("./pages/SecureCaseIdentityPage"), "SecureCaseIdentityPage");
 
 function ProtectedPage({ allowedRoles, children }) {
   return <RequireRole allowedRoles={allowedRoles}>{children}</RequireRole>;
@@ -111,6 +112,7 @@ function SecureWorkApp() {
           <Route path="/bureau-quotidien" element={<BureauTravailRoute />} />
           {secureNotesApiEnabled() && <Route path="/dossiers" element={<SecureCaseDirectoryPage />} />}
           {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/reference-artag" element={<SecureCaseReferencePage />} />}
+          {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/identite" element={<SecureCaseIdentityPage />} />}
           {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/notes-partagees" element={<SecureSharedNotesPage />} />}
           <Route path="*" element={
             <main className="page-shell">
