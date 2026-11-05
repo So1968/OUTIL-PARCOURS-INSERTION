@@ -53,6 +53,7 @@ const SecureCaseDirectoryPage = lazyNamed(() => import("./pages/SecureCaseDirect
 const SecureCaseReferencePage = lazyNamed(() => import("./pages/SecureCaseReferencePage"), "SecureCaseReferencePage");
 const SecureCaseIdentityPage = lazyNamed(() => import("./pages/SecureCaseIdentityPage"), "SecureCaseIdentityPage");
 const SecureCaseAutonomyPage = lazyNamed(() => import("./pages/SecureCaseAutonomyPage"), "SecureCaseAutonomyPage");
+const SecureCaseBriefPage = lazyNamed(() => import("./pages/SecureCaseBriefPage"), "SecureCaseBriefPage");
 
 function ProtectedPage({ allowedRoles, children }) {
   return <RequireRole allowedRoles={allowedRoles}>{children}</RequireRole>;
@@ -115,6 +116,8 @@ function SecureWorkApp() {
           {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/reference-artag" element={<SecureCaseReferencePage />} />}
           {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/identite" element={<SecureCaseIdentityPage />} />}
           {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/socle-autonomie" element={<SecureCaseAutonomyPage />} />}
+          {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/synthese-courte" element={<SecureCaseBriefPage type="synthese-courte" />} />}
+          {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/note-continuite" element={<SecureCaseBriefPage type="note-continuite" />} />}
           {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/notes-partagees" element={<SecureSharedNotesPage />} />}
           <Route path="*" element={
             <main className="page-shell">

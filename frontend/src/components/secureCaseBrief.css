@@ -1,0 +1,7 @@
+.secure-case-brief__fields { display: grid; gap: 12px; }
+.secure-case-brief__fields > div { display: grid; grid-template-columns: minmax(140px, 1fr) minmax(0, 3fr); gap: 12px; }
+.secure-case-brief__fields dt { font-weight: 700; }
+.secure-case-brief__fields dd { margin: 0; overflow-wrap: anywhere; }
+.secure-case-brief textarea { min-height: 90px; }
+.secure-case-brief p, .secure-case-brief h2 { overflow-wrap: anywhere; }
+@media (max-width: 480px) { .secure-case-brief__fields > div { grid-template-columns: 1fr; gap: 4px; } }

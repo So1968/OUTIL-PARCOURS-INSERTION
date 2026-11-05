@@ -123,6 +123,28 @@ export async function modifierSocleAutonomieSecurise({ caseId, expectedVersion, 
   });
 }
 
+const TYPES_BLOCS_COURTS = new Set(["synthese-courte", "note-continuite"]);
+
+function cheminBlocCourt(caseId, type) {
+  if (!TYPES_BLOCS_COURTS.has(type)) throw new ApiAccessError(422, "TYPE_BLOC_INVALIDE");
+  return dossierPath(caseId) + "/blocs-courts/" + type;
+}
+
+export async function lireBlocCourtSecurise({ caseId, type, beforeVersion }) {
+  if (beforeVersion !== undefined && (!Number.isInteger(beforeVersion)
+    || beforeVersion < 1 || beforeVersion > 2147483647)) {
+    throw new ApiAccessError(422, "VERSION_INVALIDE");
+  }
+  const path = cheminBlocCourt(caseId, type);
+  return expectJson(await fetch(path + (beforeVersion === undefined ? "" : `?beforeVersion=${beforeVersion}`), {
+    credentials: "same-origin", cache: "no-store", redirect: "error",
+  }));
+}
+
+export async function modifierBlocCourtSecurise({ caseId, type, expectedVersion, content, reason }) {
+  return mutateDossier(cheminBlocCourt(caseId, type), "PATCH", { expectedVersion, content, reason });
+}
+
 export async function lireHistoriqueNotePartageeSecurise({ caseId, noteId, beforeVersion }) {
   const path = notePath(caseId, noteId);
   if (beforeVersion !== undefined && (!Number.isInteger(beforeVersion)
