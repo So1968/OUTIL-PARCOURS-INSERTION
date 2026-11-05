@@ -15,7 +15,7 @@ const LABELS = {
 };
 const DURATIONS = [5, 10, 15, 20, 30, 45, 60, 90, 120];
 
-export function SecureWorkEventsPanel() {
+export function SecureWorkEventsPanel({ compact = false }) {
   const [day, setDay] = useState("");
   const [chosenDay, setChosenDay] = useState("");
   const [tasks, setTasks] = useState([]);
@@ -111,6 +111,8 @@ export function SecureWorkEventsPanel() {
       style={{ border: "1px solid #a8afa0", borderRadius: 12, padding: 16, marginBottom: 18 }}>
       <h2>Plan de charge professionnel — saisie express</h2>
       <p>Activités personnelles enregistrées sur PostgreSQL. Aucun nom, compte rendu ou numéro de dossier n'est demandé. Ces repères ne créent pas de rendez-vous Outlook.</p>
+      {message && <p role="status" className="secure-daily-feedback">{message}</p>}
+      {!compact && <>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "end" }}>
         <label>Date du plan
           <input type="date" value={chosenDay} disabled={busy || !ready}
@@ -120,12 +122,15 @@ export function SecureWorkEventsPanel() {
           onClick={() => refresh(chosenDay)}>Afficher cette journée</button>
         <button type="button" disabled={busy} onClick={() => refresh(day)}>Actualiser</button>
       </div>
+      </>}
       {ready && summary && <>
+        {!compact && <>
         <p><strong>{chargeToText(summary.totalKnown)}</strong> de charge connue le {day}, dont {chargeToText(summary.doneMinutes)} effectuées, {chargeToText(summary.plannedMinutes)} prévues et {chargeToText(summary.taskMinutes)} de tâches à réaliser.</p>
         <p>{summary.overdue} tâche(s) en retard, {summary.due} tâche(s) échues ou du jour. {summary.unestimatedTasks > 0
           ? String(summary.unestimatedTasks) + " tâche(s) sans temps estimé." : "Toutes les tâches échéantes ont une estimation."}</p>
         <p><strong>Attention :</strong> charge partielle, sans calendrier Outlook ni pauses ni trajets. Un repère de rendez-vous saisi ici ne constitue pas une réservation d'agenda.</p>
 
+        </>}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10, margin: "16px 0" }}>
           {QUICK.map(option => (
             <button type="button" key={option.label} disabled={busy || !!retryInput}
@@ -168,6 +173,7 @@ export function SecureWorkEventsPanel() {
           }}>Annuler la tentative et vérifier la liste</button>
         </div>}
 
+        {!compact && <>
         <h3>Activités enregistrées ({events.filter(e => e.state !== "ANNULE").length})</h3>
         <ul style={{ display: "grid", gap: 12, paddingLeft: 20 }}>
           {events.map(entry => <li key={entry.id}>
@@ -191,8 +197,8 @@ export function SecureWorkEventsPanel() {
             </>}
           </li>)}
         </ul>
+        </>}
       </>}
-      {message && <p role="status">{message}</p>}
     </section>
   );
 }
