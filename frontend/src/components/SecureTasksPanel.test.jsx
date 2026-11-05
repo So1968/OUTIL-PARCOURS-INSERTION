@@ -110,9 +110,7 @@ describe("bureau professionnel sans stockage local", () => {
     fireEvent.change(screen.getByLabelText("Rappel à afficher dans mon bureau"),{
       target:{value:"2"},
     });
-    fireEvent.change(screen.getByLabelText("Durée estimée",{
-      selector:"select",
-    }),{target:{value:"20"}});
+    fireEvent.change(screen.getByLabelText("Durée estimée pour la nouvelle tâche"),{target:{value:"20"}});
     fireEvent.click(screen.getByRole("button",{name:"Créer sur le serveur"}));
     await waitFor(() => expect(api.createSecureTask).toHaveBeenCalledWith(
       "Préparer une relance fictive", expect.any(String),
