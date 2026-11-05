@@ -253,7 +253,7 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
                   <option value={7}>7 jours avant</option>
                 </select>
               </label>
-              <label>Durée estimée
+              <label>Durée estimée pour la nouvelle tâche
                 <select value={newMinutes} disabled={busy || !!retryTask}
                   onChange={event => setNewMinutes(event.target.value)}>
                   <option value="">Non estimée</option>
