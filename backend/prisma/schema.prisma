@@ -227,7 +227,7 @@ model CaseProfessionalReflectionRevision {
   caseFile        CaseFile    @relation(fields: [caseId], references: [id], onDelete: Cascade)
   owner           UserAccount @relation(fields: [ownerId], references: [id], onDelete: Restrict)
 
-  @@unique([caseId, ownerId, dossierVersion])
+  @@unique([caseId, ownerId, dossierVersion], map: "CaseProfReflectionRev_version_key")
 }
 
 // Demande de création immuable : la même clé ne crée jamais un autre dossier.
