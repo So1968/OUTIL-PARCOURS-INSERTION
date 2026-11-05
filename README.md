@@ -48,6 +48,8 @@ Un [écran de notes partagées pour la recette privée](docs/50_ECRAN_NOTES_PART
 
 La [file active serveur du même module](docs/51_FILE_ACTIVE_SERVEUR.md) permet d'ouvrir les notes depuis les seuls dossiers autorisés en rédaction, avec leur numéro ARTAG. Les dossiers sans numéro sont conservés et signalés pour identification, sans référence générée automatiquement.
 
+L'[API du numéro ARTAG versionné](docs/52_REFERENCE_ARTAG_VERSIONNEE.md) prépare son attribution/correction par la référente titulaire sur un dossier existant identifié. Elle conserve ancienne valeur, auteur et motif, refuse les conflits et ne propose pas d'attribution en aveugle depuis la liste.
+
 ## Démarrage local
 
 Depuis la racine du dépôt :

@@ -90,3 +90,7 @@ Le modèle Prisma est encore appliqué en CI par `db push` et requiert des **mig
 ## Migrations Prisma versionnées — base fictive uniquement
 
 Le dépôt comporte désormais `prisma/migrations/20261023_initial_schema/migration.sql`, généré depuis le modèle Prisma. Les workflows de tests utilisent `npm --prefix backend run db:migrate:ci -- deploy`, puis `status` et `drift`. Le script `ciMigrate.mjs` interdit une base autre que les bases fictives du runner GitHub, et `db:push:test` a été supprimé. **Ne pas appliquer l'initialisation sur une base existante**, ni utiliser ces commandes dans un environnement ARTAG. Voir `docs/48_MIGRATIONS_PRISMA_VERSIONNEES.md`.
+
+## Numéro ARTAG versionné — préparation serveur
+
+`GET` et `PATCH /api/dossiers/:caseId/reference-artag` utilisent le verrou du module d'écritures partagées et la session serveur. Ce premier périmètre exige la référente titulaire du dossier non archivé ; une délégation de notes ne suffit pas. La correction exige CSRF, version attendue et motif, conserve ancienne/nouvelle référence dans `CaseReferenceRevision`, incrémente la version commune aux notes et écrit l'audit dans une transaction sérialisable. La lecture inclut un historique paginé et audité. Aucun numéro n'est généré ni aucun dossier créé. Pas de nouvel écran ni d'activation institutionnelle ; contrat et limites : [52_REFERENCE_ARTAG_VERSIONNEE.md](../docs/52_REFERENCE_ARTAG_VERSIONNEE.md).

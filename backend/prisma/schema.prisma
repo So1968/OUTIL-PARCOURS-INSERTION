@@ -75,6 +75,7 @@ model UserAccount {
   ownWorkTasks    WorkTask[]
   ownWorkEvents   WorkEvent[]
   sharedRevisions SharedNoteRevision[]
+  referenceRevisions CaseReferenceRevision[]
 }
 
 model CaseFile {
@@ -93,6 +94,24 @@ model CaseFile {
   privateNotes  PrivateNote[]
   externalLinks ExternalLink[]
   auditEvents   AuditEvent[]
+  referenceRevisions CaseReferenceRevision[]
+}
+
+// Une attribution/correction conserve la valeur réellement lue avant écriture.
+// Aucune identité de personne ni reconstruction d'un historique antérieur.
+model CaseReferenceRevision {
+  id                String      @id @default(uuid())
+  caseId            String
+  dossierVersion    Int
+  previousReference String?     @db.VarChar(80)
+  artagReference    String      @db.VarChar(80)
+  actorId           String
+  reason            String      @db.VarChar(200)
+  createdAt         DateTime    @default(now())
+  caseFile          CaseFile    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  actor             UserAccount @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@unique([caseId, dossierVersion])
 }
 
 model CaseAssignment {

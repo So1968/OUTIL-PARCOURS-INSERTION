@@ -1,6 +1,10 @@
 import express from "express";
 import helmet from "helmet";
 import { listWritableCases, InvalidCaseDirectoryQuery, CaseDirectoryChanged } from "./caseDirectoryService.js";
+import {
+  readCaseReference, updateCaseReference, InvalidCaseReference,
+  CaseReferenceUnavailable, CaseReferenceHistoryUnavailable,
+} from "./caseReferenceService.js";
 import { readCaseOverview, CaseAccessDenied, SecurityProviderUnavailable } from "./caseAccessService.js";
 import { resolveSessionUserId } from "./sessions.js";
 import { createAuthRouter } from "./authRouter.js";
@@ -107,6 +111,43 @@ export function createApp({
   }
 
   if (canWrite) {
+    const handleReferenceError = (error, res) => {
+      if (error instanceof CaseAccessDenied) return res.status(404).json({ error: "DOSSIER_INDISPONIBLE" });
+      if (error instanceof DossierVersionConflict) return res.status(409).json({ error: "DOSSIER_MODIFIE_ENTRE_TEMPS" });
+      if (error instanceof InvalidCaseReference) return res.status(422).json({ error: "REFERENCE_INVALIDE" });
+      if (error instanceof CaseReferenceUnavailable) return res.status(409).json({ error: "REFERENCE_INDISPONIBLE" });
+      if (error instanceof CaseReferenceHistoryUnavailable) return res.status(409).json({ error: "HISTORIQUE_REFERENCE_INDISPONIBLE" });
+      return res.status(503).json({ error: "SERVICE_INDISPONIBLE" });
+    };
+    const referencePath = "/api/dossiers/:caseId/reference-artag";
+    app.get(referencePath, async (req, res) => {
+      try {
+        if (Object.keys(req.query).some(key => key !== "beforeVersion")
+          || (req.query.beforeVersion !== undefined && (typeof req.query.beforeVersion !== "string"
+            || !/^[1-9][0-9]{0,9}$/.test(req.query.beforeVersion)))) throw new InvalidCaseReference();
+        return res.status(200).json(await readCaseReference({
+          db: privateDb, cookieHeader: req.headers.cookie, caseId: req.params.caseId,
+          beforeVersion: req.query.beforeVersion === undefined ? undefined : Number(req.query.beforeVersion),
+        }));
+      } catch (error) { return handleReferenceError(error, res); }
+    });
+    app.patch(referencePath, express.json({ limit: "4kb", type: "application/json" }), async (req, res) => {
+      if (!validCsrf({ secret: csrfSecret, cookieHeader: req.headers.cookie,
+        csrfHeader: req.get("X-CSRF-Token"), origin: req.get("Origin"), allowedOrigin: oidc.origin })) {
+        return res.status(403).json({ error: "CSRF_REFUSE" });
+      }
+      try {
+        const keys = ["expectedVersion", "artagReference", "reason"];
+        if (!req.body || Array.isArray(req.body) || Object.keys(req.body).length !== keys.length
+          || !keys.every(key => Object.hasOwn(req.body, key)) || Object.keys(req.query).length) {
+          throw new InvalidCaseReference();
+        }
+        return res.status(200).json(await updateCaseReference({
+          db: privateDb, cookieHeader: req.headers.cookie, caseId: req.params.caseId,
+          expectedVersion: req.body.expectedVersion, artagReference: req.body.artagReference, reason: req.body.reason,
+        }));
+      } catch (error) { return handleReferenceError(error, res); }
+    });
     app.get("/api/mes-dossiers", async (req, res) => {
       try {
         if (Object.keys(req.query).some(key => key !== "before")) throw new InvalidCaseDirectoryQuery();
