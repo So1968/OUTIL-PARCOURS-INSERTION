@@ -140,7 +140,10 @@ export function createApp({
       } catch (error) { return reflectionError(error, res); }
     });
     app.patch(reflectionPath, express.json({ limit: "16kb", type: "application/json", strict: false }), async (req, res) => {
-      if (!csrfOk(req)) return res.status(403).json({ error: "CSRF_REFUSE" });
+      if (!validCsrf({ secret: csrfSecret, cookieHeader: req.headers.cookie,
+        csrfHeader: req.get("X-CSRF-Token"), origin: req.get("Origin"), allowedOrigin: oidc.origin })) {
+        return res.status(403).json({ error: "CSRF_REFUSE" });
+      }
       try {
         if (Object.keys(req.query).length) throw new InvalidProfessionalReflection();
         return res.status(200).json(await updateProfessionalReflection({
