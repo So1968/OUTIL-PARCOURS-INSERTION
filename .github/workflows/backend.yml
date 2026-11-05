@@ -56,4 +56,7 @@ jobs:
       - name: Refuser toute dérive entre PostgreSQL et Prisma
         run: npm --prefix backend run db:migrate:ci -- drift
       - name: Tester refus d'accès, requêtes PostgreSQL et audit transactionnel
-        run: npm run backend:test
+        run: >-
+          npm --prefix backend test --
+          --test-reporter=tap --test-reporter-destination=stdout
+          --test-reporter=./scripts/githubTestReporter.mjs --test-reporter-destination=stdout

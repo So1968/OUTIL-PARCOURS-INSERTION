@@ -4,7 +4,10 @@ import { readCaseOverview, CaseAccessDenied, SecurityProviderUnavailable } from 
 import { resolveSessionUserId } from "./sessions.js";
 import { createAuthRouter } from "./authRouter.js";
 import { issueCsrfToken, validCsrf } from "./csrf.js";
-import { createSharedNote, DossierVersionConflict, InvalidSharedNote } from "./sharedNoteService.js";
+import {
+  createSharedNote, correctSharedNote, validateSharedNote, readSharedNoteHistory,
+  DossierVersionConflict, InvalidSharedNote, SharedNoteHistoryUnavailable,
+} from "./sharedNoteService.js";
 import { listOwnTasks, listOwnReminders, createOwnTask, updateOwnTask, WorkTaskAccessDenied, WorkTaskInvalid, WorkTaskConflict } from "./workTaskService.js";
 import { listOwnEvents, createOwnEvent, updateOwnEvent, WorkEventDenied, WorkEventInvalid, WorkEventConflict } from "./workEventService.js";
 
@@ -103,8 +106,24 @@ export function createApp({
   }
 
   if (canWrite) {
-    app.post("/api/dossiers/:caseId/notes-partagees",
-      express.json({ limit: "8kb", type: "application/json" }),
+    const handleNoteError = (error, res) => {
+      if (error instanceof CaseAccessDenied) {
+        return res.status(404).json({ error: "DOSSIER_INDISPONIBLE" });
+      }
+      if (error instanceof DossierVersionConflict) {
+        return res.status(409).json({ error: "DOSSIER_MODIFIE_ENTRE_TEMPS" });
+      }
+      if (error instanceof SharedNoteHistoryUnavailable) {
+        return res.status(409).json({ error: "HISTORIQUE_NOTE_INDISPONIBLE" });
+      }
+      if (error instanceof InvalidSharedNote) {
+        return res.status(422).json({ error: "NOTE_INVALIDE" });
+      }
+      return res.status(503).json({ error: "SERVICE_INDISPONIBLE" });
+    };
+    const noteMutation = (keys, operation, status = 200) => [
+      // 4000 caractères peuvent dépasser 8 ko en JSON/UTF-8.
+      express.json({ limit: "32kb", type: "application/json" }),
       async (req, res) => {
         if (!validCsrf({
           secret: csrfSecret,
@@ -116,27 +135,41 @@ export function createApp({
           return res.status(403).json({ error: "CSRF_REFUSE" });
         }
         try {
-          const note = await createSharedNote({
-            db: privateDb,
-            cookieHeader: req.headers.cookie,
-            caseId: req.params.caseId,
-            expectedVersion: req.body?.expectedVersion,
-            text: req.body?.text,
+          const bodyKeys = Object.keys(req.body || {});
+          if (!req.body || Array.isArray(req.body) || bodyKeys.length !== keys.length
+            || !keys.every(key => Object.hasOwn(req.body, key))) throw new InvalidSharedNote();
+          const note = await operation({
+            ...Object.fromEntries(keys.map(key => [key, req.body[key]])),
+            db: privateDb, cookieHeader: req.headers.cookie,
+            caseId: req.params.caseId, noteId: req.params.noteId,
           });
-          return res.status(201).json(note);
+          return res.status(status).json(note);
         } catch (error) {
-          if (error instanceof CaseAccessDenied) {
-            return res.status(404).json({ error: "DOSSIER_INDISPONIBLE" });
-          }
-          if (error instanceof DossierVersionConflict) {
-            return res.status(409).json({ error: "DOSSIER_MODIFIE_ENTRE_TEMPS" });
-          }
-          if (error instanceof InvalidSharedNote) {
-            return res.status(422).json({ error: "NOTE_INVALIDE" });
-          }
-          return res.status(503).json({ error: "SERVICE_INDISPONIBLE" });
+          return handleNoteError(error, res);
         }
-      });
+      },
+    ];
+    const notesPath = "/api/dossiers/:caseId/notes-partagees";
+    app.post(notesPath, ...noteMutation(["expectedVersion", "text"], createSharedNote, 201));
+    app.patch(notesPath + "/:noteId",
+      ...noteMutation(["expectedVersion", "text", "reason"], correctSharedNote));
+    app.post(notesPath + "/:noteId/validation",
+      ...noteMutation(["expectedVersion"], validateSharedNote));
+    app.get(notesPath + "/:noteId/historique", async (req, res) => {
+      try {
+        if (Object.keys(req.query).some(key => key !== "beforeVersion")
+          || (req.query.beforeVersion !== undefined && (typeof req.query.beforeVersion !== "string"
+            || !/^[1-9][0-9]{0,9}$/.test(req.query.beforeVersion)))) throw new InvalidSharedNote();
+        const history = await readSharedNoteHistory({
+          db: privateDb, cookieHeader: req.headers.cookie,
+          caseId: req.params.caseId, noteId: req.params.noteId,
+          beforeVersion: req.query.beforeVersion === undefined ? undefined : Number(req.query.beforeVersion),
+        });
+        return res.status(200).json(history);
+      } catch (error) {
+        return handleNoteError(error, res);
+      }
+    });
   }
 
   // Tâches personnelles isolées : le serveur retrouve le propriétaire depuis

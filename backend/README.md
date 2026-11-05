@@ -1,5 +1,7 @@
 > **État actualisé — 23 octobre 2026 :** le début de cette notice retrace les toutes premières étapes et contient des mentions historiquement dépassées (« aucune session », « toutes les routes désactivées »). Le statut actuel est dans les sections **Sessions HTTP**, **SSO**, **Écriture HTTP**, **Tâches personnelles** et [audit sécurité](../docs/43_AUDIT_SECURITE_BACKEND_ET_CORRECTIFS.md). Les fonctionnalités sont toujours désactivées hors configuration de recette autorisée, et le serveur interdit la production.
 
+> **25 octobre 2026 :** la préparation des notes partagées comprend désormais correction motivée, validation après relecture et historique paginé, protégés par le même verrou de recette. Toute correction retire la validation ; chaque état reste conservé avec son auteur et sa date. Les brouillons et leur historique exigent `SHARED_WRITE`, sans élargir les droits de lecture de continuité. Voir [le contrat et la recette des notes versionnées](../docs/49_NOTES_PARTAGEES_VERSIONNEES.md). Aucun écran ni connecteur n'est activé.
+
 # Backend ARTAG — socle technique désactivé par défaut
 
 Ce dossier introduit **Express + PostgreSQL/Prisma** conformément à `STACK_RECOMMANDEE.md` et `docs/27_ARCHITECTURE_APPLICATIVE.md`.

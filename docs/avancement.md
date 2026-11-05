@@ -1,5 +1,15 @@
 # Avancement du projet — Outil ARTAG
 
+## 2026-10-25 — Corrections et validations versionnées des notes partagées
+
+- **Décidé :** compléter le cycle du brouillon partagé existant sans modifier les parcours validés ni activer la recette institutionnelle. Une correction exige un motif et retire la validation ; la relecture est validée séparément.
+- **Créé :** services et routes protégées de correction, validation et historique paginé ; tests de transitions, de refus d'accès, de concurrence et de rollback ; [contrat technique et limites](49_NOTES_PARTAGEES_VERSIONNEES.md).
+- **Modifié :** le service des notes réutilise les révisions existantes et vérifie la session dans sa transaction ; le client API prépare les trois opérations ; les conflits PostgreSQL sont retournés explicitement.
+- **Conservé :** versions précédentes, auteur, date, motif, audit sans contenu libre et séparation des notes réservées. Aucun changement de schéma, de dépendance, d'intitulé, d'interface ni de stockage local.
+- **Vérifications :** lint, build, contrôle de confidentialité et schéma Prisma conformes ; 83 tests frontend et 57 tests backend réussis localement, 10 tests PostgreSQL ignorés localement par leurs verrous. Sur le commit de code `09403b3`, la CI de la PR #42 a exécuté les **67 tests backend avec PostgreSQL, sans échec ni test ignoré** ; migrations, idempotence, dérive de schéma, restauration, frontend et CodeQL conformes. La CI conserve TAP et publie les assertions échouées dans les contrôles de PR.
+- **À poursuivre :** dossier métier complet, synthèses validées de continuité à lecture restreinte, migration progressive des écrans, conservation des informations et reprise autorisée des notes sans historique.
+- **Vigilances et dette :** l'historique incomplet bloque les corrections plutôt que d'inventer une provenance ; les droits de rédaction ne sont pas élargis. SSO, hébergement, recette métier et validations SSI/RGPD ARTAG restent des prérequis institutionnels. Aucune donnée réelle ni connexion externe.
+
 ## État général
 Projet en phase de structuration.
 Base métier largement cadrée.
