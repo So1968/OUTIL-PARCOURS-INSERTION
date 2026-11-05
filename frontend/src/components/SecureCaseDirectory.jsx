@@ -62,6 +62,8 @@ export function SecureCaseDirectory() {
         </p>}
         {hasUsableArtagReference(row.artagReference) && row.canManageReference && <p><Link to={`/dossiers/${row.id}/identite`}>Identité</Link></p>}
         {hasUsableArtagReference(row.artagReference) && row.canManageReference && <p><Link to={`/dossiers/${row.id}/socle-autonomie`}>Repères d’autonomie</Link></p>}
+        {hasUsableArtagReference(row.artagReference) && row.canManageReference && <p><Link to={`/dossiers/${row.id}/synthese-courte`}>Synthèse courte</Link></p>}
+        {hasUsableArtagReference(row.artagReference) && row.canManageReference && <p><Link to={`/dossiers/${row.id}/note-continuite`}>Note de continuité</Link></p>}
       </li>)}</ul>
       {data.nextCursor !== null && <button type="button" disabled={busy} onClick={() => load(true)}>Voir d’autres dossiers</button>}
       <SecureCaseCreationPanel onAccessLost={clearAccess} />
