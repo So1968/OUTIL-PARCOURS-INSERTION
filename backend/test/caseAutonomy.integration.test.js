@@ -45,11 +45,14 @@ test("PostgreSQL/HTTP : socle autonomie versionné, accès restreint et audit sa
     const csrfResponse = await fetch(base + "/auth/csrf", { headers: cookie(refSession.token) });
     assert.equal(csrfResponse.status, 200);
     const csrf = (await csrfResponse.json()).token;
+    const csrfTnsResponse = await fetch(base + "/auth/csrf", { headers: cookie(tnsSession.token) });
+    assert.equal(csrfTnsResponse.status, 200);
+    const csrfTns = (await csrfTnsResponse.json()).token;
     const read = (token = refSession.token, suffix = "") => fetch(base + path + suffix, { headers: cookie(token) });
     const write = (body, token = refSession.token, extraHeaders = {}) => fetch(base + path, {
       method: "PATCH", headers: {
         ...cookie(token), Origin: origin, "Content-Type": "application/json",
-        "X-CSRF-Token": csrf, ...extraHeaders,
+        "X-CSRF-Token": token === tnsSession.token ? csrfTns : csrf, ...extraHeaders,
       }, body: JSON.stringify(body),
     });
 
