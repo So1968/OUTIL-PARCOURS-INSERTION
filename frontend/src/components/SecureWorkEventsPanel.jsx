@@ -28,6 +28,16 @@ export function SecureWorkEventsPanel({ compact = false }) {
   const [minutes, setMinutes] = useState(15);
   const [state, setState] = useState("EFFECTUE");
 
+  const handleAccessLost = error => {
+    if (![401, 403, 404].includes(error?.status)) return false;
+    setReady(false);
+    setTasks([]);
+    setEvents([]);
+    setRetryInput(null);
+    setMessage("Accès aux activités indisponible. Reconnectez-vous avant de poursuivre.");
+    return true;
+  };
+
   useEffect(() => {
     let cancelled = false;
     Promise.all([loadSecureTasks(), loadSecureWorkEvents()]).then(([list, data]) => {
@@ -38,7 +48,7 @@ export function SecureWorkEventsPanel({ compact = false }) {
       setChosenDay(data.day);
       setReady(true);
     }).catch(error => {
-      if (!cancelled) setMessage(error.message);
+      if (!cancelled && !handleAccessLost(error)) setMessage(error.message);
     });
     return () => { cancelled = true; };
   }, []);
@@ -60,7 +70,7 @@ export function SecureWorkEventsPanel({ compact = false }) {
       setReady(true);
       setMessage("Charge rechargée depuis le serveur privé.");
     } catch (error) {
-      setMessage(error.message);
+      if (!handleAccessLost(error)) setMessage(error.message);
     } finally {
       setBusy(false);
     }
@@ -77,8 +87,10 @@ export function SecureWorkEventsPanel({ compact = false }) {
       const result = await loadSecureWorkEvents(day);
       setEvents(result.events);
     } catch (error) {
-      setRetryInput(input);
-      setMessage(error.message + " En cas de doute, réessayer utilise la même clé anti-doublon.");
+      if (!handleAccessLost(error)) {
+        setRetryInput(input);
+        setMessage(error.message + " En cas de doute, réessayer utilise la même clé anti-doublon.");
+      }
     } finally {
       setBusy(false);
     }
@@ -100,7 +112,7 @@ export function SecureWorkEventsPanel({ compact = false }) {
       setEvents(result.events);
       setMessage("Repère de charge actualisé.");
     } catch (error) {
-      setMessage(error.message);
+      if (!handleAccessLost(error)) setMessage(error.message);
     } finally {
       setBusy(false);
     }
