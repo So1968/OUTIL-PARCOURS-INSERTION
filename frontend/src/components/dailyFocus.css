@@ -1,0 +1,26 @@
+/* Repères de travail : contrastés, simples et accessibles au clavier/tactile. */
+.daily-board button { min-height:44px; }
+.daily-board button:disabled { cursor:not-allowed; opacity:.65; }
+.daily-board input[type="checkbox"] { min-width:22px; min-height:22px; }
+.daily-board .daily-priorities { border:2px solid #697561; border-radius:14px; padding:18px; background:#f7f7f2; color:#252525; }
+.daily-priorities-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+.daily-priorities-header h2 { margin:0; font-size:1.3rem; }
+.daily-focus-toggle { font-weight:700; }
+.daily-progress { font-weight:600; margin:12px 0; }
+.daily-priority-list { display:grid; list-style:none; gap:12px; padding:0; margin:12px 0; }
+.daily-priority-item { display:grid; gap:12px; padding:14px; background:#fff; border:1px solid #697561; border-radius:10px; }
+.daily-priority-title { display:flex; align-items:baseline; gap:10px; font-size:1.1rem; overflow-wrap:anywhere; }
+.daily-priority-rank { font-weight:800; }
+.daily-priority-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.daily-priority-complete { display:inline-flex; align-items:center; gap:8px; min-height:44px; padding:6px 12px; border:1px solid #697561; border-radius:9px; font-weight:700; cursor:pointer; }
+.daily-priority-actions button { font-weight:600; }
+.daily-priorities-note { margin-bottom:0; }
+.daily-feedback { border-left:5px solid #536449; padding:12px 14px; background:#f5f6f3; color:#222; font-weight:600; }
+.daily-undo { margin:8px 0 14px; }
+.daily-board .daily-priorities button:focus-visible, .daily-board .daily-priorities input:focus-visible { outline:3px solid #594f35; outline-offset:3px; }
+@media(max-width:620px) {
+  .daily-board { padding:14px; }
+  .daily-board .daily-priorities { padding:12px; }
+  .daily-priority-actions > button, .daily-priority-complete { flex:1 1 130px; }
+  .daily-priority-actions > button { min-height:48px; }
+}
