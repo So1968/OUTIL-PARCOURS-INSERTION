@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { secureDailyPriorities, secureTaskCounts } from "../lib/secureDailyPriorities";
 import "./secureDailyFocus.css";
 import {
@@ -21,17 +21,34 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
   const [ready, setReady] = useState(false);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState(() => secureTaskApiEnabled());
   const [retryTask, setRetryTask] = useState(null);
   const [startedId, setStartedId] = useState(null);
   const [lastUndo, setLastUndo] = useState(null);
-  const autoLoaded = useRef(false);
 
   useEffect(() => {
-    if (secureTaskApiEnabled() && !autoLoaded.current) {
-      autoLoaded.current = true;
-      void reload();
-    }
+    if (!secureTaskApiEnabled()) return;
+    let cancelled = false;
+    Promise.all([loadSecureTasks(), loadSecureReminders()]).then(([data, remindersData]) => {
+      if (cancelled) return;
+      setTasks(data);
+      setReminders(remindersData.reminders);
+      setProfessionalDay(remindersData.day);
+      setReady(true);
+      setMessage("Mes tâches et rappels sont chargés depuis le serveur.");
+    }).catch(error => {
+      if (cancelled) return;
+      // Aucun retour aux données locales de démonstration en cas d'erreur d'accès.
+      setReady(false);
+      setTasks([]);
+      setReminders([]);
+      setMessage([401, 403, 404].includes(error?.status)
+        ? "Accès professionnel indisponible. Reconnectez-vous avant de poursuivre."
+        : error.message);
+    }).finally(() => {
+      if (!cancelled) setBusy(false);
+    });
+    return () => { cancelled = true; };
   }, []);
 
   if (!secureTaskApiEnabled()) return null;
