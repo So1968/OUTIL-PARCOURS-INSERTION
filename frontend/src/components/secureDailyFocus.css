@@ -13,3 +13,9 @@
  .secure-daily-priorities { padding:12px; }
  .secure-daily-priorities__actions button { flex:1 1 125px; min-height:48px; }
 }
+
+.secure-task-suggestions summary { cursor:pointer; padding:12px 0; font-weight:700; }
+.secure-task-suggestions__buttons { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+.secure-task-suggestions__buttons button { min-height:44px; border-radius:9px; padding:8px 12px; }
+.secure-task-suggestions summary:focus-visible, .secure-task-suggestions button:focus-visible { outline:3px solid #594f35; outline-offset:3px; }
+@media(max-width:620px) { .secure-task-suggestions__buttons button { flex:1 1 140px; min-height:48px; } }
