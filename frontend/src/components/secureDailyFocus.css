@@ -1,0 +1,15 @@
+.secure-daily-priorities { background:#f7f7f2; color:#222; border:2px solid #697561; border-radius:14px; padding:16px; margin:14px 0; }
+.secure-daily-priorities__header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+.secure-daily-priorities__header h3 { margin:0; }
+.secure-daily-priorities__list { list-style:none; padding:0; margin:12px 0; display:grid; gap:10px; }
+.secure-daily-priorities__item { display:grid; gap:8px; background:#fff; border:1px solid #697561; border-radius:9px; padding:12px; }
+.secure-daily-priorities__item strong { font-size:1.07rem; overflow-wrap:anywhere; }
+.secure-daily-priorities__actions { display:flex; flex-wrap:wrap; gap:8px; }
+.secure-daily-priorities button { min-height:44px; padding:8px 12px; font:inherit; border-radius:9px; cursor:pointer; }
+.secure-daily-priorities button:disabled { opacity:.65; cursor:not-allowed; }
+.secure-daily-priorities button:focus-visible { outline:3px solid #594f35; outline-offset:3px; }
+.secure-daily-feedback { border-left:5px solid #536449; padding:12px; font-weight:600; background:#f5f6f3; color:#222; }
+@media(max-width:620px) {
+ .secure-daily-priorities { padding:12px; }
+ .secure-daily-priorities__actions button { flex:1 1 125px; min-height:48px; }
+}

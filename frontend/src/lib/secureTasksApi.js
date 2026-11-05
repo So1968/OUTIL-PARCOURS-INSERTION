@@ -7,9 +7,10 @@ export function secureTaskApiEnabled() {
 }
 
 export class SecureTasksUnavailable extends Error {
-  constructor(message = "Tâches sécurisées non disponibles.") {
+  constructor(message = "Tâches sécurisées non disponibles.", status = null) {
     super(message);
     this.name = "SecureTasksUnavailable";
+    this.status = status;
   }
 }
 
@@ -29,7 +30,7 @@ async function doRequest(path, options = {}) {
       422: "Vérifie les informations de la tâche.",
       503: "Le serveur professionnel n'est pas activé.",
     };
-    throw new SecureTasksUnavailable(labels[res.status] || "Connexion sécurisée indisponible.");
+    throw new SecureTasksUnavailable(labels[res.status] || "Connexion sécurisée indisponible.", res.status);
   }
   return res.json();
 }
