@@ -128,6 +128,52 @@ describe("bureau de charge et saisie express (démonstration)", () => {
     expect(screen.getAllByRole("checkbox", { name:"Terminer : Appel fictif" })).toHaveLength(1);
   });
 
+  it("place les priorités en premier, avec les quatre actions accessibles et un report annulable", () => {
+    localStorage.setItem("artag-taches-entretien-demo-v1", JSON.stringify({
+      "__mes_taches": [
+        { id:"one", title:"Préparer une réponse fictive", status:"À faire", dueDate:workDay(), priority:"haute" },
+        { id:"two", title:"Rappel fictif", status:"À faire", dueDate:workDay() },
+      ],
+    }));
+    const { container } = renderBoard();
+    const titles = [...container.querySelectorAll("h2")].map(node => node.textContent);
+    expect(titles[0]).toBe("Mes 3 priorités du jour");
+    expect(titles.indexOf("Saisie express — 1 clic pour un événement courant"))
+      .toBeLessThan(titles.indexOf("Charge calculée"));
+    expect(screen.getByRole("button", { name:"Reporter la priorité : Préparer une réponse fictive" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name:"Commencer cette tâche" })).toBeInTheDocument();
+    expect(screen.getAllByRole("checkbox", { name:/Terminer la priorité/ })).toHaveLength(2);
+    fireEvent.click(screen.getByRole("button", { name:"Reporter la priorité : Préparer une réponse fictive" }));
+    const stored = JSON.parse(localStorage.getItem("artag-taches-entretien-demo-v1"));
+    expect(stored.__mes_taches[0].dueDate).not.toBe(workDay());
+    expect(screen.getByRole("status")).toHaveTextContent("Tâche reportée");
+    fireEvent.click(screen.getByRole("button", { name:"Annuler la dernière modification de tâche" }));
+    const restored = JSON.parse(localStorage.getItem("artag-taches-entretien-demo-v1"));
+    expect(restored.__mes_taches[0].dueDate).toBe(workDay());
+    expect(restored.__mes_taches[0].priority).toBe("haute");
+  });
+
+  it("permet d'annuler une fin de tâche et garde les trois accès essentiels en Focus", () => {
+    localStorage.setItem("artag-taches-entretien-demo-v1", JSON.stringify({
+      "__mes_taches": [{ id:"one", title:"Action fictive", status:"À faire", dueDate:workDay() }],
+    }));
+    renderBoard();
+    fireEvent.click(screen.getByRole("checkbox", { name:"Terminer la priorité : Action fictive" }));
+    expect(screen.getByRole("status")).toHaveTextContent("Tâche terminée");
+    expect(screen.queryByRole("checkbox", { name:"Terminer la priorité : Action fictive" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name:"Annuler la dernière modification de tâche" }));
+    expect(screen.getByRole("checkbox", { name:"Terminer la priorité : Action fictive" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name:"Activer le mode Focus" }));
+    expect(screen.getByRole("heading", { name:"Mes 3 priorités du jour" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name:"À faire maintenant (1)" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name:/Saisie express/ })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name:"Noter une tâche en quelques secondes" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("Temps mobilisable ce jour (minutes)")).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name:"Charge calculée" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name:"Mes actions" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name:"Quitter le mode Focus" })).toHaveAttribute("aria-pressed", "true");
+  });
+
   it("signale les tâches sans temps estimé plutôt que de fabriquer une durée", () => {
     localStorage.setItem("artag-taches-entretien-demo-v1", JSON.stringify({
       "dossier-demo": [{ id:"t1", title:"Relance fictive", dueDate:workDay(), status:"À faire" }],
