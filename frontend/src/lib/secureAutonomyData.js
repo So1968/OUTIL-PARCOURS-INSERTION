@@ -26,7 +26,10 @@ export function checkedAutonomyAnswers(value) {
       || Object.keys(answer).length !== 3
       || !["reponse", "note", "valide"].every(key => Object.hasOwn(answer, key))
       || !AUTONOMY_CHOICES.includes(answer.reponse) || !validText(answer.note)
-      || Array.from(answer.note).length > 1500 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(answer.note)
+      || Array.from(answer.note).length > 1500 || Array.from(answer.note).some(char => {
+        const code = char.codePointAt(0);
+        return (code < 32 && code !== 9 && code !== 10 && code !== 13) || code === 127;
+      })
       || typeof answer.valide !== "boolean") return null;
     result[id] = { reponse: answer.reponse, note: answer.note, valide: answer.valide };
   }
