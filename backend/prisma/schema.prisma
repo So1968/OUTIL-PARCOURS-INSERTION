@@ -35,6 +35,12 @@ enum ExternalSystem {
   ONEDRIVE
 }
 
+// Documents métier distincts, sans automatisation de transfert vers Insertis.
+enum CaseBriefKind {
+  SYNTHESE_COURTE
+  NOTE_CONTINUITE
+}
+
 enum WorkTaskStatus {
   A_FAIRE
   EN_COURS
@@ -79,6 +85,7 @@ model UserAccount {
   caseCreationRequests CaseCreationRequest[]
   identityRevisions CaseIdentityRevision[]
   autonomyRevisions CaseAutonomyRevision[]
+  briefRevisions CaseBriefRevision[]
 }
 
 model CaseFile {
@@ -103,6 +110,8 @@ model CaseFile {
   identityRevisions CaseIdentityRevision[]
   autonomy CaseAutonomy?
   autonomyRevisions CaseAutonomyRevision[]
+  briefs CaseBrief[]
+  briefRevisions CaseBriefRevision[]
 }
 
 // État minimal du même dossier ; aucune correspondance automatique de personne.
@@ -159,6 +168,34 @@ model CaseAutonomyRevision {
   actor             UserAccount @relation(fields: [actorId], references: [id], onDelete: Restrict)
 
   @@unique([caseId, dossierVersion])
+}
+
+// Vue structurée et courte du dossier (aucune note réservée).
+// Chaque écriture conserve un historique immuable au niveau des services métier.
+model CaseBrief {
+  caseId         String
+  kind           CaseBriefKind
+  dossierVersion Int
+  content        Json          @db.JsonB
+  caseFile       CaseFile      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@id([caseId, kind])
+}
+
+model CaseBriefRevision {
+  id              String        @id @default(uuid())
+  caseId          String
+  kind            CaseBriefKind
+  dossierVersion  Int
+  previousContent Json          @db.JsonB
+  content         Json          @db.JsonB
+  actorId         String
+  reason          String        @db.VarChar(200)
+  createdAt       DateTime      @default(now())
+  caseFile        CaseFile      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  actor           UserAccount   @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@unique([caseId, kind, dossierVersion])
 }
 
 // Demande de création immuable : la même clé ne crée jamais un autre dossier.

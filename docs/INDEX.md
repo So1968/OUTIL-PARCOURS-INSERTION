@@ -33,6 +33,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 27. [Bloc identité minimal versionné](55_IDENTITE_MINIMALE_VERSIONNEE.md) — Nom, Prénom, Numéro Insertis, Âge, valeurs inconnues et modifications historisées sous titularité serveur.
 28. [Socle autonomie versionné](56_SOCLE_AUTONOMIE_VERSIONNE.md) — huit questions inchangées, état et versions PostgreSQL, accès réservé à la référente et recette.
 29. [Écran serveur des repères d'autonomie](57_ECRAN_SOCLE_AUTONOMIE.md) — huit questions, saisie et historique contrôlés, reprise après conflit.
+30. [Synthèse courte et note de continuité versionnées](58_BLOCS_COURTS_VERSIONNES.md) — deux contenus distincts, corrections motivées, droits limités et historique PostgreSQL.
 
 ## Grandes familles documentaires
 
