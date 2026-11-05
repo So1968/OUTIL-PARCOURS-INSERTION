@@ -41,7 +41,7 @@ describe("bureau professionnel sans stockage local", () => {
     render(<SecureTasksPanel focus={false} onToggleFocus={vi.fn()} />);
     expect(await screen.findByRole("heading",{name:"Mes 3 priorités du jour"})).toBeInTheDocument();
     expect(screen.queryByText("NE_PAS_AFFICHER")).not.toBeInTheDocument();
-    expect(screen.getByText("À reprendre :")).toBeInTheDocument();
+    expect(screen.getByText(/À reprendre :/)).toBeInTheDocument();
     expect(screen.getAllByRole("button",{name:"Terminer"})).toHaveLength(3);
     expect(screen.getAllByRole("button",{name:"Reporter le rappel"})).toHaveLength(3);
     expect(readSpy).not.toHaveBeenCalled();
