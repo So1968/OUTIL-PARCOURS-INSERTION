@@ -21,6 +21,9 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
   const [professionalDay, setProfessionalDay] = useState("");
   const [ready, setReady] = useState(false);
   const [title, setTitle] = useState("");
+  const [newDueDate, setNewDueDate] = useState("");
+  const [newReminder, setNewReminder] = useState(1);
+  const [newMinutes, setNewMinutes] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(() => secureTaskApiEnabled());
   const [retryTask, setRetryTask] = useState(null);
@@ -91,10 +94,18 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
     setBusy(true);
     try {
       // Même clé après une réponse réseau incertaine : pas de doublon serveur.
-      await createSecureTask(payload.title, payload.requestId);
+      // Même identifiant ET mêmes paramètres en cas de renvoi réseau incertain.
+      if (payload.options && Object.keys(payload.options).length) {
+        await createSecureTask(payload.title, payload.requestId, payload.options);
+      } else {
+        await createSecureTask(payload.title, payload.requestId);
+      }
       setRetryTask(null);
       setTitle("");
-      setMessage("Tâche sauvegardée sur le serveur professionnel.");
+      setNewDueDate("");
+      setNewReminder(1);
+      setNewMinutes("");
+      setMessage("Tâche sauvegardée sur le serveur professionnel, avec les repères de suivi confirmés.");
       try {
         const [data, reminderData] = await Promise.all([loadSecureTasks(), loadSecureReminders()]);
         setTasks(data);
@@ -117,7 +128,13 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
   const add = event => {
     event.preventDefault();
     if (!title.trim() || retryTask || busy) return;
-    void saveTask({ title: title.trim(), requestId: crypto.randomUUID() });
+    const options = {};
+    if (newDueDate) {
+      options.dueDate = newDueDate;
+      options.reminderDaysBefore = newReminder;
+    }
+    if (newMinutes !== "") options.estimatedMinutes = Number(newMinutes);
+    void saveTask({ title: title.trim(), requestId: crypto.randomUUID(), options });
   };
 
   const edit = async (task, changes, isUndo = false) => {
@@ -220,6 +237,33 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
             <input value={title} maxLength={200} onChange={e => setTitle(e.target.value)}
               placeholder="Action brève à réaliser" required />
           </label>
+          <details className="secure-task-details">
+            <summary>Ajouter une échéance, un rappel ou une durée (facultatif)</summary>
+            <div className="secure-task-details__fields">
+              <label>Échéance de la tâche
+                <input type="date" value={newDueDate} disabled={busy || !!retryTask}
+                  onChange={event => setNewDueDate(event.target.value)} />
+              </label>
+              <label>Rappel à afficher dans mon bureau
+                <select value={newReminder} disabled={busy || !!retryTask || !newDueDate}
+                  onChange={event => setNewReminder(Number(event.target.value))}>
+                  <option value={0}>Le jour même</option>
+                  <option value={1}>1 jour avant</option>
+                  <option value={2}>2 jours avant</option>
+                  <option value={7}>7 jours avant</option>
+                </select>
+              </label>
+              <label>Durée estimée
+                <select value={newMinutes} disabled={busy || !!retryTask}
+                  onChange={event => setNewMinutes(event.target.value)}>
+                  <option value="">Non estimée</option>
+                  {[5, 10, 15, 20, 30, 45, 60, 90, 120, 180].map(value =>
+                    <option key={value} value={value}>{value} min</option>)}
+                </select>
+              </label>
+            </div>
+            <p>Aucune date n’est ajoutée par défaut. Ces éléments seront enregistrés avec la tâche, en une seule fois.</p>
+          </details>
           <button type="submit" disabled={busy || !!retryTask || !title.trim()}>Créer sur le serveur</button>
         </form>
         {retryTask && <div role="alert">
