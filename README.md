@@ -54,6 +54,8 @@ L'[écran Identité / références](docs/53_ECRAN_REFERENCE_ARTAG.md) relie main
 
 La [création contrôlée depuis la file active](docs/54_CREATION_DOSSIER_CONTROLEE.md) prépare un dossier portant un numéro ARTAG déjà attribué, pour la référente connectée, avec première révision et audit. Une vérification après réponse perdue conserve la même demande ; aucun numéro ni rapprochement de personne n'est généré automatiquement.
 
+Le [bloc identité minimal](docs/55_IDENTITE_MINIMALE_VERSIONNEE.md) prépare Nom, Prénom, Numéro Insertis et Âge pour la référente titulaire du dossier identifié, avec motif et historique des valeurs antérieures. Les champs inconnus restent non renseignés ; aucun rapprochement ni connecteur n'est activé.
+
 ## Démarrage local
 
 Depuis la racine du dépôt :

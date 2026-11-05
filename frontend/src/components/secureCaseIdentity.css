@@ -1,0 +1,7 @@
+.secure-case-identity h2, .secure-case-identity p, .secure-case-identity dd { overflow-wrap: anywhere; }
+.secure-case-identity dl { display: grid; gap: 12px; }
+.secure-case-identity dl > div { display: grid; grid-template-columns: minmax(110px, 1fr) minmax(0, 3fr); gap: 12px; }
+.secure-case-identity dt { font-weight: 700; }
+.secure-case-identity dd { margin: 0; white-space: pre-wrap; }
+.secure-case-identity input { min-width: 0; }
+@media (max-width: 480px) { .secure-case-identity dl > div { grid-template-columns: 1fr; gap: 4px; } }

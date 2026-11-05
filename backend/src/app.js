@@ -1,5 +1,6 @@
 import express from "express";
 import { createCase, InvalidCaseCreation, CaseCreationConflict } from "./caseCreationService.js";
+import { readCaseIdentity, updateCaseIdentity, InvalidCaseIdentity, CaseIdentityHistoryUnavailable } from "./caseIdentityService.js";
 import helmet from "helmet";
 import { listWritableCases, InvalidCaseDirectoryQuery, CaseDirectoryChanged } from "./caseDirectoryService.js";
 import {
@@ -112,6 +113,32 @@ export function createApp({
   }
 
   if (canWrite) {
+    const identityError = (error, res) => {
+      if (error instanceof CaseAccessDenied) return res.status(404).json({ error: "DOSSIER_INDISPONIBLE" });
+      if (error instanceof InvalidCaseIdentity) return res.status(422).json({ error: "IDENTITE_INVALIDE" });
+      if (error instanceof DossierVersionConflict) return res.status(409).json({ error: "DOSSIER_MODIFIE_ENTRE_TEMPS" });
+      if (error instanceof CaseIdentityHistoryUnavailable) return res.status(409).json({ error: "HISTORIQUE_IDENTITE_INDISPONIBLE" });
+      return res.status(503).json({ error: "SERVICE_INDISPONIBLE" });
+    };
+    const identityPath = "/api/dossiers/:caseId/identite";
+    app.get(identityPath, async (req, res) => {
+      try {
+        if (Object.keys(req.query).some(key => key !== "beforeVersion")
+          || (req.query.beforeVersion !== undefined && (typeof req.query.beforeVersion !== "string"
+            || !/^[1-9][0-9]{0,9}$/.test(req.query.beforeVersion)))) throw new InvalidCaseIdentity();
+        return res.status(200).json(await readCaseIdentity({ db: privateDb, cookieHeader: req.headers.cookie, caseId: req.params.caseId,
+          beforeVersion: req.query.beforeVersion === undefined ? undefined : Number(req.query.beforeVersion) }));
+      } catch (error) { return identityError(error, res); }
+    });
+    app.patch(identityPath, express.json({ limit: "16kb", type: "application/json", strict: false }), async (req, res) => {
+      if (!validCsrf({ secret: csrfSecret, cookieHeader: req.headers.cookie,
+        csrfHeader: req.get("X-CSRF-Token"), origin: req.get("Origin"), allowedOrigin: oidc.origin })) return res.status(403).json({ error: "CSRF_REFUSE" });
+      try {
+        if (Object.keys(req.query).length) throw new InvalidCaseIdentity();
+        return res.status(200).json(await updateCaseIdentity({ db: privateDb, cookieHeader: req.headers.cookie,
+          caseId: req.params.caseId, input: req.body }));
+      } catch (error) { return identityError(error, res); }
+    });
     app.post("/api/dossiers", express.json({ limit: "2kb", type: "application/json", strict: false }), async (req, res) => {
       if (!validCsrf({ secret: csrfSecret, cookieHeader: req.headers.cookie,
         csrfHeader: req.get("X-CSRF-Token"), origin: req.get("Origin"), allowedOrigin: oidc.origin })) {

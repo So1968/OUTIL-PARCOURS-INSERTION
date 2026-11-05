@@ -78,6 +78,7 @@ export function SecureCaseCreationPanel({ onAccessLost }) {
       <p>La référence actuelle du dossier est affichée. Son historique conserve les éventuelles corrections.</p>
       <p><Link to={`/dossiers/${result.caseId}/notes-partagees`}>Ouvrir les notes du dossier</Link></p>
       <p><Link to={`/dossiers/${result.caseId}/reference-artag`}>Voir le numéro et son historique</Link></p>
+      <p><Link to={`/dossiers/${result.caseId}/identite`}>Compléter l’identité du dossier</Link></p>
       <button type="button" disabled={busy} onClick={() => { reset(); setOpen(true); setMessage(""); }}>Préparer un autre dossier</button>
     </section>}
   </section>;

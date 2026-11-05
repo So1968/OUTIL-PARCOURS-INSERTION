@@ -32,6 +32,7 @@ test("les routes métier ne sont jamais accessibles dans ce socle", async () => 
       ["GET", "/api/mes-dossiers"],
       ["GET", "/api/dossiers/fictif/reference-artag"],
       ["PATCH", "/api/dossiers/fictif/reference-artag"],
+      ["GET", "/api/dossiers/fictif/identite"], ["PATCH", "/api/dossiers/fictif/identite"],
       ["PATCH", "/api/dossiers/fictif/notes-partagees/fictif"],
       ["POST", "/api/dossiers/fictif/notes-partagees/fictif/validation"],
       ["GET", "/api/dossiers/fictif/notes-partagees/fictif/historique"],
@@ -64,7 +65,8 @@ test("les références ARTAG restent fermées si un seul prérequis de recette m
     await once(server, "listening");
     try {
       for (const [method, path] of [["GET", "/api/dossiers/fictif/reference-artag"],
-        ["PATCH", "/api/dossiers/fictif/reference-artag"], ["POST", "/api/dossiers"]]) {
+        ["PATCH", "/api/dossiers/fictif/reference-artag"], ["POST", "/api/dossiers"],
+        ["GET", "/api/dossiers/fictif/identite"], ["PATCH", "/api/dossiers/fictif/identite"]]) {
         const response = await fetch(`http://127.0.0.1:${server.address().port}${path}`, { method });
         assert.equal(response.status, 503);
         assert.deepEqual(await response.json(), { error: "METIER_NON_ACTIVE" });

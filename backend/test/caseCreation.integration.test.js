@@ -192,7 +192,20 @@ test("PostgreSQL/HTTP : toute panne de demande, révision ou audit annule la cr�
 test("PostgreSQL/HTTP : une clé connue ne réouvre pas une archive, une réaffectation ou une session révoquée", integration, async () => {
   await withFixture(async ({ db, users, reference, post, headers }) => {
     const body = { requestId: randomUUID(), artagReference: reference };
-    const first = await (await post({ body })).json();
+    // Cette recette part d'une clé réellement connue. La création et ses conflits
+    // sont testés plus haut ; ne pas confondre une réponse 409 avec un dossier créé.
+    const first = { caseId: randomUUID() };
+    await db.$transaction([
+      db.caseFile.create({ data: { id: first.caseId, referentId: users[0], artagReference: reference, version: 1 } }),
+      db.caseCreationRequest.create({ data: { actorId: users[0], requestId: body.requestId, caseId: first.caseId,
+        referenceDigest: createHash("sha256").update(reference).digest("hex") } }),
+      db.caseReferenceRevision.create({ data: { caseId: first.caseId, dossierVersion: 1, previousReference: null,
+        artagReference: reference, actorId: users[0], reason: "Création du dossier" } }),
+      db.auditEvent.create({ data: { caseId: first.caseId, actorId: users[0], eventType: "CASE_CREATED",
+        purpose: "Création d'un dossier identifié par sa référente titulaire" } }),
+    ]);
+    const known = await post({ body });
+    assert.equal(known.status, 200); assert.equal((await known.json()).caseId, first.caseId);
     assert.equal((await post({ body: { ...body, artagReference: reference + "-AUTRE" } })).status, 409);
     await db.caseFile.update({ where: { id: first.caseId }, data: { archivedAt: new Date() } });
     assert.equal((await post({ body })).status, 404);

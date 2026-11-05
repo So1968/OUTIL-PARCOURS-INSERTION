@@ -4,6 +4,8 @@
 
 # Backend ARTAG — socle technique désactivé par défaut
 
+> **Bloc identité — 26 octobre 2026 :** `GET/PATCH /api/dossiers/:caseId/identite` prépare les quatre champs prévus, seulement pour la référente titulaire d'un dossier identifié non archivé. État, révision avant/après, compteur global et audit sont transactionnels. Aucun champ nominal n'est ajouté aux API de file, notes ou référence ; aucun rapprochement ni connecteur. Le même verrou de recette SSO/HTTPS/CSRF reste requis et fermé par défaut. Voir [le contrat du bloc identité](../docs/55_IDENTITE_MINIMALE_VERSIONNEE.md).
+
 > **26 octobre 2026 :** `POST /api/dossiers` prépare la création d'un dossier avec numéro ARTAG déjà attribué, uniquement pour la référente connectée. Le même verrou de recette, la session et le CSRF sont requis. Demande personnelle immuable, référence, première révision et audit sont transactionnels ; rejouer une demande connue revérifie les droits et retrouve le dossier courant sans doublon. Voir [le contrat de création et ses limites](../docs/54_CREATION_DOSSIER_CONTROLEE.md). Le module reste fermé par défaut, sans création de comptes ni déploiement institutionnel.
 
 Ce dossier introduit **Express + PostgreSQL/Prisma** conformément à `STACK_RECOMMANDEE.md` et `docs/27_ARCHITECTURE_APPLICATIVE.md`.
