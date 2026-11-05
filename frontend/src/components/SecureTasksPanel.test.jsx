@@ -97,6 +97,50 @@ describe("bureau professionnel sans stockage local", () => {
     ));
   });
 
+  it("enregistre titre, date, rappel et durée en une seule création", async () => {
+    api.createSecureTask.mockResolvedValue({id:"nouvelle-tache-fictive"});
+    render(<SecureTasksPanel focus={false} onToggleFocus={vi.fn()} />);
+    await screen.findByRole("heading",{name:"Mes 3 priorités du jour"});
+    fireEvent.click(screen.getByText("Ajouter une échéance, un rappel ou une durée (facultatif)"));
+    fireEvent.change(screen.getByPlaceholderText("Action brève à réaliser"),
+      {target:{value:"Préparer une relance fictive"}});
+    fireEvent.change(screen.getByLabelText("Échéance de la tâche"),{
+      target:{value:"2026-11-13"},
+    });
+    fireEvent.change(screen.getByLabelText("Rappel à afficher dans mon bureau"),{
+      target:{value:"2"},
+    });
+    fireEvent.change(screen.getByLabelText("Durée estimée",{
+      selector:"select",
+    }),{target:{value:"20"}});
+    fireEvent.click(screen.getByRole("button",{name:"Créer sur le serveur"}));
+    await waitFor(() => expect(api.createSecureTask).toHaveBeenCalledWith(
+      "Préparer une relance fictive", expect.any(String),
+      {dueDate:"2026-11-13",reminderDaysBefore:2,estimatedMinutes:20},
+    ));
+    expect(api.createSecureTask).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(screen.getByLabelText("Échéance de la tâche")).toHaveValue(""));
+  });
+
+  it("sur une réponse incertaine réutilise identifiant et paramètres sans deuxième création indépendante", async () => {
+    api.createSecureTask.mockRejectedValueOnce(new Error("Réseau interrompu"))
+      .mockResolvedValueOnce({id:"nouvelle-tache-fictive"});
+    render(<SecureTasksPanel focus={false} onToggleFocus={vi.fn()} />);
+    await screen.findByRole("heading",{name:"Mes 3 priorités du jour"});
+    fireEvent.click(screen.getByText("Ajouter une échéance, un rappel ou une durée (facultatif)"));
+    fireEvent.change(screen.getByPlaceholderText("Action brève à réaliser"),{
+      target:{value:"Contacter un partenaire"},
+    });
+    fireEvent.change(screen.getByLabelText("Échéance de la tâche"),{
+      target:{value:"2026-11-13"},
+    });
+    fireEvent.click(screen.getByRole("button",{name:"Créer sur le serveur"}));
+    const retry=await screen.findByRole("button",{name:"Réessayer sans doublon"});
+    fireEvent.click(retry);
+    await waitFor(() => expect(api.createSecureTask).toHaveBeenCalledTimes(2));
+    expect(api.createSecureTask.mock.calls[0]).toEqual(api.createSecureTask.mock.calls[1]);
+  });
+
   it("en Focus masque les réglages longs, mais garde rappels et création", async () => {
     render(<SecureTasksPanel focus={true} onToggleFocus={vi.fn()} />);
     await screen.findByRole("heading",{name:"Mes 3 priorités du jour"});
