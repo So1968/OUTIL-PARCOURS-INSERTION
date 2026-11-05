@@ -26,6 +26,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 20. [Migrations Prisma versionnées](48_MIGRATIONS_PRISMA_VERSIONNEES.md) — migration initiale, registre, contrôle de dérive et interdiction de reprise aveugle des bases existantes.
 21. [Notes partagées versionnées](49_NOTES_PARTAGEES_VERSIONNEES.md) — correction motivée, validation distincte, historique paginé et refus des conflits d'écriture.
 22. [Écran des notes partagées](50_ECRAN_NOTES_PARTAGEES.md) — interface API désactivée par défaut, reprise après conflit et isolation des dossiers.
+23. [File active serveur](51_FILE_ACTIVE_SERVEUR.md) — dossiers accessibles en rédaction, identification ARTAG et entrée vers les notes.
 
 ## Grandes familles documentaires
 

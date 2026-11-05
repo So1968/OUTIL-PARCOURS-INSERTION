@@ -46,6 +46,8 @@ Le frontend existant reste en mode prototype et n'est pas relié à cette API. N
 
 Un [écran de notes partagées pour la recette privée](docs/50_ECRAN_NOTES_PARTAGEES.md) prépare le chargement, la correction, la validation et l'historique via l'API. Il est désactivé par défaut, exige HTTPS et ne reprend aucune donnée locale du prototype.
 
+La [file active serveur du même module](docs/51_FILE_ACTIVE_SERVEUR.md) permet d'ouvrir les notes depuis les seuls dossiers autorisés en rédaction, avec leur numéro ARTAG. Les dossiers sans numéro sont conservés et signalés pour identification, sans référence générée automatiquement.
+
 ## Démarrage local
 
 Depuis la racine du dépôt :

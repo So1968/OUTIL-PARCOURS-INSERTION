@@ -79,6 +79,7 @@ model UserAccount {
 
 model CaseFile {
   id            String            @id @default(uuid())
+  artagReference String?           @unique @db.VarChar(80)
   referentId    String?
   referent      UserAccount?      @relation("ReferentCases", fields: [referentId], references: [id], onDelete: SetNull)
   version       Int               @default(0)

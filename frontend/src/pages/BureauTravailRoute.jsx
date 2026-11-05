@@ -15,9 +15,10 @@ export function BureauTravailRoute() {
         <h1>Mon bureau professionnel protégé</h1>
         <p>Les tâches et événements de démonstration ne sont ni affichés ni importés automatiquement.</p>
         {secureTaskApiEnabled() && <><SecureWorkEventsPanel /><SecureTasksPanel /></>}
-        {secureNotesApiEnabled() && <p>Les notes partagées s’ouvrent depuis le dossier concerné, selon vos habilitations.</p>}
+        {secureNotesApiEnabled() && <p><Link to="/dossiers">Ouvrir ma file active</Link></p>}
       </main>
     );
   }
   return <BureauQuotidienPage />;
 }
+import { Link } from "react-router-dom";

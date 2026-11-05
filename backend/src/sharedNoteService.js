@@ -62,7 +62,7 @@ async function authorizedWriter(tx, cookieHeader, caseId, now) {
   const dossier = await tx.caseFile.findUnique({
     where: { id: caseId },
     select: {
-      id: true, referentId: true, version: true, archivedAt: true,
+      id: true, referentId: true, version: true, archivedAt: true, artagReference: true,
       assignments: {
         where: { active: true },
         select: { userId: true, capability: true, active: true },
@@ -278,7 +278,8 @@ export async function readSharedNotes({
         purpose: "Consultation des notes partagées du dossier" },
     });
     return Object.freeze({
-      dossierVersion: dossier.version, notes: notes.slice(0, NOTES_PAGE_SIZE),
+      dossierVersion: dossier.version, artagReference: dossier.artagReference,
+      notes: notes.slice(0, NOTES_PAGE_SIZE),
       nextOffset: notes.length > NOTES_PAGE_SIZE ? offset + NOTES_PAGE_SIZE : null,
     });
   });

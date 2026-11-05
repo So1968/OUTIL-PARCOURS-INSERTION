@@ -1,5 +1,6 @@
 import express from "express";
 import helmet from "helmet";
+import { listWritableCases, InvalidCaseDirectoryQuery, CaseDirectoryChanged } from "./caseDirectoryService.js";
 import { readCaseOverview, CaseAccessDenied, SecurityProviderUnavailable } from "./caseAccessService.js";
 import { resolveSessionUserId } from "./sessions.js";
 import { createAuthRouter } from "./authRouter.js";
@@ -106,6 +107,19 @@ export function createApp({
   }
 
   if (canWrite) {
+    app.get("/api/mes-dossiers", async (req, res) => {
+      try {
+        if (Object.keys(req.query).some(key => key !== "before")) throw new InvalidCaseDirectoryQuery();
+        return res.status(200).json(await listWritableCases({
+          db: privateDb, cookieHeader: req.headers.cookie, before: req.query.before,
+        }));
+      } catch (error) {
+        if (error instanceof CaseAccessDenied) return res.status(404).json({ error: "DOSSIER_INDISPONIBLE" });
+        if (error instanceof InvalidCaseDirectoryQuery) return res.status(422).json({ error: "REQUETE_DOSSIERS_INVALIDE" });
+        if (error instanceof CaseDirectoryChanged) return res.status(409).json({ error: "FILE_MODIFIEE_ENTRE_TEMPS" });
+        return res.status(503).json({ error: "SERVICE_INDISPONIBLE" });
+      }
+    });
     const handleNoteError = (error, res) => {
       if (error instanceof CaseAccessDenied) {
         return res.status(404).json({ error: "DOSSIER_INDISPONIBLE" });
