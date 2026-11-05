@@ -90,6 +90,11 @@ export async function corrigerReferenceArtagSecurisee({ caseId, artagReference, 
   return mutateDossier(dossierPath(caseId) + "/reference-artag", "PATCH", { expectedVersion, artagReference, reason });
 }
 
+export async function creerDossierSecurise({ requestId, artagReference }) {
+  if (typeof requestId !== "string" || !UUID.test(requestId)) throw new ApiAccessError(422, "CREATION_DOSSIER_INVALIDE");
+  return mutateDossier("/api/dossiers", "POST", { requestId, artagReference });
+}
+
 export async function lireHistoriqueNotePartageeSecurise({ caseId, noteId, beforeVersion }) {
   const path = notePath(caseId, noteId);
   if (beforeVersion !== undefined && (!Number.isInteger(beforeVersion)

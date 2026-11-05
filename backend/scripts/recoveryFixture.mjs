@@ -31,6 +31,7 @@ const taskIds = [
 const eventRequestId = "00000000-0000-4000-8000-000000000050";
 const caseId = "00000000-0000-4000-8000-000000000051";
 const referenceActorId = "00000000-0000-4000-8000-000000000052";
+const creationRequestId = "00000000-0000-4000-8000-000000000053";
 
 async function seed(db, env) {
   if (ensureEphemeralRecoveryTarget(env) !== "artag_ci_demo") {
@@ -71,7 +72,15 @@ async function seed(db, env) {
   } });
   await db.caseReferenceRevision.create({ data: {
     caseId, dossierVersion: 1, previousReference: null, artagReference: "ARTAG-RECETTE-FICTIVE",
-    actorId: referenceActorId, reason: "Attribution de recette strictement fictive",
+    actorId: referenceActorId, reason: "Création du dossier",
+  } });
+  await db.caseCreationRequest.create({ data: {
+    actorId: referenceActorId, requestId: creationRequestId, caseId,
+    referenceDigest: createHash("sha256").update("ARTAG-RECETTE-FICTIVE").digest("hex"),
+  } });
+  await db.auditEvent.create({ data: {
+    caseId, actorId: referenceActorId, eventType: "CASE_CREATED",
+    purpose: "Création d'un dossier identifié par sa référente titulaire",
   } });
   await db.auditEvent.create({
     data: { actorId: userId, eventType: "RECOVERY_FIXTURE", purpose: "Recette fictive de restauration" },
@@ -79,7 +88,7 @@ async function seed(db, env) {
 }
 
 async function snapshot(db) {
-  const [user, tasks, events, auditCount, caseFile, referenceRevisions, referenceActor] = await Promise.all([
+  const [user, tasks, events, auditCount, caseFile, referenceRevisions, referenceActor, creationRequest, creationAuditCount] = await Promise.all([
     db.userAccount.findUnique({
       where: { id: userId }, select: { id: true, role: true, enabled: true },
     }),
@@ -103,6 +112,10 @@ async function snapshot(db) {
     db.caseReferenceRevision.findMany({ where: { caseId }, orderBy: { dossierVersion: "asc" },
       select: { dossierVersion: true, previousReference: true, artagReference: true, actorId: true, reason: true, createdAt: true } }),
     db.userAccount.findUnique({ where: { id: referenceActorId }, select: { id: true, role: true, enabled: true } }),
+    db.caseCreationRequest.findUnique({ where: { caseId }, select: {
+      actorId: true, requestId: true, caseId: true, referenceDigest: true, createdAt: true,
+    } }),
+    db.auditEvent.count({ where: { caseId, actorId: referenceActorId, eventType: "CASE_CREATED" } }),
   ]);
   if (!user?.enabled || user.role !== "APPUI_TNS" ||
       tasks.length !== 2 || events.length !== 1 || auditCount !== 1 ||
@@ -112,10 +125,12 @@ async function snapshot(db) {
       !referenceActor?.enabled || referenceActor.role !== "REFERENTE" ||
       referenceRevisions.length !== 1 || referenceRevisions[0].dossierVersion !== 1 ||
       referenceRevisions[0].previousReference !== null || referenceRevisions[0].artagReference !== caseFile.artagReference ||
-      referenceRevisions[0].actorId !== referenceActorId || referenceRevisions[0].reason !== "Attribution de recette strictement fictive") {
+      referenceRevisions[0].actorId !== referenceActorId || referenceRevisions[0].reason !== "Création du dossier" || creationAuditCount !== 1 ||
+      creationRequest?.requestId !== creationRequestId || creationRequest.actorId !== referenceActorId ||
+      creationRequest.caseId !== caseId || creationRequest.referenceDigest !== createHash("sha256").update("ARTAG-RECETTE-FICTIVE").digest("hex")) {
     throw new Error("DONNEES_FICTIVES_ABSENTES_OU_CORROMPUES");
   }
-  return { user, tasks, events, auditCount, caseFile, referenceRevisions, referenceActor };
+  return { user, tasks, events, auditCount, caseFile, referenceRevisions, referenceActor, creationRequest, creationAuditCount };
 }
 
 export function fingerprint(data) {

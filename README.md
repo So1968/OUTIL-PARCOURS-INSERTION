@@ -52,6 +52,8 @@ L'[API du numéro ARTAG versionné](docs/52_REFERENCE_ARTAG_VERSIONNEE.md) prép
 
 L'[écran Identité / références](docs/53_ECRAN_REFERENCE_ARTAG.md) relie maintenant la file active à la correction motivée et à l'historique d'un numéro déjà renseigné. Le module de recette reste désactivé par défaut ; une coupure réseau ne provoque aucun renvoi automatique.
 
+La [création contrôlée depuis la file active](docs/54_CREATION_DOSSIER_CONTROLEE.md) prépare un dossier portant un numéro ARTAG déjà attribué, pour la référente connectée, avec première révision et audit. Une vérification après réponse perdue conserve la même demande ; aucun numéro ni rapprochement de personne n'est généré automatiquement.
+
 ## Démarrage local
 
 Depuis la racine du dépôt :

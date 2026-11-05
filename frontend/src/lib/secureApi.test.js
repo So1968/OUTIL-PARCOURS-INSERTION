@@ -4,6 +4,7 @@ import {
   corrigerNotePartageeSecurisee, validerNotePartageeSecurisee, lireHistoriqueNotePartageeSecurise,
   lireNotesPartageesSecurisees,
   lireReferenceArtagSecurisee, corrigerReferenceArtagSecurisee,
+  creerDossierSecurise,
 } from "./secureApi";
 
 const id = "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa";
@@ -11,6 +12,20 @@ const noteId = "bbbbbbbb-bbbb-4bbb-bbbb-bbbbbbbbbbbb";
 afterEach(() => vi.unstubAllGlobals());
 
 describe("adaptateur API métier same-origin (non activé dans le prototype)", () => {
+  it("crée avec une clé conservée par l'appelant et un CSRF sans imposer de référente navigateur", async () => {
+    const token = "a".repeat(64), requestId = noteId;
+    const mock = vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({ token })))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ created: true }), { status: 201 }));
+    vi.stubGlobal("fetch", mock);
+    await creerDossierSecurise({ requestId, artagReference: "ARTAG-NOUVEAU-FICTIF" });
+    expect(mock.mock.calls[1]).toEqual(["/api/dossiers", {
+      method: "POST", credentials: "same-origin", cache: "no-store", redirect: "error",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
+      body: JSON.stringify({ requestId, artagReference: "ARTAG-NOUVEAU-FICTIF" }),
+    }]);
+    await expect(creerDossierSecurise({ requestId: "../autre" })).rejects.toMatchObject({ status: 422 });
+    expect(mock).toHaveBeenCalledTimes(2);
+  });
   it("lit l'historique de référence sans CSRF et transmet une correction exacte avec CSRF", async () => {
     const csrf = "a".repeat(64);
     const mock = vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({ history: [] })))

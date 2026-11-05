@@ -76,6 +76,7 @@ model UserAccount {
   ownWorkEvents   WorkEvent[]
   sharedRevisions SharedNoteRevision[]
   referenceRevisions CaseReferenceRevision[]
+  caseCreationRequests CaseCreationRequest[]
 }
 
 model CaseFile {
@@ -95,6 +96,22 @@ model CaseFile {
   externalLinks ExternalLink[]
   auditEvents   AuditEvent[]
   referenceRevisions CaseReferenceRevision[]
+  creationRequest CaseCreationRequest?
+}
+
+// Demande de création immuable : la même clé ne crée jamais un autre dossier.
+// L'empreinte porte sur la référence initiale, indépendamment des corrections.
+model CaseCreationRequest {
+  id              String      @id @default(uuid())
+  actorId         String
+  requestId       String      @db.Uuid
+  caseId          String      @unique
+  referenceDigest String      @db.Char(64)
+  createdAt       DateTime    @default(now())
+  actor           UserAccount @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  caseFile        CaseFile    @relation(fields: [caseId], references: [id], onDelete: Restrict)
+
+  @@unique([actorId, requestId])
 }
 
 // Une attribution/correction conserve la valeur réellement lue avant écriture.
