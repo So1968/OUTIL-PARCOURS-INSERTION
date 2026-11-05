@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { DailyFocusPanel } from "../components/DailyFocusPanel";
+import "../components/dailyFocus.css";
 import { actionsMaintenant, retrouverTacheEnCours } from "../lib/dailyFocus";
 import { readStorageJson, writeStorageJson } from "../lib/storage";
 import { repartitionTaches, rappelsProfessionnels, jourDeRappel } from "../lib/entretienTasks";
