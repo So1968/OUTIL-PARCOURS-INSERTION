@@ -90,6 +90,23 @@ export async function corrigerReferenceArtagSecurisee({ caseId, artagReference, 
   return mutateDossier(dossierPath(caseId) + "/reference-artag", "PATCH", { expectedVersion, artagReference, reason });
 }
 
+export async function creerDossierSecurise({ requestId, artagReference }) {
+  if (typeof requestId !== "string" || !UUID.test(requestId)) throw new ApiAccessError(422, "CREATION_DOSSIER_INVALIDE");
+  return mutateDossier("/api/dossiers", "POST", { requestId, artagReference });
+}
+
+export async function lireIdentiteSecurisee({ caseId, beforeVersion }) {
+  const path = dossierPath(caseId) + "/identite";
+  if (beforeVersion !== undefined && (!Number.isInteger(beforeVersion) || beforeVersion < 1 || beforeVersion > 2147483647)) throw new ApiAccessError(422, "VERSION_INVALIDE");
+  return expectJson(await fetch(path + (beforeVersion === undefined ? "" : `?beforeVersion=${beforeVersion}`), {
+    credentials: "same-origin", cache: "no-store", redirect: "error",
+  }));
+}
+
+export async function modifierIdentiteSecurisee({ caseId, expectedVersion, identity, reason }) {
+  return mutateDossier(dossierPath(caseId) + "/identite", "PATCH", { expectedVersion, identity, reason });
+}
+
 export async function lireHistoriqueNotePartageeSecurise({ caseId, noteId, beforeVersion }) {
   const path = notePath(caseId, noteId);
   if (beforeVersion !== undefined && (!Number.isInteger(beforeVersion)

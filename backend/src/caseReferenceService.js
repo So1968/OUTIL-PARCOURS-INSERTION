@@ -23,7 +23,7 @@ function checkContext(db, caseId, now) {
     || !(now instanceof Date) || !Number.isFinite(now.getTime())) throw new CaseAccessDenied();
 }
 
-function validReference(value) {
+export function validArtagReference(value) {
   return typeof value === "string" && value.isWellFormed() && value === value.trim() && value.length > 0
     && Array.from(value).length <= 80 && !/[\u0000-\u001f\u007f]/u.test(value);
 }
@@ -67,7 +67,7 @@ export async function updateCaseReference({
   db, cookieHeader, caseId, expectedVersion, artagReference, reason, now = new Date(),
 } = {}) {
   if (!Number.isInteger(expectedVersion) || expectedVersion < 0 || expectedVersion >= MAX_VERSION
-    || !validReference(artagReference) || typeof reason !== "string" || !reason.trim()
+    || !validArtagReference(artagReference) || typeof reason !== "string" || !reason.trim()
     || !reason.isWellFormed() || reason.length > 200 || /[\u0000-\u001f\u007f]/u.test(reason)) throw new InvalidCaseReference();
   checkContext(db, caseId, now);
   return referenceTransaction(db, async tx => {
