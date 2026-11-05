@@ -3,6 +3,7 @@ import { createCase, InvalidCaseCreation, CaseCreationConflict } from "./caseCre
 import { readCaseIdentity, updateCaseIdentity, InvalidCaseIdentity, CaseIdentityHistoryUnavailable } from "./caseIdentityService.js";
 import { readCaseAutonomy, updateCaseAutonomy, InvalidCaseAutonomy, CaseAutonomyHistoryUnavailable } from "./caseAutonomyService.js";
 import { readCaseBrief, updateCaseBrief, InvalidCaseBrief, CaseBriefHistoryUnavailable } from "./caseBriefService.js";
+import { readProfessionalReflection, updateProfessionalReflection, InvalidProfessionalReflection, ProfessionalReflectionHistoryUnavailable } from "./professionalReflectionService.js";
 import helmet from "helmet";
 import { listWritableCases, InvalidCaseDirectoryQuery, CaseDirectoryChanged } from "./caseDirectoryService.js";
 import {
@@ -112,6 +113,44 @@ export function createApp({
       }
     });
 
+  }
+
+  if (canWrite) {
+    const reflectionError = (error, res) => {
+      if (error instanceof CaseAccessDenied) return res.status(404).json({ error: "DOSSIER_INDISPONIBLE" });
+      if (error instanceof InvalidProfessionalReflection) return res.status(422).json({ error: "REFLEXION_PROFESSIONNELLE_INVALIDE" });
+      if (error instanceof DossierVersionConflict) return res.status(409).json({ error: "DOSSIER_MODIFIE_ENTRE_TEMPS" });
+      if (error instanceof ProfessionalReflectionHistoryUnavailable) {
+        return res.status(409).json({ error: "HISTORIQUE_REFLEXION_INDISPONIBLE" });
+      }
+      return res.status(503).json({ error: "SERVICE_INDISPONIBLE" });
+    };
+    const reflectionPath = "/api/dossiers/:caseId/reflexion-professionnelle";
+    app.get(reflectionPath, async (req, res) => {
+      try {
+        if (Object.keys(req.query).some(key => key !== "beforeVersion")
+          || (req.query.beforeVersion !== undefined && (typeof req.query.beforeVersion !== "string"
+            || !/^[1-9][0-9]{0,9}$/.test(req.query.beforeVersion)))) {
+          throw new InvalidProfessionalReflection();
+        }
+        return res.status(200).json(await readProfessionalReflection({
+          db: privateDb, cookieHeader: req.headers.cookie, caseId: req.params.caseId,
+          beforeVersion: req.query.beforeVersion === undefined ? undefined : Number(req.query.beforeVersion),
+        }));
+      } catch (error) { return reflectionError(error, res); }
+    });
+    app.patch(reflectionPath, express.json({ limit: "16kb", type: "application/json", strict: false }), async (req, res) => {
+      if (!validCsrf({ secret: csrfSecret, cookieHeader: req.headers.cookie,
+        csrfHeader: req.get("X-CSRF-Token"), origin: req.get("Origin"), allowedOrigin: oidc.origin })) {
+        return res.status(403).json({ error: "CSRF_REFUSE" });
+      }
+      try {
+        if (Object.keys(req.query).length) throw new InvalidProfessionalReflection();
+        return res.status(200).json(await updateProfessionalReflection({
+          db: privateDb, cookieHeader: req.headers.cookie, caseId: req.params.caseId, input: req.body,
+        }));
+      } catch (error) { return reflectionError(error, res); }
+    });
   }
 
   if (canWrite) {

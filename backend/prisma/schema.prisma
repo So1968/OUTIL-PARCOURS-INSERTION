@@ -86,6 +86,8 @@ model UserAccount {
   identityRevisions CaseIdentityRevision[]
   autonomyRevisions CaseAutonomyRevision[]
   briefRevisions CaseBriefRevision[]
+  reservedReflections CaseProfessionalReflection[]
+  reservedReflectionRevisions CaseProfessionalReflectionRevision[]
 }
 
 model CaseFile {
@@ -112,6 +114,8 @@ model CaseFile {
   autonomyRevisions CaseAutonomyRevision[]
   briefs CaseBrief[]
   briefRevisions CaseBriefRevision[]
+  reservedReflections CaseProfessionalReflection[]
+  reservedReflectionRevisions CaseProfessionalReflectionRevision[]
 }
 
 // État minimal du même dossier ; aucune correspondance automatique de personne.
@@ -196,6 +200,34 @@ model CaseBriefRevision {
   actor           UserAccount   @relation(fields: [actorId], references: [id], onDelete: Restrict)
 
   @@unique([caseId, kind, dossierVersion])
+}
+
+// Réflexion sur la relation d'aide réservée à son autrice ; aucune transmission
+// au dossier partagé ni exposition par la direction, le relais ou l'appui TNS.
+model CaseProfessionalReflection {
+  caseId         String
+  ownerId        String
+  dossierVersion Int
+  content        Json        @db.JsonB
+  caseFile       CaseFile    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  owner          UserAccount @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+
+  @@id([caseId, ownerId])
+}
+
+model CaseProfessionalReflectionRevision {
+  id              String      @id @default(uuid())
+  caseId          String
+  ownerId         String
+  dossierVersion  Int
+  previousContent Json        @db.JsonB
+  content         Json        @db.JsonB
+  reason          String      @db.VarChar(200)
+  createdAt       DateTime    @default(now())
+  caseFile        CaseFile    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  owner           UserAccount @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+
+  @@unique([caseId, ownerId, dossierVersion], map: "CaseProfReflectionRev_version_key")
 }
 
 // Demande de création immuable : la même clé ne crée jamais un autre dossier.
