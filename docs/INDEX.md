@@ -38,6 +38,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 32. [Ergonomie du bureau et mode Focus](60_ERGONOMIE_BUREAU_FOCUS.md) — trois priorités visibles, gestes courts, annulation et Focus allégé en démonstration.
 33. [Bureau sécurisé et mode Focus](61_BUREAU_SECURISE_FOCUS.md) — priorités depuis PostgreSQL, reprises EN_COURS, Focus sans localStorage et annulation versionnée.
 34. [Suggestions après entretien](62_SUGGESTIONS_SUITE_ENTRETIEN.md) — six libellés en un clic, toujours à confirmer et jamais générés automatiquement.
+35. [Tâche et rappel en une saisie](63_TACHE_SAISIE_UNIQUE_ECHEANCE_RAPPEL.md) — titre seul ou échéance, rappel et durée facultatifs enregistrés ensemble.
 
 ## Grandes familles documentaires
 
