@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { secureDailyPriorities, secureTaskCounts } from "../lib/secureDailyPriorities";
+import { SUGGESTIONS_SUITE_ENTRETIEN } from "../lib/taskSuggestions";
 import "./secureDailyFocus.css";
 import {
   secureTaskApiEnabled, loadSecureTasks, loadSecureReminders, nextProfessionalDay,
@@ -203,6 +204,17 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
         </div>
         {message && <p role="status" className="secure-daily-feedback">{message}</p>}
         {lastUndo && <button type="button" disabled={busy} onClick={() => void undoTask()}>Annuler la dernière modification de tâche</button>}
+        <details className="secure-task-suggestions">
+          <summary>Actions fréquentes après un entretien (facultatif)</summary>
+          <div className="secure-task-suggestions__buttons" role="group" aria-label="Suggestions après entretien">
+            {SUGGESTIONS_SUITE_ENTRETIEN.map(option => (
+              <button type="button" key={option} disabled={busy || !!retryTask} onClick={() => setTitle(option)}>
+                {option}
+              </button>
+            ))}
+          </div>
+          <p>Une suggestion prépare seulement le libellé. Vérifie-le, puis décide de créer ou non la tâche sur le serveur. Pas de date inventée.</p>
+        </details>
         <form onSubmit={add} className="daily-controls">
           <label>Nouvelle tâche personnelle
             <input value={title} maxLength={200} onChange={e => setTitle(e.target.value)}

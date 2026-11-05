@@ -174,6 +174,19 @@ describe("bureau de charge et saisie express (démonstration)", () => {
     expect(screen.getByRole("button", { name:"Quitter le mode Focus" })).toHaveAttribute("aria-pressed", "true");
   });
 
+  it("propose une action après entretien sans créer de tâche avant validation", () => {
+    renderBoard();
+    fireEvent.click(screen.getByText("Actions fréquentes après un entretien (facultatif)"));
+    fireEvent.click(screen.getByRole("button", { name:"Relancer la CAF" }));
+    expect(screen.getByPlaceholderText("Ex. Relancer la réponse d'un partenaire")).toHaveValue("Relancer la CAF");
+    expect(localStorage.getItem("artag-taches-entretien-demo-v1")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name:"Ajouter à ma liste" }));
+    const stored=JSON.parse(localStorage.getItem("artag-taches-entretien-demo-v1"));
+    expect(stored.__mes_taches).toMatchObject([
+      { title:"Relancer la CAF", dueDate:"", status:"À faire" },
+    ]);
+  });
+
   it("signale les tâches sans temps estimé plutôt que de fabriquer une durée", () => {
     localStorage.setItem("artag-taches-entretien-demo-v1", JSON.stringify({
       "dossier-demo": [{ id:"t1", title:"Relance fictive", dueDate:workDay(), status:"À faire" }],

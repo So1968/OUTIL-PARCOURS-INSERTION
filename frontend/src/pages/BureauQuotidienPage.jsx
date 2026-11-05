@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { DailyFocusPanel } from "../components/DailyFocusPanel";
+import { SUGGESTIONS_SUITE_ENTRETIEN } from "../lib/taskSuggestions";
 import "../components/dailyFocus.css";
 import { actionsMaintenant, retrouverTacheEnCours } from "../lib/dailyFocus";
 import { readStorageJson, writeStorageJson } from "../lib/storage";
@@ -293,6 +294,10 @@ export function BureauQuotidienPage() {
         .daily-controls label { display:grid; gap:5px; }
         .daily-alert { font-weight:700; border-left:4px solid #d2a85b; padding:10px; }
         .daily-quick-buttons button { min-height:44px; font-weight:700; }
+        .daily-template-buttons { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
+        .daily-template-buttons button { min-height:44px; }
+        .daily-task-suggestions summary { cursor:pointer; font-weight:700; padding:10px 0; }
+        .daily-task-suggestions summary:focus-visible { outline:3px solid #594f35; outline-offset:3px; }
       `}</style>
       <p>Mon organisation — démonstration locale</p>
       <h1>Plan de charge du jour</h1>
@@ -384,6 +389,15 @@ export function BureauQuotidienPage() {
 
       <section className="daily-section" aria-labelledby="new-task-header">
         <h2 id="new-task-header">Noter une tâche en quelques secondes</h2>
+        <details className="daily-task-suggestions">
+          <summary>Actions fréquentes après un entretien (facultatif)</summary>
+          <div className="daily-template-buttons" role="group" aria-label="Suggestions après entretien">
+            {SUGGESTIONS_SUITE_ENTRETIEN.map(title => (
+              <button type="button" key={title} onClick={() => setFreeTask(title)}>{title}</button>
+            ))}
+          </div>
+          <p>Choisis un libellé, adapte-le si nécessaire, puis valide explicitement. Aucune date ni tâche n’est créée automatiquement.</p>
+        </details>
         <form onSubmit={ajouterTacheLibre} className="daily-controls">
           <label style={{ flex:"1 1 280px" }}>Action à ne pas oublier
             <input value={freeTask} maxLength={240} onChange={e => setFreeTask(e.target.value)}

@@ -83,6 +83,20 @@ describe("bureau professionnel sans stockage local", () => {
     expect(screen.queryByRole("heading",{name:"Mes 3 priorités du jour"})).not.toBeInTheDocument();
   });
 
+  it("une suggestion ne crée rien sans confirmation sur le serveur", async () => {
+    api.createSecureTask.mockResolvedValue({ id:"tache-fictive" });
+    render(<SecureTasksPanel focus={false} onToggleFocus={vi.fn()} />);
+    await screen.findByRole("heading",{name:"Mes 3 priorités du jour"});
+    fireEvent.click(screen.getByText("Actions fréquentes après un entretien (facultatif)"));
+    fireEvent.click(screen.getByRole("button",{name:"Contacter un partenaire"}));
+    expect(screen.getByPlaceholderText("Action brève à réaliser")).toHaveValue("Contacter un partenaire");
+    expect(api.createSecureTask).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button",{name:"Créer sur le serveur"}));
+    await waitFor(() => expect(api.createSecureTask).toHaveBeenCalledWith(
+      "Contacter un partenaire", expect.any(String)
+    ));
+  });
+
   it("en Focus masque les réglages longs, mais garde rappels et création", async () => {
     render(<SecureTasksPanel focus={true} onToggleFocus={vi.fn()} />);
     await screen.findByRole("heading",{name:"Mes 3 priorités du jour"});
