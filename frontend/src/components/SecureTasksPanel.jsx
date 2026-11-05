@@ -24,6 +24,7 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
   const [busy, setBusy] = useState(false);
   const [retryTask, setRetryTask] = useState(null);
   const [startedId, setStartedId] = useState(null);
+  const [lastUndo, setLastUndo] = useState(null);
   const autoLoaded = useRef(false);
 
   useEffect(() => {
@@ -87,11 +88,14 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
     void saveTask({ title: title.trim(), requestId: crypto.randomUUID() });
   };
 
-  const edit = async (task, changes) => {
+  const edit = async (task, changes, isUndo = false) => {
     setBusy(true);
     try {
       const updated = await editSecureTask(task, changes);
       setTasks(current => current.map(item => item.id === updated.id ? updated : item));
+      if (isUndo) setLastUndo(null);
+      else setLastUndo({ taskId:task.id, version:updated.version,
+        previous:task, fields:Object.keys(changes) });
       try {
         const { reminders: refreshed, day } = await loadSecureReminders();
         setReminders(refreshed);
@@ -100,13 +104,29 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
       } catch {
         setMessage("Modification enregistrée. Recharge les rappels pour actualiser la liste.");
       }
-      return true;
+      return updated;
     } catch (error) {
+      if (isUndo) setLastUndo(null);
       setMessage(error.message);
-      return false;
+      return null;
     } finally {
       setBusy(false);
     }
+  };
+
+  const undoTask = async () => {
+    if (!lastUndo || busy) return;
+    const current = tasks.find(task => task.id === lastUndo.taskId);
+    if (!current || current.version !== lastUndo.version) {
+      setLastUndo(null);
+      setMessage("Annulation indisponible : la tâche a changé. Recharge la liste.");
+      return;
+    }
+    const changes = Object.fromEntries(lastUndo.fields.map(key => [
+      key, lastUndo.previous[key] ?? null,
+    ]));
+    const restored = await edit(current, changes, true);
+    if (restored) setMessage("Dernière modification annulée sur le serveur.");
   };
 
   const beginTask = async task => {
@@ -151,6 +171,7 @@ export function SecureTasksPanel({ focus = false, onToggleFocus }) {
           <p>Ordre : tâche en cours, retards, échéances du jour, autres. Le marquage manuel n’est pas encore activé dans le mode sécurisé.</p>
         </div>
         {message && <p role="status" className="secure-daily-feedback">{message}</p>}
+        {lastUndo && <button type="button" disabled={busy} onClick={() => void undoTask()}>Annuler la dernière modification de tâche</button>}
         <form onSubmit={add} className="daily-controls">
           <label>Nouvelle tâche personnelle
             <input value={title} maxLength={200} onChange={e => setTitle(e.target.value)}
