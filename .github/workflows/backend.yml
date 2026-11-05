@@ -58,5 +58,6 @@ jobs:
       - name: Tester refus d'accès, requêtes PostgreSQL et audit transactionnel
         run: >-
           npm --prefix backend test --
+          --test-concurrency=1
           --test-reporter=tap --test-reporter-destination=stdout
           --test-reporter=./scripts/githubTestReporter.mjs --test-reporter-destination=stdout
