@@ -4,7 +4,7 @@ import { resolveSessionUserId } from "./sessions.js";
 import { validArtagReference } from "./caseReferenceService.js";
 import { DossierVersionConflict } from "./sharedNoteService.js";
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX = 2147483647;
 const PAGE_SIZE = 25;
 
