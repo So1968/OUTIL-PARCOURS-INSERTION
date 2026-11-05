@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { DailyFocusPanel } from "../components/DailyFocusPanel";
+import "../components/dailyFocus.css";
 import { actionsMaintenant, retrouverTacheEnCours } from "../lib/dailyFocus";
 import { readStorageJson, writeStorageJson } from "../lib/storage";
 import { repartitionTaches, rappelsProfessionnels, jourDeRappel } from "../lib/entretienTasks";
@@ -39,6 +40,7 @@ export function BureauQuotidienPage() {
   const [captureStatus, setCaptureStatus] = useState("Fait");
   const [message, setMessage] = useState("");
   const [lastQuickId, setLastQuickId] = useState("");
+  const [lastTaskUndo, setLastTaskUndo] = useState(null);
   const [freeTask, setFreeTask] = useState("");
   const [focus, setFocus] = useState(() => readStorageJson(FOCUS_KEY, false) === true);
   const [lastTaskPointer, setLastTaskPointer] = useState(() => readStorageJson(LAST_TASK_KEY, null));
@@ -67,11 +69,38 @@ export function BureauQuotidienPage() {
   }
 
   function updateTask(task, changes) {
-    saveRecords({
+    const list = records[task.dossierId] || [];
+    const previous = list.find(entry => entry.id === task.id);
+    if (!previous) {
+      setMessage("Cette tâche n'est plus disponible. Vérifie la liste.");
+      return;
+    }
+    const success = changes.status === "Fait" ? "Tâche terminée. Ce geste peut être annulé."
+      : changes.dueDate ? "Tâche reportée. Ce geste peut être annulé."
+        : "Tâche mise à jour. Ce geste peut être annulé.";
+    if (saveRecords({
       ...records,
-      [task.dossierId]: (records[task.dossierId] || []).map(entry =>
-        entry.id === task.id ? { ...entry, ...changes } : entry),
-    }, "Tâche mise à jour.");
+      [task.dossierId]: list.map(entry => entry.id === task.id ? { ...entry, ...changes } : entry),
+    }, success)) {
+      setLastTaskUndo({ dossierId: task.dossierId, taskId: task.id, previous });
+    }
+  }
+
+  function undoLastTaskChange() {
+    if (!lastTaskUndo) return;
+    const list = records[lastTaskUndo.dossierId] || [];
+    if (!list.some(entry => entry.id === lastTaskUndo.taskId)) {
+      setMessage("Annulation indisponible : cette tâche n'existe plus.");
+      setLastTaskUndo(null);
+      return;
+    }
+    if (saveRecords({
+      ...records,
+      [lastTaskUndo.dossierId]: list.map(entry =>
+        entry.id === lastTaskUndo.taskId ? lastTaskUndo.previous : entry),
+    }, "Dernière modification de tâche annulée.")) {
+      setLastTaskUndo(null);
+    }
   }
 
   function ajouterTacheLibre(event) {
@@ -269,19 +298,11 @@ export function BureauQuotidienPage() {
       <h1>Plan de charge du jour</h1>
       <p>Une seule page pour savoir ce qui t'attend et noter en quelques secondes les entretiens, appels, rendez-vous et imprévus. Sans dossier nominatif dans la saisie express.</p>
 
-      <div className="daily-controls">
-        <label>Date du plan de charge
-          <input type="date" value={day} onChange={e => isDate(e.target.value) && setDay(e.target.value)} />
-        </label>
-        <label>Temps mobilisable ce jour (minutes)
-          <input type="number" min="1" max="600" step="15" value={capacity}
-            onChange={e => saveCapacity(e.target.value)} />
-        </label>
-      </div>
-
       <DailyFocusPanel tasks={items} today={day} focus={focus}
-        onToggle={toggleFocus} onUpdate={updateTask} onStart={commencerTache} />
+        onToggle={toggleFocus} onUpdate={updateTask} onStart={commencerTache} onSnooze={reporterTache} />
 
+      {message && <p role="status" className="daily-feedback">{message}</p>}
+      {lastTaskUndo && <div className="daily-undo"><button type="button" onClick={undoLastTaskChange}>Annuler la dernière modification de tâche</button></div>}
       {lastTask && <section className="daily-section" aria-label="Reprendre une tâche">
         <h2>Reprendre la dernière tâche interrompue</h2>
         <p><strong>{lastTask.title}</strong></p>
@@ -291,56 +312,6 @@ export function BureauQuotidienPage() {
         </div>
         <p>Le raccourci reste dans ce navigateur de démonstration, sans texte de note ni transfert Outlook.</p>
       </section>}
-
-      {!focus &&       <section className="daily-section" aria-labelledby="charge-header">
-        <h2 id="charge-header">Charge calculée</h2>
-        <div className="daily-summary">
-          <div><strong>{dureeLisible(charge.totalKnown)}</strong>Charge connue</div>
-          <div><strong>{dureeLisible(charge.capacity)}</strong>Temps mobilisable estimé</div>
-          <div><strong>{charge.overload ? "−" : ""}{dureeLisible(Math.abs(charge.margin))}</strong>{charge.overload ? "Dépassement estimé" : "Marge disponible"}</div>
-          <div><strong>{charge.overdueCount}</strong>Tâches en retard</div>
-        </div>
-        <p>Échéances de tâches : {dureeLisible(charge.taskMinutes)} · Événements prévus : {dureeLisible(charge.plannedMinutes)} · Déjà effectués : {dureeLisible(charge.doneMinutes)} · Rendez-vous enregistrés : {dureeLisible(charge.meetingMinutes)}.</p>
-        {charge.missingEstimates > 0 && <p className="daily-alert">Attention : {charge.missingEstimates} élément(s) sans durée. La charge réelle peut être supérieure.</p>}
-        {charge.overload && <p className="daily-alert">Charge supérieure au temps mobilisable : reporter ou réorganiser des actions.</p>}
-        {charge.pendingWithoutDate > 0 && <p className="daily-alert">{charge.pendingWithoutDate} tâche(s) sans échéance restent à planifier.</p>}
-        <button type="button" onClick={copierBilanAnonyme}>Copier le bilan sans données personnelles</button>
-      </section>
-      }
-
-      <section className="daily-section" aria-labelledby="rappels-header">
-        <h2 id="rappels-header">À faire maintenant ({actionsNow.length})</h2>
-        {actionsNow.length === 0
-          ? <p>Aucune action urgente ou rappel arrivé à échéance. Les tâches sans date sont à planifier plus bas.</p>
-          : <ul className="daily-tasks">
-            {actionsNow.map(task => (
-              <li key={task.dossierId + ":" + task.id} className="daily-task">
-                <label className="daily-task-title">
-                  <input type="checkbox" checked={false} aria-label={`Terminer : ${task.title}`}
-                    onChange={() => updateTask(task, { status: "Fait" })} />
-                  <strong>{task.title}</strong>
-                </label>
-                <span>Rappel : {dateLabel(jourDeRappel(task.dueDate, task.reminderDaysBefore ?? 1))}</span>
-                <span>Échéance : {dateLabel(task.dueDate)}</span>
-                <button type="button" onClick={() => commencerTache(task)}>Commencer</button>
-                <button type="button" onClick={() => reporterTache(task)}>Reporter au lendemain</button>
-              </li>
-            ))}
-          </ul>}
-        <p>Chaque tâche n'apparaît qu'une fois dans cette liste (retards, échéances et rappels). Les notifications Outlook ne sont pas encore actives.</p>
-      </section>
-
-      <section className="daily-section" aria-labelledby="new-task-header">
-        <h2 id="new-task-header">Noter une tâche en quelques secondes</h2>
-        <form onSubmit={ajouterTacheLibre} className="daily-controls">
-          <label style={{ flex:"1 1 280px" }}>Action à ne pas oublier
-            <input value={freeTask} maxLength={240} onChange={e => setFreeTask(e.target.value)}
-              placeholder="Ex. Relancer la réponse d'un partenaire" required />
-          </label>
-          <button type="submit">Ajouter à ma liste</button>
-        </form>
-        <p>Pas de date inventée : après l'ajout, choisis une échéance et une durée si tu les connais. Ne saisis aucune identité réelle dans cette maquette.</p>
-      </section>
 
       <section className="daily-section" aria-labelledby="quick-header">
         <h2 id="quick-header">Saisie express — 1 clic pour un événement courant</h2>
@@ -376,7 +347,7 @@ export function BureauQuotidienPage() {
         </form>
         {lastQuickId && <button type="button" onClick={undoLastQuick}>Annuler la dernière saisie</button>}
         <p>La durée proposée est une estimation modifiable. Pour protéger les personnes accompagnées, ne note pas de nom, téléphone ni information confidentielle dans la saisie express.</p>
-        {dailyQuick.length > 0 && <ul className="daily-tasks">
+        {!focus && dailyQuick.length > 0 && <ul className="daily-tasks">
           {dailyQuick.map(e => <li className="daily-task" key={e.id}>
             <strong>{e.type} — {e.title}</strong>
             <span>{dureeLisible(e.minutes)}</span>
@@ -389,6 +360,67 @@ export function BureauQuotidienPage() {
         </ul>}
       </section>
 
+      <section className="daily-section" aria-labelledby="rappels-header">
+        <h2 id="rappels-header">À faire maintenant ({actionsNow.length})</h2>
+        {actionsNow.length === 0
+          ? <p>Aucune action urgente ou rappel arrivé à échéance. Les tâches sans date sont à planifier plus bas.</p>
+          : <ul className="daily-tasks">
+            {actionsNow.map(task => (
+              <li key={task.dossierId + ":" + task.id} className="daily-task">
+                <label className="daily-task-title">
+                  <input type="checkbox" checked={false} aria-label={`Terminer : ${task.title}`}
+                    onChange={() => updateTask(task, { status: "Fait" })} />
+                  <strong>{task.title}</strong>
+                </label>
+                <span>Rappel : {dateLabel(jourDeRappel(task.dueDate, task.reminderDaysBefore ?? 1))}</span>
+                <span>Échéance : {dateLabel(task.dueDate)}</span>
+                <button type="button" onClick={() => commencerTache(task)}>Commencer</button>
+                <button type="button" onClick={() => reporterTache(task)}>Reporter au lendemain</button>
+              </li>
+            ))}
+          </ul>}
+        <p>Chaque tâche n'apparaît qu'une fois dans cette liste (retards, échéances et rappels). Les notifications Outlook ne sont pas encore actives.</p>
+      </section>
+
+      <section className="daily-section" aria-labelledby="new-task-header">
+        <h2 id="new-task-header">Noter une tâche en quelques secondes</h2>
+        <form onSubmit={ajouterTacheLibre} className="daily-controls">
+          <label style={{ flex:"1 1 280px" }}>Action à ne pas oublier
+            <input value={freeTask} maxLength={240} onChange={e => setFreeTask(e.target.value)}
+              placeholder="Ex. Relancer la réponse d'un partenaire" required />
+          </label>
+          <button type="submit">Ajouter à ma liste</button>
+        </form>
+        <p>Pas de date inventée : après l'ajout, choisis une échéance et une durée si tu les connais. Ne saisis aucune identité réelle dans cette maquette.</p>
+      </section>
+
+      {!focus && <>
+      <div className="daily-controls">
+        <label>Date du plan de charge
+          <input type="date" value={day} onChange={e => isDate(e.target.value) && setDay(e.target.value)} />
+        </label>
+        <label>Temps mobilisable ce jour (minutes)
+          <input type="number" min="1" max="600" step="15" value={capacity}
+            onChange={e => saveCapacity(e.target.value)} />
+        </label>
+      </div>
+
+      {!focus &&       <section className="daily-section" aria-labelledby="charge-header">
+        <h2 id="charge-header">Charge calculée</h2>
+        <div className="daily-summary">
+          <div><strong>{dureeLisible(charge.totalKnown)}</strong>Charge connue</div>
+          <div><strong>{dureeLisible(charge.capacity)}</strong>Temps mobilisable estimé</div>
+          <div><strong>{charge.overload ? "−" : ""}{dureeLisible(Math.abs(charge.margin))}</strong>{charge.overload ? "Dépassement estimé" : "Marge disponible"}</div>
+          <div><strong>{charge.overdueCount}</strong>Tâches en retard</div>
+        </div>
+        <p>Échéances de tâches : {dureeLisible(charge.taskMinutes)} · Événements prévus : {dureeLisible(charge.plannedMinutes)} · Déjà effectués : {dureeLisible(charge.doneMinutes)} · Rendez-vous enregistrés : {dureeLisible(charge.meetingMinutes)}.</p>
+        {charge.missingEstimates > 0 && <p className="daily-alert">Attention : {charge.missingEstimates} élément(s) sans durée. La charge réelle peut être supérieure.</p>}
+        {charge.overload && <p className="daily-alert">Charge supérieure au temps mobilisable : reporter ou réorganiser des actions.</p>}
+        {charge.pendingWithoutDate > 0 && <p className="daily-alert">{charge.pendingWithoutDate} tâche(s) sans échéance restent à planifier.</p>}
+        <button type="button" onClick={copierBilanAnonyme}>Copier le bilan sans données personnelles</button>
+      </section>
+      }
+
       {!focus && <section aria-label="Mes actions">
         <h2>{activeCount} tâche(s) non terminée(s)</h2>
         {taskSection("Priorité 1 — en retard", sorted.overdue, "retards")}
@@ -398,7 +430,7 @@ export function BureauQuotidienPage() {
           {taskSection("Réalisées", sorted.done, "terminees")}
         </details>
       </section>}
-      {message && <p role="status">{message}</p>}
+      </>}
       <p>Les saisies restent dans ce navigateur de démonstration. Le total n'est pas une donnée officielle de temps de travail : il exclut les éléments sans durée, et Outlook n'est pas connecté. Une version professionnelle nécessitera le stockage ARTAG sécurisé et les droits validés.</p>
     </main>
   );
