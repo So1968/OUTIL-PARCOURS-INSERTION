@@ -102,6 +102,7 @@ model CaseFile {
   identity CaseIdentity?
   identityRevisions CaseIdentityRevision[]
   autonomy CaseAutonomy?
+  autonomyRevisions CaseAutonomyRevision[]
 }
 
 // État minimal du même dossier ; aucune correspondance automatique de personne.
