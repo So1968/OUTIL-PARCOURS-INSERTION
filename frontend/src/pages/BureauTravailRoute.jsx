@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { SecureTasksPanel } from "../components/SecureTasksPanel";
 import { SecureWorkEventsPanel } from "../components/SecureWorkEventsPanel";
 import { secureTaskApiEnabled } from "../lib/secureTasksApi";
@@ -9,16 +11,16 @@ import { BureauQuotidienPage } from "./BureauQuotidienPage";
  * quand une instance privée HTTPS utilise les tâches serveur.
  */
 export function BureauTravailRoute() {
+  const [focus, setFocus] = useState(false);
   if (secureTaskApiEnabled() || secureNotesApiEnabled()) {
     return (
       <main className="page-shell" style={{ maxWidth: 1040, margin: "0 auto", padding: 24 }}>
         <h1>Mon bureau professionnel protégé</h1>
         <p>Les tâches et événements de démonstration ne sont ni affichés ni importés automatiquement.</p>
-        {secureTaskApiEnabled() && <><SecureWorkEventsPanel /><SecureTasksPanel /></>}
+        {secureTaskApiEnabled() && <><SecureTasksPanel focus={focus} onToggleFocus={() => setFocus(value => !value)} /><SecureWorkEventsPanel compact={focus} /></>}
         {secureNotesApiEnabled() && <p><Link to="/dossiers">Ouvrir ma file active</Link></p>}
       </main>
     );
   }
   return <BureauQuotidienPage />;
 }
-import { Link } from "react-router-dom";
