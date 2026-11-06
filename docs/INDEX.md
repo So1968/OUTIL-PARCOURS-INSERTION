@@ -42,6 +42,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 36. [Bloc relation d’aide réservé et versionné](64_RELATION_AIDE_RESERVEE_VERSIONNEE.md) — six axes, réflexion privée par autrice, historique et test de transmission sans fuite.
 37. [Écran réservé relation d’aide](65_ECRAN_RELATION_AIDE_RESERVEE.md) — six axes, historique privé, relecture après conflit et purge de la vue après refus.
 38. [Suites à donner rattachées au dossier](66_ACTIONS_SUIVI_RATTACHEES_DOSSIER.md) — lien explicite, rappels privés et contrôle des droits après transfert de référente.
+39. [Trace minimale des entretiens](67_ENTRETIENS_ET_SUITES_CONFIRMEES.md) — date déclarée, suite facultative atomique, droits et contrôle des doublons.
 
 ## Grandes familles documentaires
 
