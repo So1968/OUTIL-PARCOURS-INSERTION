@@ -29,7 +29,7 @@ function validDate(value) {
   const day = Number(value.slice(8, 10));
   if (year < 1900 || year > 2100 || month < 1 || month > 12) return false;
   const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
-  return day >= 1 && day <= [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31][month - 1];
+  return day >= 1 && day <= [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
 }
 
 function safeText(value, max) {
