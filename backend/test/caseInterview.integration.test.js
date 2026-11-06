@@ -51,7 +51,7 @@ test("PostgreSQL : entretien daté et suite facultative créés ensemble sans fu
     });
     const input={
       requestId:randomUUID(),interviewDay:"2026-11-04",
-      followUp:{title:"Relancer un partenaire fictif",dueDate:"2026-11-12",
+      followUp:{title:"Relancer un partenaire fictif",dueDate:"2026-11-08",
         reminderDaysBefore:2,estimatedMinutes:15},
     };
     assert.equal((await read(a.token)).status,200);
@@ -75,7 +75,7 @@ test("PostgreSQL : entretien daté et suite facultative créés ensemble sans fu
     const recorded=await first.json();
     assert.equal(recorded.interviewDay,"2026-11-04");
     assert.equal(recorded.followUp.title,input.followUp.title);
-    assert.equal(recorded.followUp.dueDate,"2026-11-12");
+    assert.equal(recorded.followUp.dueDate,"2026-11-08");
     assert.equal(recorded.followUp.reminderDaysBefore,2);
     assert.equal(recorded.followUp.estimatedMinutes,15);
     assert.equal(await db.caseInterview.count(),1);
