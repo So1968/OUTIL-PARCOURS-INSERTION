@@ -99,12 +99,13 @@ export function SecureCaseFollowUpPanel({ caseId }) {
     try {
       const updated = await editSecureTask(task, changes);
       setTasks(current => current.map(item => item.id === task.id ? updated : item));
-      try { apply(await read()); }
-      catch (err) {
+      try {
+        apply(await read());
+        setMessage("Action de suivi modifiée sur le serveur.");
+      } catch (err) {
         if ([401, 403, 404].includes(err?.status)) clearAccess();
         else setMessage("Modification enregistrée. Rechargez la liste des rappels.");
       }
-      if (ready) setMessage("Action de suivi modifiée sur le serveur.");
     } catch (err) { failed(err); }
     finally { locked.current = false; setBusy(false); }
   };
