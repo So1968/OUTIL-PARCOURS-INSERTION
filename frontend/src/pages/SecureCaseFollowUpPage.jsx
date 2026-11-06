@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { SecureCaseFollowUpPanel } from "../components/SecureCaseFollowUpPanel";
+import { SecureCaseInterviewsPanel } from "../components/SecureCaseInterviewsPanel";
 
 export function SecureCaseFollowUpPage() {
   const { caseId } = useParams();
@@ -11,6 +12,7 @@ export function SecureCaseFollowUpPage() {
     <header><img src="/logo-artag.png" alt="ARTAG" />
       <div><h1>Suites à donner — dossier</h1>
         <Link to="/dossiers">Retour à ma file active</Link></div></header>
+    <SecureCaseInterviewsPanel key={caseId + ":entretiens"} caseId={caseId} />
     <SecureCaseFollowUpPanel key={caseId} caseId={caseId} />
   </main>;
 }
