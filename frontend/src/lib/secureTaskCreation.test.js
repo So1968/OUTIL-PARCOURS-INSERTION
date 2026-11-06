@@ -39,6 +39,17 @@ describe("création de tâches en une saisie", () => {
     expect(() => prepareSecureTaskCreate("A".repeat(201), {})).toThrow(InvalidTaskDraft);
   });
 
+  it("rattache uniquement un dossier explicitement autorisé à la requête", () => {
+    const caseId="aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa";
+    expect(prepareSecureTaskCreate("Relance fictive",{
+      caseId, dueDate:"2026-11-18", reminderDaysBefore:2,
+    })).toEqual({title:"Relance fictive",caseId,dueDate:"2026-11-18",reminderDaysBefore:2});
+    expect(prepareSecureTaskCreate("Tâche libre")).not.toHaveProperty("caseId");
+    for (const invalid of [null,"", "faux",42,"bbbbbbbb-bbbb-4bbb-bbbb-bbbbbbbbbb!"]) {
+      expect(() => prepareSecureTaskCreate("Fictif",{caseId:invalid})).toThrow(InvalidTaskDraft);
+    }
+  });
+
   it("ne change jamais les paramètres passés", () => {
     const options = Object.freeze({dueDate:"2026-11-13",reminderDaysBefore:7});
     expect(prepareSecureTaskCreate("Réponse fictive", options).dueDate).toBe("2026-11-13");
