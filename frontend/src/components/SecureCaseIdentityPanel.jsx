@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { secureTaskApiEnabled } from "../lib/secureTasksApi";
 import { ApiAccessError, lireIdentiteSecurisee, modifierIdentiteSecurisee } from "../lib/secureApi";
 import { validDossierVersion, validReferenceReason } from "../lib/secureCaseReferenceData";
 import { IDENTITY_FIELDS, checkedIdentityPage, validIdentity, sameIdentity } from "../lib/secureCaseIdentityData";
@@ -92,6 +93,7 @@ export function SecureCaseIdentityPanel({ caseId }) {
         <p><Link to={`/dossiers/${caseId}/synthese-courte`}>Synthèse courte</Link></p>
         <p><Link to={`/dossiers/${caseId}/note-continuite`}>Note de continuité</Link></p>
         <p><Link to={`/dossiers/${caseId}/relation-aide`}>Bloc professionnel — relation d’aide (réservé)</Link></p>
+        {secureTaskApiEnabled() && <p><Link to={`/dossiers/${caseId}/actions-suivi`}>Suites à donner et rappels du dossier</Link></p>}
         {!editing && <button type="button" disabled={busy || !!review || data.dossierVersion === 2147483647} onClick={() => {
           setEditing(true); setDraft(toDraft(data.identity)); setReason(""); setMessage("");
         }}>Compléter ou corriger l’identité</button>}
