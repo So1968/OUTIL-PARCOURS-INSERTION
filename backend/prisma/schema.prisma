@@ -408,7 +408,7 @@ model WorkTask {
   ownerId            String
   owner              UserAccount    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   caseId             String?
-  caseFile           CaseFile?      @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  caseFile           CaseFile?      @relation(fields: [caseId], references: [id], onDelete: Restrict)
   title              String         @db.VarChar(200)
   dueDate            DateTime?      @db.Date
   reminderDaysBefore Int            @default(1)
