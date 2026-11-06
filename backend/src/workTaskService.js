@@ -28,7 +28,7 @@ function parseDay(value) {
   return parsed;
 }
 
-function validFields(input, { create = false } = {}) {
+export function validFields(input, { create = false } = {}) {
   if (!input || typeof input !== "object" || Array.isArray(input)
     || Object.keys(input).some(key => !(create ? CREATE_FIELDS : FIELDS).has(key))) throw new WorkTaskInvalid();
   if (create && !Object.hasOwn(input, "title")) throw new WorkTaskInvalid();
@@ -98,7 +98,7 @@ async function authorizedActor(tx, ownerId) {
 
 // Rattachement réservé à la référente titulaire. Une affectation de notes,
 // un profil TNS ou une délégation ne vaut pas autorisation d'actions de dossier.
-async function authorizedCase(tx, actor, caseId) {
+export async function authorizedCase(tx, actor, caseId) {
   if (actor.role !== "REFERENTE") throw new WorkTaskAccessDenied();
   const row = await tx.caseFile.findFirst({
     where: { id: caseId, referentId: actor.id, archivedAt: null },
