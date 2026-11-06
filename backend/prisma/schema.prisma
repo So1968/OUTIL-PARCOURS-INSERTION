@@ -79,6 +79,7 @@ model UserAccount {
   webSessions     WebSession[]
   identityLinks   IdentityLink[]
   ownWorkTasks    WorkTask[]
+  ownCaseInterviews CaseInterview[]
   ownWorkEvents   WorkEvent[]
   sharedRevisions SharedNoteRevision[]
   referenceRevisions CaseReferenceRevision[]
@@ -117,6 +118,7 @@ model CaseFile {
   reservedReflections CaseProfessionalReflection[]
   reservedReflectionRevisions CaseProfessionalReflectionRevision[]
   followUpTasks WorkTask[]
+  caseInterviews CaseInterview[]
 }
 
 // État minimal du même dossier ; aucune correspondance automatique de personne.
@@ -409,6 +411,8 @@ model WorkTask {
   owner              UserAccount    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   caseId             String?
   caseFile           CaseFile?      @relation(fields: [caseId], references: [id], onDelete: Restrict)
+  interviewId        String?        @unique
+  interview          CaseInterview? @relation(fields: [interviewId], references: [id], onDelete: Restrict)
   title              String         @db.VarChar(200)
   dueDate            DateTime?      @db.Date
   reminderDaysBefore Int            @default(1)
@@ -425,6 +429,23 @@ model WorkTask {
   @@unique([ownerId, requestId])
 }
 
+
+// Trace minimale d'entretien réalisé, sans contenu de note ni diagnostic.
+// La suite à donner, facultative, est créée atomiquement comme tâche privée.
+model CaseInterview {
+  id            String      @id @default(uuid())
+  requestId     String      @db.Uuid
+  caseId        String
+  ownerId       String
+  interviewDay  DateTime    @db.Date
+  createdAt     DateTime    @default(now())
+  caseFile      CaseFile    @relation(fields: [caseId], references: [id], onDelete: Restrict)
+  owner         UserAccount @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  followUp      WorkTask?
+
+  @@unique([ownerId, requestId])
+  @@index([caseId, ownerId, interviewDay])
+}
 
 // Saisie express privée : aucune description libre, aucun lien nominatif.
 // La clé client unique évite les doubles créations lors d'un renvoi réseau.

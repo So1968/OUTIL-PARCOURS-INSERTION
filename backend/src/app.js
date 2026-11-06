@@ -19,6 +19,7 @@ import {
   DossierVersionConflict, InvalidSharedNote, SharedNoteHistoryUnavailable,
 } from "./sharedNoteService.js";
 import { listOwnTasks, listOwnReminders, createOwnTask, updateOwnTask, WorkTaskAccessDenied, WorkTaskInvalid, WorkTaskConflict } from "./workTaskService.js";
+import { listOwnInterviews, recordOwnInterview, InvalidInterview, InterviewUnavailable, InterviewConflict } from "./caseInterviewService.js";
 import { listOwnEvents, createOwnEvent, updateOwnEvent, WorkEventDenied, WorkEventInvalid, WorkEventConflict } from "./workEventService.js";
 
 export function createApp({
@@ -390,6 +391,43 @@ export function createApp({
       } catch (error) {
         return handleNoteError(error, res);
       }
+    });
+  }
+
+  // Date de l'entretien et éventuelle action en une transaction, uniquement
+  // quand les deux espaces serveur privés (dossiers et tâches) sont activés.
+  if (canWrite && canUseTasks) {
+    const handleInterviewError = (error, res) => {
+      if (error instanceof InterviewUnavailable) return res.status(404).json({error:"ENTRETIEN_INDISPONIBLE"});
+      if (error instanceof InvalidInterview) return res.status(422).json({error:"ENTRETIEN_INVALIDE"});
+      if (error instanceof InterviewConflict) return res.status(409).json({error:"ENTRETIEN_DEJA_ENREGISTRE"});
+      return res.status(503).json({error:"SERVICE_INDISPONIBLE"});
+    };
+    const interviewPath="/api/dossiers/:caseId/entretiens";
+    app.get(interviewPath, async (req,res)=>{
+      try {
+        const offset=req.query.offset;
+        if (Object.keys(req.query).some(key=>key!=="offset")
+          || offset!==undefined && (typeof offset!=="string" || !/^[0-9]{1,6}$/.test(offset))) {
+          throw new InvalidInterview();
+        }
+        return res.status(200).json(await listOwnInterviews({
+          db:privateDb,cookieHeader:req.headers.cookie,caseId:req.params.caseId,
+          offset:offset===undefined?0:Number(offset),now:clock(),
+        }));
+      } catch(error) { return handleInterviewError(error,res); }
+    });
+    app.post(interviewPath, express.json({limit:"4kb",type:"application/json",strict:false}),async(req,res)=>{
+      if (!validCsrf({secret:csrfSecret,cookieHeader:req.headers.cookie,
+        csrfHeader:req.get("X-CSRF-Token"),origin:req.get("Origin"),allowedOrigin:oidc.origin})) {
+        return res.status(403).json({error:"CSRF_REFUSE"});
+      }
+      try {
+        return res.status(201).json(await recordOwnInterview({
+          db:privateDb,cookieHeader:req.headers.cookie,
+          caseId:req.params.caseId,input:req.body,now:clock(),
+        }));
+      } catch(error) { return handleInterviewError(error,res); }
     });
   }
 
