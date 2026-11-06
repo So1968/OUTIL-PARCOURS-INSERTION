@@ -55,6 +55,7 @@ const SecureCaseIdentityPage = lazyNamed(() => import("./pages/SecureCaseIdentit
 const SecureCaseAutonomyPage = lazyNamed(() => import("./pages/SecureCaseAutonomyPage"), "SecureCaseAutonomyPage");
 const SecureCaseBriefPage = lazyNamed(() => import("./pages/SecureCaseBriefPage"), "SecureCaseBriefPage");
 const SecureProfessionalReflectionPage = lazyNamed(() => import("./pages/SecureProfessionalReflectionPage"), "SecureProfessionalReflectionPage");
+const SecureCaseFollowUpPage = lazyNamed(() => import("./pages/SecureCaseFollowUpPage"), "SecureCaseFollowUpPage");
 
 function ProtectedPage({ allowedRoles, children }) {
   return <RequireRole allowedRoles={allowedRoles}>{children}</RequireRole>;
@@ -120,6 +121,7 @@ function SecureWorkApp() {
           {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/synthese-courte" element={<SecureCaseBriefPage type="synthese-courte" />} />}
           {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/note-continuite" element={<SecureCaseBriefPage type="note-continuite" />} />}
           {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/relation-aide" element={<SecureProfessionalReflectionPage />} />}
+          {secureNotesApiEnabled() && secureTaskApiEnabled() && <Route path="/dossiers/:caseId/actions-suivi" element={<SecureCaseFollowUpPage />} />}
           {secureNotesApiEnabled() && <Route path="/dossiers/:caseId/notes-partagees" element={<SecureSharedNotesPage />} />}
           <Route path="*" element={
             <main className="page-shell">

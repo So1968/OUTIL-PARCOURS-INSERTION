@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { secureTaskApiEnabled } from "../lib/secureTasksApi";
 import { ApiAccessError } from "../lib/secureApi";
 import { loadWritableCases, hasUsableArtagReference } from "../lib/secureCaseDirectoryApi";
 import "./secureCaseDirectory.css";
@@ -65,6 +66,7 @@ export function SecureCaseDirectory() {
         {hasUsableArtagReference(row.artagReference) && row.canManageReference && <p><Link to={`/dossiers/${row.id}/synthese-courte`}>Synthèse courte</Link></p>}
         {hasUsableArtagReference(row.artagReference) && row.canManageReference && <p><Link to={`/dossiers/${row.id}/note-continuite`}>Note de continuité</Link></p>}
         {hasUsableArtagReference(row.artagReference) && row.canManageReference && <p><Link to={`/dossiers/${row.id}/relation-aide`}>Bloc professionnel — relation d’aide (réservé)</Link></p>}
+        {secureTaskApiEnabled() && hasUsableArtagReference(row.artagReference) && row.canManageReference && <p><Link to={`/dossiers/${row.id}/actions-suivi`}>Suites à donner et rappels du dossier</Link></p>}
       </li>)}</ul>
       {data.nextCursor !== null && <button type="button" disabled={busy} onClick={() => load(true)}>Voir d’autres dossiers</button>}
       <SecureCaseCreationPanel onAccessLost={clearAccess} />

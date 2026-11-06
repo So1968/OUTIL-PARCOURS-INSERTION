@@ -9,10 +9,17 @@ export function prepareSecureTaskCreate(title, options = {}) {
     throw new InvalidTaskDraft("Indique une action courte (200 caractères maximum).");
   }
   if (!options || typeof options !== "object" || Array.isArray(options)
-    || Object.keys(options).some(key => !["dueDate", "reminderDaysBefore", "estimatedMinutes"].includes(key))) {
+    || Object.keys(options).some(key => !["dueDate", "reminderDaysBefore", "estimatedMinutes", "caseId"].includes(key))) {
     throw new InvalidTaskDraft("Options de suivi invalides.");
   }
   const task = { title: title.trim() };
+  if (options.caseId !== undefined) {
+    if (typeof options.caseId !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(options.caseId)) {
+      throw new InvalidTaskDraft("Identifiant du dossier invalide.");
+    }
+    task.caseId = options.caseId;
+  }
   const day = options.dueDate;
   if (day !== undefined && day !== null && day !== "") {
     if (typeof day !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(day)) {
