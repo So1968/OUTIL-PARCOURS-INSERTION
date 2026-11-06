@@ -111,3 +111,26 @@ test("refuse les révisions de dossiers étrangers, les données supplémentaire
     caseId: "personne-reelle-123", asOf: "2026-11-04", revisions, authorized: true,
   }), FictionalRevisionError);
 });
+
+test("régression : les douze mois sont reconnus, et les dates impossibles refusées", () => {
+  for (let month = 1; month <= 12; month += 1) {
+    const date = `2026-${String(month).padStart(2, "0")}-01`;
+    const result = selectFictionalRevisedTimeline({
+      caseId, asOf: date, revisions: [
+        revision("E01", 1, date, date, "Entretien fictif daté."),
+      ], authorized: true,
+    });
+    assert.equal(result.events[0].occurredAt, date);
+  }
+  for (const invalid of ["2026-02-29", "2026-04-31", "2026-06-31", "2026-11-31", "2026-13-01"]) {
+    assert.throws(() => selectFictionalRevisedTimeline({
+      caseId, asOf: invalid, revisions: [], authorized: true,
+    }), FictionalRevisionError);
+  }
+  const leap = selectFictionalRevisedTimeline({
+    caseId, asOf: "2024-02-29", revisions: [
+      revision("E01", 1, "2024-02-29", "2024-02-29", "Jour bissextile fictif."),
+    ], authorized: true,
+  });
+  assert.equal(leap.events[0].occurredAt, "2024-02-29");
+});
