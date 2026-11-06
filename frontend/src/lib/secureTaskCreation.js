@@ -15,7 +15,7 @@ export function prepareSecureTaskCreate(title, options = {}) {
   const task = { title: title.trim() };
   if (options.caseId !== undefined) {
     if (typeof options.caseId !== "string" ||
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(options.caseId)) {
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(options.caseId)) {
       throw new InvalidTaskDraft("Identifiant du dossier invalide.");
     }
     task.caseId = options.caseId;
