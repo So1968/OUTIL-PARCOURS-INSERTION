@@ -1,11 +1,12 @@
 import { resolveSessionUserId } from "./sessions.js";
+import { validArtagReference } from "./caseReferenceService.js";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const ROLES = new Set(["REFERENTE", "APPUI_TNS", "ACCUEIL", "RELAIS_LOGEMENT"]);
 const STATUSES = new Set(["A_FAIRE", "EN_COURS", "EN_ATTENTE", "FAIT"]);
 const FIELDS = new Set(["title", "dueDate", "reminderDaysBefore", "snoozedUntil", "estimatedMinutes", "status"]);
-const CREATE_FIELDS = new Set([...FIELDS, "requestId"]);
+const CREATE_FIELDS = new Set([...FIELDS, "requestId", "caseId"]);
 
 export class WorkTaskAccessDenied extends Error {
   constructor() { super("TACHE_INDISPONIBLE"); this.name = "WorkTaskAccessDenied"; }
@@ -33,6 +34,10 @@ function validFields(input, { create = false } = {}) {
   if (create && !Object.hasOwn(input, "title")) throw new WorkTaskInvalid();
   if (!create && Object.keys(input).length === 0) throw new WorkTaskInvalid();
   const data = {};
+  if (create && Object.hasOwn(input, "caseId")) {
+    if (typeof input.caseId !== "string" || !UUID.test(input.caseId)) throw new WorkTaskInvalid();
+    data.caseId = input.caseId;
+  }
   if (Object.hasOwn(input, "title")) {
     if (typeof input.title !== "string" || !input.title.trim() || input.title.length > 200) {
       throw new WorkTaskInvalid();
@@ -59,11 +64,14 @@ function validFields(input, { create = false } = {}) {
 
 const taskSelect = {
   id: true, title: true, dueDate: true, snoozedUntil: true, reminderDaysBefore: true,
-  estimatedMinutes: true, status: true, version: true, updatedAt: true,
+  estimatedMinutes: true, status: true, version: true, updatedAt: true, caseId: true,
 };
 function exposed(task) {
+  // Les anciennes tâches libres gardent exactement le contrat JSON précédent.
+  const { caseId, ...fields } = task;
   return {
-    ...task,
+    ...fields,
+    ...(caseId ? { caseId } : {}),
     dueDate: task.dueDate ? task.dueDate.toISOString().slice(0, 10) : null,
     snoozedUntil: task.snoozedUntil ? task.snoozedUntil.toISOString().slice(0, 10) : null,
   };
@@ -88,6 +96,27 @@ async function authorizedActor(tx, ownerId) {
   return actor;
 }
 
+// Rattachement réservé à la référente titulaire. Une affectation de notes,
+// un profil TNS ou une délégation ne vaut pas autorisation d'actions de dossier.
+async function authorizedCase(tx, actor, caseId) {
+  if (actor.role !== "REFERENTE") throw new WorkTaskAccessDenied();
+  const row = await tx.caseFile.findFirst({
+    where: { id: caseId, referentId: actor.id, archivedAt: null },
+    select: { artagReference: true },
+  });
+  if (!row || !validArtagReference(row.artagReference)) throw new WorkTaskAccessDenied();
+}
+
+// Une tâche rattachée ne doit pas rester visible si le dossier est transféré,
+// archivé ou ne porte plus de référence ARTAG. Les tâches libres sont inchangées.
+const visibleTaskScope = ownerId => ({
+  OR: [
+    { caseId: null },
+    { caseFile: { is: { referentId: ownerId, archivedAt: null,
+      artagReference: { not: null } } } },
+  ],
+});
+
 /** Liste strictement personnelle, paginée. Jamais de tâches d'un autre compte. */
 export async function listOwnTasks({ db, cookieHeader, offset = 0 } = {}) {
   if (!Number.isSafeInteger(offset) || offset < 0 || offset > 100000) throw new WorkTaskInvalid();
@@ -95,7 +124,7 @@ export async function listOwnTasks({ db, cookieHeader, offset = 0 } = {}) {
   return db.$transaction(async tx => {
     await authorizedActor(tx, ownerId);
     const rows = await tx.workTask.findMany({
-      where: { ownerId }, select: taskSelect,
+      where: { ownerId, ...visibleTaskScope(ownerId) }, select: taskSelect,
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       skip: offset, take: 101,
     });
@@ -113,7 +142,8 @@ export async function createOwnTask({ db, cookieHeader, input } = {}) {
     (typeof requestId !== "string" || !UUID.test(requestId))) throw new WorkTaskInvalid();
   const ownerId = await getOwner(db, cookieHeader);
   return db.$transaction(async tx => {
-    await authorizedActor(tx, ownerId);
+    const actor = await authorizedActor(tx, ownerId);
+    if (data.caseId) await authorizedCase(tx, actor, data.caseId);
     let task;
     let created = true;
     if (requestId) {
@@ -153,11 +183,12 @@ export async function updateOwnTask({ db, cookieHeader, taskId, expectedVersion,
   const data = validFields(changes);
   const ownerId = await getOwner(db, cookieHeader);
   return db.$transaction(async tx => {
-    await authorizedActor(tx, ownerId);
+    const actor = await authorizedActor(tx, ownerId);
     const current = await tx.workTask.findFirst({
-      where: { id: taskId, ownerId }, select: { id: true, version: true },
+      where: { id: taskId, ownerId }, select: { id: true, version: true, caseId: true },
     });
     if (!current) throw new WorkTaskAccessDenied();
+    if (current.caseId) await authorizedCase(tx, actor, current.caseId);
     if (current.version !== expectedVersion) throw new WorkTaskConflict();
     const result = await tx.workTask.updateMany({
       where: { id: taskId, ownerId, version: expectedVersion },
@@ -217,9 +248,10 @@ export async function listOwnReminders({ db, cookieHeader, now = new Date(), off
         ownerId,
         status: { not: "FAIT" },
         OR: dueConditions,
-        AND: [{
-          OR: [{ snoozedUntil: null }, { snoozedUntil: { lte: startOfDay } }],
-        }],
+        AND: [
+          { OR: [{ snoozedUntil: null }, { snoozedUntil: { lte: startOfDay } }] },
+          visibleTaskScope(ownerId),
+        ],
       },
       select: taskSelect,
       orderBy: [{ dueDate: "asc" }, { id: "asc" }],
