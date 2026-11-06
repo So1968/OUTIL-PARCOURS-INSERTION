@@ -58,3 +58,18 @@ test("répéter le même événement produit une sortie identique sans stockage"
   assert.deepEqual(first, second);
   assert.notStrictEqual(first, second);
 });
+
+test("refuse les dates impossibles, accepte le 29 février bissextile", () => {
+  for (const occurredAt of [
+    "2026-02-29T10:00:00+01:00",
+    "2026-04-31T10:00:00+01:00",
+    "2026-11-04T25:00:00+01:00",
+    "2026-11-04T10:61:00+01:00",
+    "2026-11-04T10:00:00+25:00",
+  ]) {
+    assert.throws(() => proposeSimulatedActions({ ...fixture, occurredAt }), SimulationInputError);
+  }
+  assert.equal(proposeSimulatedActions({
+    ...fixture, occurredAt: "2024-02-29T10:00:00+01:00",
+  }).status, "CONFIRMATION_REQUISE");
+});
