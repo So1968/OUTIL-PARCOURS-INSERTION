@@ -16,8 +16,8 @@ const STATUS = new Set(["DECLARATION", "OBSERVATION", "DOCUMENT_VERIFIE", "INCON
 const FIELDS = ["id", "caseId", "version", "occurredAt", "recordedAt", "evidenceStatus", "text", "reason"];
 
 export class FictionalRevisionError extends Error {
-  constructor() {
-    super("REVISION_PARCOURS_FICTIF_INVALIDE");
+  constructor(reason = "GENERAL") {
+    super("REVISION_PARCOURS_FICTIF_INVALIDE_" + reason);
     this.name = "FictionalRevisionError";
   }
 }
@@ -61,10 +61,13 @@ export function selectFictionalRevisedTimeline({
   if (authorized !== true) {
     return Object.freeze({ status: "ACCES_REFUSE", events: [] });
   }
-  if (!CASE_ID.test(caseId ?? "") || !validDate(asOf)
-    || !Array.isArray(revisions) || revisions.length > 200
-    || !revisions.every(revision => validRevision(revision, caseId))) {
-    throw new FictionalRevisionError();
+  if (!CASE_ID.test(caseId ?? "")) throw new FictionalRevisionError("CASE_ID");
+  if (!validDate(asOf)) throw new FictionalRevisionError("DATE");
+  if (!Array.isArray(revisions) || revisions.length > 200) {
+    throw new FictionalRevisionError("LISTE");
+  }
+  if (!revisions.every(revision => validRevision(revision, caseId))) {
+    throw new FictionalRevisionError("ENTREE");
   }
 
   const byEvent = new Map();
