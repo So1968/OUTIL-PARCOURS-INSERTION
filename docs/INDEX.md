@@ -43,6 +43,7 @@ Cet index facilite la navigation **sans modifier ni remplacer** les spécificati
 37. [Écran réservé relation d’aide](65_ECRAN_RELATION_AIDE_RESERVEE.md) — six axes, historique privé, relecture après conflit et purge de la vue après refus.
 38. [Suites à donner rattachées au dossier](66_ACTIONS_SUIVI_RATTACHEES_DOSSIER.md) — lien explicite, rappels privés et contrôle des droits après transfert de référente.
 39. [Trace minimale des entretiens](67_ENTRETIENS_ET_SUITES_CONFIRMEES.md) — date déclarée, suite facultative atomique, droits et contrôle des doublons.
+40. [Écran des entretiens et suites](68_ECRAN_ENTRETIENS_ET_SUITES.md) — date réalisée, suite facultative, historique et réessai anti-doublon.
 
 ## Grandes familles documentaires
 
