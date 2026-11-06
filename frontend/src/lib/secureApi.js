@@ -148,6 +148,26 @@ export async function modifierReflexionProfessionnelleSecurisee({ caseId, expect
   });
 }
 
+// Entretien réalisé : date déclarée et au plus une action de suivi confirmée.
+export async function lireEntretiensSecurises({ caseId, offset = 0 }) {
+  if (!Number.isSafeInteger(offset) || offset < 0 || offset > 100000) {
+    throw new ApiAccessError(422, "PAGINATION_INVALIDE");
+  }
+  const path = dossierPath(caseId) + "/entretiens?offset=" + offset;
+  return expectJson(await fetch(path, {
+    credentials: "same-origin", cache: "no-store", redirect: "error",
+  }));
+}
+
+export async function enregistrerEntretienSecurise({ caseId, requestId, interviewDay, followUp = null }) {
+  if (typeof requestId !== "string" || !UUID.test(requestId)) {
+    throw new ApiAccessError(422, "ENTRETIEN_INVALIDE");
+  }
+  return mutateDossier(dossierPath(caseId) + "/entretiens", "POST", {
+    requestId, interviewDay, followUp,
+  });
+}
+
 export async function lireBlocCourtSecurise({ caseId, type, beforeVersion }) {
   if (beforeVersion !== undefined && (!Number.isInteger(beforeVersion)
     || beforeVersion < 1 || beforeVersion > 2147483647)) {
