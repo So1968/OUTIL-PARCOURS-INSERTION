@@ -116,6 +116,7 @@ model CaseFile {
   briefRevisions CaseBriefRevision[]
   reservedReflections CaseProfessionalReflection[]
   reservedReflectionRevisions CaseProfessionalReflectionRevision[]
+  followUpTasks WorkTask[]
 }
 
 // État minimal du même dossier ; aucune correspondance automatique de personne.
@@ -406,6 +407,8 @@ model WorkTask {
   requestId          String?        @db.VarChar(80)
   ownerId            String
   owner              UserAccount    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  caseId             String?
+  caseFile           CaseFile?      @relation(fields: [caseId], references: [id], onDelete: SetNull)
   title              String         @db.VarChar(200)
   dueDate            DateTime?      @db.Date
   reminderDaysBefore Int            @default(1)
@@ -418,6 +421,7 @@ model WorkTask {
 
   @@index([ownerId, dueDate])
   @@index([ownerId, status])
+  @@index([ownerId, caseId])
   @@unique([ownerId, requestId])
 }
 
