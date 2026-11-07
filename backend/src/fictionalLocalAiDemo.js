@@ -220,6 +220,8 @@ export async function runFixedFictionalLocalAiDemo({
         "\nIMPORTANT : rends exclusivement un objet JSON conforme au schéma, sans commentaire." },
       { role: "user", content: JSON.stringify({
         fictionalOnly: true,
+        caseId: request.caseId,
+        summaryType: request.summaryType,
         referenceDate: DAY,
         question: request.currentProfessionalQuestion,
         eventEvidenceUntrusted: request.evidence,
