@@ -101,7 +101,11 @@ export class FictionalLocalAiError extends Error {
   }
 }
 
-function buildFixedDemoContext() {
+/**
+ * Contexte de la démonstration, exclusivement figé dans ce fichier.
+ * Exporté pour le dialogue fictif multi-tours ; aucune entrée de dossier réel.
+ */
+export function buildFixedFictionalDemoContext() {
   const events = fictionalEvidence.map(([id, occurredAt, text]) => ({
     id, caseId: CASE_ID, occurredAt, text,
     evidenceStatus: id === "E07" ? "OBSERVATION" : "DECLARATION",
@@ -129,7 +133,7 @@ function buildFixedDemoContext() {
  * La construction du contexte ne peut recevoir aucune donnée professionnelle.
  */
 export function previewFixedFictionalLocalAiDemo() {
-  const { request } = buildFixedDemoContext();
+  const { request } = buildFixedFictionalDemoContext();
   return Object.freeze({
     status: "DEMONSTRATION_FICTIVE_PREPAREE",
     caseId: request.caseId,
@@ -207,7 +211,7 @@ export async function runFixedFictionalLocalAiDemo({
     || /cloud/i.test(modelName) || typeof fetchImpl !== "function") {
     throw new FictionalLocalAiError("CONFIGURATION_LOCALE_INVALIDE");
   }
-  const { prepared, request } = buildFixedDemoContext();
+  const { prepared, request } = buildFixedFictionalDemoContext();
   await ensureDownloadedLocalModel(modelName, fetchImpl);
 
   const payload = {
