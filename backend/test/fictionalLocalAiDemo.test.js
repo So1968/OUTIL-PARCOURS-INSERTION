@@ -61,7 +61,7 @@ function localModelTransport({
 async function call(extra = {}) {
   const transport = localModelTransport();
   const result = await runFixedFictionalLocalAiDemo({
-    enabled: true, fictionalOnlyAcknowledged: true,
+    enabled: true, fictionalOnlyAcknowledged: true, offlineOnlyAcknowledged: true,
     modelName: "qwen3:8b", fetchImpl: transport.fakeFetch, ...extra,
   });
   return { result, transport };
@@ -119,6 +119,9 @@ test("vérifie d'abord les modèles téléchargés puis envoie un seul POST loca
   assert.equal(result.providerUsed, "OLLAMA_LOCAL");
   assert.equal(result.localEndpointOnly, true);
   assert.equal(result.cloudConfigurationVerified, false);
+  assert.equal(result.offlineOnlyAttested, true);
+  assert.equal(result.paidModelApiAllowed, false);
+  assert.equal(result.perRequestBillingConfigured, false);
   assert.equal(result.humanValidationRequired, true);
   assert.equal(result.qualityScore, null);
   assert.equal(result.saved, false);
@@ -136,7 +139,7 @@ test("un modèle non téléchargé bloque l'appel de génération", async () => 
   const t = localModelTransport({ modelIsDownloaded: false });
   await assert.rejects(
     () => runFixedFictionalLocalAiDemo({
-      enabled: true, fictionalOnlyAcknowledged: true, modelName: "qwen3:8b",
+      enabled: true, fictionalOnlyAcknowledged: true, offlineOnlyAcknowledged: true, modelName: "qwen3:8b",
       fetchImpl: t.fakeFetch,
     }),
     { name: "FictionalLocalAiError", message: "MODELE_LOCAL_NON_TELECHARGE" },
@@ -145,12 +148,24 @@ test("un modèle non téléchargé bloque l'appel de génération", async () => 
   assert.equal(t.calls[0].options.method, "GET");
 });
 
+test("aucun appel, y compris au catalogue local, sans confirmation hors cloud", async () => {
+  const t = localModelTransport();
+  const result = await runFixedFictionalLocalAiDemo({
+    enabled: true, fictionalOnlyAcknowledged: true,
+    offlineOnlyAcknowledged: false, modelName: "qwen3:8b",
+    fetchImpl: t.fakeFetch,
+  });
+  assert.equal(result.status, "DEMONSTRATION_DESACTIVEE");
+  assert.equal(result.modelCalled, false);
+  assert.equal(t.calls.length, 0);
+});
+
 test("interdit les alias cloud et les noms de modèle invalides sans réseau", async () => {
   const t = localModelTransport();
   for (const name of ["gpt-oss:cloud", "model-cloud", "https://ollama.com/api/chat", ""]) {
     await assert.rejects(
       () => runFixedFictionalLocalAiDemo({
-        enabled: true, fictionalOnlyAcknowledged: true, modelName: name,
+        enabled: true, fictionalOnlyAcknowledged: true, offlineOnlyAcknowledged: true, modelName: name,
         fetchImpl: t.fakeFetch,
       }),
       FictionalLocalAiError,
@@ -170,7 +185,7 @@ test("une citation inventée ou une action confirmée entraîne un rejet intégr
     const t = localModelTransport({ answer: badAnswer });
     await assert.rejects(
       () => runFixedFictionalLocalAiDemo({
-        enabled: true, fictionalOnlyAcknowledged: true, modelName: "qwen3:8b",
+        enabled: true, fictionalOnlyAcknowledged: true, offlineOnlyAcknowledged: true, modelName: "qwen3:8b",
         fetchImpl: t.fakeFetch,
       }),
       { name: "FictionalLocalAiError", message: "BROUILLON_MODELE_A_VERIFIER" },
@@ -182,7 +197,7 @@ test("une réponse interrompue ou malformée est refusée sans fuite de contenu"
   const t = localModelTransport({ done: false });
   await assert.rejects(
     () => runFixedFictionalLocalAiDemo({
-      enabled: true, fictionalOnlyAcknowledged: true, modelName: "qwen3:8b",
+      enabled: true, fictionalOnlyAcknowledged: true, offlineOnlyAcknowledged: true, modelName: "qwen3:8b",
       fetchImpl: t.fakeFetch,
     }),
     { name: "FictionalLocalAiError", message: "REPONSE_MODELE_INVALIDE" },
@@ -190,7 +205,7 @@ test("une réponse interrompue ou malformée est refusée sans fuite de contenu"
   const thrown = async () => { throw new Error("SECRET_IMAGINAIRE_DANS_ERREUR_RESEAU"); };
   await assert.rejects(
     () => runFixedFictionalLocalAiDemo({
-      enabled: true, fictionalOnlyAcknowledged: true, modelName: "qwen3:8b",
+      enabled: true, fictionalOnlyAcknowledged: true, offlineOnlyAcknowledged: true, modelName: "qwen3:8b",
       fetchImpl: thrown,
     }),
     { name: "FictionalLocalAiError", message: "MODELE_LOCAL_INDISPONIBLE" },
@@ -208,7 +223,7 @@ test("une réponse ou une liste de modèles trop volumineuse est rejetée", asyn
   };
   await assert.rejects(
     () => runFixedFictionalLocalAiDemo({
-      enabled: true, fictionalOnlyAcknowledged: true, modelName: "qwen3:8b",
+      enabled: true, fictionalOnlyAcknowledged: true, offlineOnlyAcknowledged: true, modelName: "qwen3:8b",
       fetchImpl: fake,
     }),
     { name: "FictionalLocalAiError", message: "REPONSE_MODELE_INVALIDE" },
@@ -224,7 +239,7 @@ test("un brouillon local qui omet des points majeurs appelle une relecture cibl�
   truncated.suggestedActions = [];
   const transport = localModelTransport({ answer: truncated });
   const result = await runFixedFictionalLocalAiDemo({
-    enabled: true, fictionalOnlyAcknowledged: true,
+    enabled: true, fictionalOnlyAcknowledged: true, offlineOnlyAcknowledged: true,
     modelName: "qwen3:8b", fetchImpl: transport.fakeFetch,
   });
   assert.equal(result.status, "BROUILLON_LOCAL_NON_VALIDE");
