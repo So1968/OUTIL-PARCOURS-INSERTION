@@ -65,7 +65,11 @@ if (!ready) {
         asked.add(intentCode);
         console.log("\nBROUILLON NON VALIDÉ — " + result.turn.question);
         console.log(result.turn.answer);
-        console.log("Sources du dossier fictif : " + result.turn.sourceEventIds.join(", "));
+        console.log("Sources du dossier fictif (la pertinence des citations doit être vérifiée) :");
+        for (const source of result.turn.sourceTrace) {
+          console.log("• " + source.eventId + " — " + source.occurredAt +
+            " — " + source.evidenceStatus + " : " + source.originalExcerptUntrusted);
+        }
         if (result.turn.uncertainties.length) {
           console.log("À vérifier : " + result.turn.uncertainties.join(" | "));
         }
