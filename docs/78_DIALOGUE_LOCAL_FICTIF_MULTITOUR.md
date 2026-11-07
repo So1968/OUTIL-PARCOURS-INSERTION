@@ -13,7 +13,7 @@ Sur le scénario fictif fixe `case-fiction-essai-local`, le prototype propose qu
 
 Le menu est volontairement **fermé** : il ne prend aucun texte libre, nom de personne, document, identifiant de dossier réel ni requête arbitraire. Le contenu de l'historique est figé dans le code existant du démonstrateur. Les réponses du modèle sont conservées uniquement dans la mémoire du processus pour enrichir le tour suivant, puis perdues à la fermeture. Les anciennes réponses de l'IA restent classées comme **non fiables et non citables comme preuve**.
 
-Une réponse est structurée : texte, identifiants des événements sources, incertitudes et actions proposées `confirmed: false`. Le code bloque les références inconnues et exige les événements essentiels au sujet de la question. Cette vérification **ne prouve ni l'exactitude ni la pertinence réelle** des citations.
+Une réponse est structurée : texte, identifiants des événements sources, incertitudes et actions proposées `confirmed: false`. Le code restitue également, pour chaque référence citée, **l'extrait fictif d'origine, sa date et son statut** (déclaration ou observation), afin de faciliter la relecture. Le code bloque les références inconnues et exige les événements essentiels au sujet de la question. Cette vérification **ne prouve ni l'exactitude ni la pertinence réelle** des citations.
 
 ## Protections
 
