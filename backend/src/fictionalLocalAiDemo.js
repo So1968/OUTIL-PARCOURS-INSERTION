@@ -18,6 +18,7 @@ import { reviewFictionalSummaryDraft } from "./fictionalSummaryReview.js";
 const CASE_ID = "case-fiction-essai-local";
 const DAY = "2026-11-04";
 const LOCAL_ENDPOINT = "http://127.0.0.1:11434/api/chat";
+const LOCAL_MODELS_ENDPOINT = "http://127.0.0.1:11434/api/tags";
 const MODEL_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,78}$/;
 const MAX_RESPONSE_BODY = 120_000;
 const MAX_MODEL_TEXT = 32_000;
@@ -144,6 +145,45 @@ function safeUsage(value) {
 }
 
 /**
+ * Le modèle doit figurer dans le catalogue des poids effectivement présents.
+ * Les alias contenant "cloud" sont rejetés. Cette vérification n'inspecte
+ * toutefois PAS la configuration du service Ollama : désactiver les fonctions
+ * cloud du serveur reste une condition administrative distincte.
+ */
+async function ensureDownloadedLocalModel(modelName, fetchImpl) {
+  let response;
+  try {
+    response = await fetchImpl(LOCAL_MODELS_ENDPOINT, {
+      method: "GET",
+      redirect: "error",
+      signal: AbortSignal.timeout(10_000),
+      headers: { "Accept": "application/json" },
+    });
+  } catch {
+    throw new FictionalLocalAiError("MODELE_LOCAL_INDISPONIBLE");
+  }
+  if (!response || response.status !== 200 || response.ok !== true
+    || typeof response.text !== "function") {
+    throw new FictionalLocalAiError("MODELE_LOCAL_INDISPONIBLE");
+  }
+  try {
+    const raw = await response.text();
+    if (typeof raw !== "string" || raw.length > MAX_RESPONSE_BODY) {
+      throw new Error("REPONSE_TROP_LONGUE");
+    }
+    const list = JSON.parse(raw);
+    if (!Array.isArray(list?.models)
+      || !list.models.some(item => item
+        && (item.name === modelName || item.model === modelName)
+        && Number.isFinite(item.size) && item.size > 0)) {
+      throw new Error("MODELE_NON_TELECHARGE");
+    }
+  } catch {
+    throw new FictionalLocalAiError("MODELE_LOCAL_NON_TELECHARGE");
+  }
+}
+
+/**
  * Déclenche une vraie inférence locale UNIQUEMENT après double opt-in.
  * Aucune possibilité de passer des notes ou une URL arbitraire.
  *
@@ -163,10 +203,11 @@ export async function runFixedFictionalLocalAiDemo({
     });
   }
   if (typeof modelName !== "string" || !MODEL_PATTERN.test(modelName)
-    || typeof fetchImpl !== "function") {
+    || /cloud/i.test(modelName) || typeof fetchImpl !== "function") {
     throw new FictionalLocalAiError("CONFIGURATION_LOCALE_INVALIDE");
   }
   const { prepared, request } = buildFixedDemoContext();
+  await ensureDownloadedLocalModel(modelName, fetchImpl);
 
   const payload = {
     model: modelName,
@@ -236,8 +277,9 @@ export async function runFixedFictionalLocalAiDemo({
     modelName,
     modelCalled: true,
     localEndpointOnly: true,
+    cloudConfigurationVerified: false,
     providerUsed: "OLLAMA_LOCAL",
-    costIncurred: false,
+    externalApiChargeVerified: false,
     generatedByModel: true,
     humanValidationRequired: true,
     qualityScore: null,
