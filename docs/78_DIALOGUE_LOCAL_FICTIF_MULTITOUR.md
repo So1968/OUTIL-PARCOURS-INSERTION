@@ -32,7 +32,7 @@ Une réponse est structurée : texte, identifiants des événements sources, inc
 Vérifier l'installation d'un modèle local, la configuration du service Ollama et le bon dossier `backend/`. Depuis ce dossier :
 
 ```bash
-LOCAL_AI_FICTIONAL_ONLY=1 node scripts/tryFictionalLocalDialogue.mjs --model qwen3:8b --confirm-fiction
+LOCAL_AI_FICTIONAL_ONLY=1 LOCAL_AI_NO_CLOUD_CONFIRMED=1 node scripts/tryFictionalLocalDialogue.mjs --model qwen3:8b --confirm-fiction
 ```
 
 Le modèle `qwen3:8b` est seulement un exemple de nom ; aucun téléchargement ni installation n'est lancé par la commande. L'opérateur choisit un numéro de 1 à 4 ; `0` quitte. **Une phrase libre n'est pas interprétée comme une question**, et aucune réponse n'est enregistrée.
@@ -52,3 +52,9 @@ Ils ne constituent pas une preuve qu'un modèle réel :
 Il faudra ensuite exécuter un véritable modèle, comparer ses quatre réponses à des attentes professionnelles et les noter avec le banc d'essai de la PR n° 83. Un passage à la saisie libre ne peut être envisagé qu'avec une architecture autorisée et une gouvernance des données, **pas simplement en supprimant la restriction du menu**.
 
 Le module reste isolé dans une **PR brouillon dépendante de la PR n° 85**. Ne pas fusionner sans révision de sécurité et recette métier, conformément à `AGENTS.md` et aux priorités du cahier des charges.
+
+### Condition complémentaire de gratuité (lot 80)
+
+La variable `LOCAL_AI_NO_CLOUD_CONFIRMED=1` est une **attestation explicite** : la personne qui lance la commande déclare avoir vérifié que les fonctions cloud du *service* Ollama sont désactivées. Elle ne désactive pas elle-même le cloud, et ne vérifie pas le serveur. Sans cette attestation, la démonstration est bloquée **avant tout appel réseau**. Les fonctions JavaScript exigent également `offlineOnlyAcknowledged: true`.
+
+Aucun abonnement, API à jetons payants, téléchargement automatique de modèle ni connexion aux dossiers professionnels ne fait partie du code de démonstration. Il reste à vérifier la licence du modèle local retenu et la puissance du matériel existant. Les ressources de la machine et l'électricité peuvent avoir un coût. Une attestation ne peut garantir à elle seule qu'un service local est correctement isolé.
