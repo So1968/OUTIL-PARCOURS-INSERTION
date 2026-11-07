@@ -2,6 +2,7 @@ import { prepareFictionalSummary } from "./fictionalSummaryPreparation.js";
 import { assembleFictionalDialogueContext } from "./fictionalDialogueContext.js";
 import { buildFictionalSocialAiRequest } from "./fictionalSocialAiContract.js";
 import { reviewFictionalSummaryDraft } from "./fictionalSummaryReview.js";
+import { reviewFixedFictionalCoverage } from "./fictionalLocalCoverage.js";
 
 /**
  * Première connexion à une IA locale (Ollama), SUR UN UNIQUE JEU FIXE ET
@@ -270,6 +271,7 @@ export async function runFixedFictionalLocalAiDemo({
   try {
     candidate = JSON.parse(raw.message.content);
     draft = reviewFictionalSummaryDraft(prepared, candidate);
+    // Repères mécaniques pour la relecture, sans validation sémantique.
   } catch {
     throw new FictionalLocalAiError("BROUILLON_MODELE_A_VERIFIER");
   }
@@ -290,5 +292,6 @@ export async function runFixedFictionalLocalAiDemo({
     promptTokens: safeUsage(raw.prompt_eval_count),
     outputTokens: safeUsage(raw.eval_count),
     draft,
+    coverageReview: reviewFixedFictionalCoverage(draft),
   });
 }

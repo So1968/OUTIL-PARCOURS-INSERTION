@@ -127,6 +127,9 @@ test("vérifie d'abord les modèles téléchargés puis envoie un seul POST loca
   assert.equal(result.outputTokens, 290);
   assert.equal(result.draft.semanticallyVerified, false);
   assert.equal(result.draft.suggestedActions[0].confirmed, false);
+  assert.equal(result.coverageReview.referencesPresentCount, 4);
+  assert.equal(result.coverageReview.automaticallyApproved, false);
+  assert.equal(result.coverageReview.semanticValidationPerformed, false);
 });
 
 test("un modèle non téléchargé bloque l'appel de génération", async () => {
@@ -211,4 +214,23 @@ test("une réponse ou une liste de modèles trop volumineuse est rejetée", asyn
     { name: "FictionalLocalAiError", message: "REPONSE_MODELE_INVALIDE" },
   );
   assert.equal(t.calls.length, 0);
+});
+
+
+test("un brouillon local qui omet des points majeurs appelle une relecture ciblée", async () => {
+  const truncated = candidate();
+  truncated.conflicts = [];
+  truncated.uncertainties = [];
+  truncated.suggestedActions = [];
+  const transport = localModelTransport({ answer: truncated });
+  const result = await runFixedFictionalLocalAiDemo({
+    enabled: true, fictionalOnlyAcknowledged: true,
+    modelName: "qwen3:8b", fetchImpl: transport.fakeFetch,
+  });
+  assert.equal(result.status, "BROUILLON_LOCAL_NON_VALIDE");
+  assert.equal(result.coverageReview.targetedReviewNeeded, true);
+  assert.deepEqual(result.coverageReview.reviewPriorities.map(p => p.code), [
+    "ECART_DECLARATIONS", "COURRIER_NON_ANALYSE", "SUITE_A_CONFIRMER",
+  ]);
+  assert.equal(result.coverageReview.automaticallyApproved, false);
 });

@@ -42,6 +42,13 @@ if (!properlyConfirmed) {
     console.log(result.draft.summaryPreview);
     console.log("Sources mentionnées :", result.draft.sections
       .flatMap(section => section.sourceEventIds).join(", "));
+    console.log("Couverture des références fictives :", result.coverageReview.referencesPresentCount,
+      "/", result.coverageReview.totalIndicators);
+    if (result.coverageReview.targetedReviewNeeded) {
+      console.log("Relecture prioritaire :", result.coverageReview.reviewPriorities
+        .map(item => item.actionForHumanReview).join(" | "));
+    }
+    console.log("Cette vérification ne mesure PAS la justesse de l'analyse.");
     console.log("Aucune sauvegarde ni transmission n'a été effectuée.");
   } catch (error) {
     console.error("Essai impossible :", error?.message?.startsWith("MODELE_")
