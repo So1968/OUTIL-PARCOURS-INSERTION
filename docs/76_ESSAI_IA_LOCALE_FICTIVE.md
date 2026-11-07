@@ -31,7 +31,7 @@ Prérequis : Ollama installé et démarré en mode local uniquement, modèle ré
 Depuis le répertoire `backend/` :
 
 ```bash
-LOCAL_AI_FICTIONAL_ONLY=1 node scripts/tryFictionalLocalAi.mjs --model qwen3:8b --confirm-fiction
+LOCAL_AI_FICTIONAL_ONLY=1 LOCAL_AI_NO_CLOUD_CONFIRMED=1 node scripts/tryFictionalLocalAi.mjs --model qwen3:8b --confirm-fiction
 ```
 
 Le nom `qwen3:8b` n'est qu'un exemple ; la commande n'installe rien et échouera proprement si le modèle n'est pas téléchargé. Aucun modèle n'est recommandé ni approuvé pour l'usage ARTAG à ce stade. L'impression d'un brouillon en console concerne **le scénario fixe inventé dans le code**.
@@ -46,3 +46,9 @@ Le nom `qwen3:8b` n'est qu'un exemple ; la commande n'installe rien et échouera
 ## Statut métier
 
 Cette expérimentation est **un adaptateur indépendant**. Elle n'altère ni `backend/src/app.js`, ni les routes HTTPS, ni les rôles, ni les écrans de saisie validés. Conformément à `AGENTS.md` et `docs/23_ORDRE_DE_TRAVAIL.md`, elle reste en PR brouillon et n'est pas fusionnée tant que les préalables métier et la recette ne sont pas satisfaits.
+
+### Condition complémentaire de gratuité (lot 80)
+
+La variable `LOCAL_AI_NO_CLOUD_CONFIRMED=1` est une **attestation explicite** : la personne qui lance la commande déclare avoir vérifié que les fonctions cloud du *service* Ollama sont désactivées. Elle ne désactive pas elle-même le cloud, et ne vérifie pas le serveur. Sans cette attestation, la démonstration est bloquée **avant tout appel réseau**. Les fonctions JavaScript exigent également `offlineOnlyAcknowledged: true`.
+
+Aucun abonnement, API à jetons payants, téléchargement automatique de modèle ni connexion aux dossiers professionnels ne fait partie du code de démonstration. Il reste à vérifier la licence du modèle local retenu et la puissance du matériel existant. Les ressources de la machine et l'électricité peuvent avoir un coût. Une attestation ne peut garantir à elle seule qu'un service local est correctement isolé.
