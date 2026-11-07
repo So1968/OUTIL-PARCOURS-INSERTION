@@ -214,8 +214,20 @@ async function generateLocalTurn({ modelName, fetchImpl, context, history, inten
     throw new FictionalLocalDialogueError("REPONSE_DIALOGUE_INVALIDE");
   }
   try {
-    return parseTurn(JSON.parse(data.message.content), intentCode,
+    const checked = parseTurn(JSON.parse(data.message.content), intentCode,
       new Set(context.allowedSourceEventIds));
+    const evidenceById = new Map(context.evidence.map(event => [event.eventId, event]));
+    const sourceTrace = Object.freeze(checked.sourceEventIds.map(eventId => {
+      const source = evidenceById.get(eventId);
+      return Object.freeze({
+        eventId,
+        occurredAt: source.occurredAt,
+        evidenceStatus: source.evidenceStatus,
+        originalExcerptUntrusted: source.contentUntrusted,
+        semanticSupportVerified: false,
+      });
+    }));
+    return Object.freeze({ ...checked, sourceTrace });
   } catch {
     throw new FictionalLocalDialogueError("REPONSE_DIALOGUE_NON_CONFORME");
   }
