@@ -1,4 +1,5 @@
 import { buildFixedFictionalDemoContext } from "./fictionalLocalAiDemo.js";
+import { checkFictionalOfflineGate } from "./fictionalOfflineCostGate.js";
 
 /**
  * Dialogue en 4 tours, sur UN scénario strictement fictif et immuable.
@@ -241,10 +242,14 @@ async function generateLocalTurn({ modelName, fetchImpl, context, history, inten
 export function createFixedFictionalLocalDialogue({
   enabled = false,
   fictionalOnlyAcknowledged = false,
+  offlineOnlyAcknowledged = false,
   modelName = "",
   fetchImpl = globalThis.fetch,
 } = {}) {
-  if (enabled !== true || fictionalOnlyAcknowledged !== true) {
+  const costGate = checkFictionalOfflineGate({
+    enabled, fictionalOnlyAcknowledged, offlineOnlyAcknowledged,
+  });
+  if (!costGate.permitted) {
     return Object.freeze({
       status: "DEMONSTRATION_DESACTIVEE",
       ask: async () => Object.freeze({ status: "DEMONSTRATION_DESACTIVEE", modelCalled: false }),
@@ -287,6 +292,9 @@ export function createFixedFictionalLocalDialogue({
         modelName,
         localEndpointOnly: true,
         cloudConfigurationVerified: false,
+        offlineOnlyAttested: true,
+        paidModelApiAllowed: false,
+        perRequestBillingConfigured: false,
         humanValidationRequired: true,
         qualityScore: null,
         saved: false,
