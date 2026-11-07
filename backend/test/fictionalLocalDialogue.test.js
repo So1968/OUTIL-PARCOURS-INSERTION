@@ -93,6 +93,11 @@ test("quatre tours fictifs conservent les échanges et les sources dans un fil l
     assert.equal(reply.turn.humanValidationRequired, true);
     assert.equal(reply.turn.transmitted, false);
     assert.equal(reply.turn.storedInDatabase, false);
+    assert.deepEqual(reply.turn.sourceTrace.map(source => source.eventId),
+      reply.turn.sourceEventIds);
+    assert.ok(reply.turn.sourceTrace.every(source => source.semanticSupportVerified === false));
+    assert.ok(reply.turn.sourceTrace.every(source => typeof source.originalExcerptUntrusted === "string"));
+    assert.ok(Object.isFrozen(reply.turn.sourceTrace));
     assert.equal(reply.saved, false);
     assert.equal(reply.qualityScore, null);
     assert.equal(reply.cloudConfigurationVerified, false);
