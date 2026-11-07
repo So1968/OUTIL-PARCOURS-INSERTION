@@ -19,7 +19,7 @@ const CASE_ID = "case-fiction-essai-local";
 const DAY = "2026-11-04";
 const LOCAL_ENDPOINT = "http://127.0.0.1:11434/api/chat";
 const LOCAL_MODELS_ENDPOINT = "http://127.0.0.1:11434/api/tags";
-const MODEL_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,78}$/;
+const MODEL_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,78}$/;
 const MAX_RESPONSE_BODY = 120_000;
 const MAX_MODEL_TEXT = 32_000;
 
