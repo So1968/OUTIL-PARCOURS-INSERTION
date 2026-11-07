@@ -8,6 +8,7 @@
  */
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
+import { prepareFixedFictionalDialogueReview } from "../src/fictionalDialogueReviewPacket.js";
 import {
   createFixedFictionalLocalDialogue,
   FICTIONAL_DIALOGUE_QUESTIONS,
@@ -79,6 +80,18 @@ if (!ready) {
             console.log("• " + action.title + " [" + action.sourceEventIds.join(", ") + "]");
           }
         }
+        const packet = prepareFixedFictionalDialogueReview({
+          turns: session.getHistory(), authorized: true,
+        });
+        console.log("Échanges réalisés :", packet.completedTurns + "/" + packet.expectedTurns);
+        console.log("Questions encore à examiner :", packet.pendingQuestions.length);
+        if (packet.repeatedActionSuggestions.length) {
+          console.log("Actions répétées à rapprocher MANUELLEMENT :");
+          for (const action of packet.repeatedActionSuggestions) {
+            console.log("• " + action.title + " (" + action.mentionedIn.join(", ") + ")");
+          }
+        }
+        console.log("La relecture professionnelle des citations et de la posture reste obligatoire.");
         console.log("Aucun enregistrement, aucune décision et aucune transmission.");
       } catch (error) {
         const code = typeof error?.message === "string"
