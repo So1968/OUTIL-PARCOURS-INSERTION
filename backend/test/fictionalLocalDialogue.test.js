@@ -59,7 +59,7 @@ function mockLocal({
 }
 function session(transport = mockLocal(), extra = {}) {
   return createFixedFictionalLocalDialogue({
-    enabled: true, fictionalOnlyAcknowledged: true,
+    enabled: true, fictionalOnlyAcknowledged: true, offlineOnlyAcknowledged: true,
     modelName, fetchImpl: transport.fetchImpl, ...extra,
   });
 }
@@ -78,6 +78,19 @@ test("la démonstration est désactivée par défaut et ne contacte rien", async
   });
   assert.equal(other.status, "DEMONSTRATION_DESACTIVEE");
   assert.deepEqual(t.calls, []);
+});
+
+test("sans attestation hors cloud, le dialogue reste bloqué sans réseau", async () => {
+  const t = mockLocal();
+  const s = createFixedFictionalLocalDialogue({
+    enabled: true, fictionalOnlyAcknowledged: true,
+    offlineOnlyAcknowledged: false,
+    modelName, fetchImpl: t.fetchImpl,
+  });
+  assert.equal(s.status, "DEMONSTRATION_DESACTIVEE");
+  const denied = await s.ask("EVOLUTION");
+  assert.equal(denied.modelCalled, false);
+  assert.equal(t.calls.length, 0);
 });
 
 test("quatre tours fictifs conservent les échanges et les sources dans un fil local", async () => {
@@ -101,6 +114,9 @@ test("quatre tours fictifs conservent les échanges et les sources dans un fil l
     assert.equal(reply.saved, false);
     assert.equal(reply.qualityScore, null);
     assert.equal(reply.cloudConfigurationVerified, false);
+    assert.equal(reply.offlineOnlyAttested, true);
+    assert.equal(reply.paidModelApiAllowed, false);
+    assert.equal(reply.perRequestBillingConfigured, false);
   }
   assert.equal(s.getHistory().length, 4);
   assert.ok(Object.isFrozen(s.getHistory()));

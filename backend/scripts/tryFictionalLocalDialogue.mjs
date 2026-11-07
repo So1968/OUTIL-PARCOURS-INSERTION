@@ -3,7 +3,7 @@
  * Aucun transfert de données réelles, aucune route ni base de production.
  *
  * Depuis backend/, après validation du service Ollama en mode cloud désactivé :
- * LOCAL_AI_FICTIONAL_ONLY=1 node scripts/tryFictionalLocalDialogue.mjs \
+ * LOCAL_AI_FICTIONAL_ONLY=1 LOCAL_AI_NO_CLOUD_CONFIRMED=1 node scripts/tryFictionalLocalDialogue.mjs \
  *   --model qwen3:8b --confirm-fiction
  */
 import { createInterface } from "node:readline/promises";
@@ -15,20 +15,22 @@ import {
 } from "../src/fictionalLocalDialogue.js";
 
 const args = process.argv.slice(2);
-const ready = process.env.LOCAL_AI_FICTIONAL_ONLY === "1"
+const ready = process.env.LOCAL_AI_NO_CLOUD_CONFIRMED === "1"
+  && process.env.LOCAL_AI_FICTIONAL_ONLY === "1"
   && args.length === 3
   && args[0] === "--model"
   && args[2] === "--confirm-fiction";
 
 if (!ready) {
   console.error("DIALOGUE_LOCAL_DESACTIVE : seules quatre questions prédéfinies sur un dossier fictif sont admises.");
-  console.error("Activation : LOCAL_AI_FICTIONAL_ONLY=1 node scripts/tryFictionalLocalDialogue.mjs --model <modele-installe> --confirm-fiction");
+  console.error("Activation : LOCAL_AI_FICTIONAL_ONLY=1 LOCAL_AI_NO_CLOUD_CONFIRMED=1 node scripts/tryFictionalLocalDialogue.mjs --model <modele-installe> --confirm-fiction");
   process.exitCode = 2;
 } else {
   let terminal;
   try {
     const session = createFixedFictionalLocalDialogue({
       enabled: true, fictionalOnlyAcknowledged: true,
+      offlineOnlyAcknowledged: true,
       modelName: args[1],
     });
     const available = Object.entries(FICTIONAL_DIALOGUE_QUESTIONS);
@@ -36,7 +38,8 @@ if (!ready) {
     terminal = createInterface({ input: stdin, output: stdout });
     console.log("Démonstration locale. AUCUN dossier réel. Quatre questions fixes.");
     console.log("Toute réponse d'IA est un brouillon qui doit être relu.");
-    console.log("Désactiver Ollama Cloud directement sur le serveur avant de lancer cet essai.");
+    console.log("Vérification manuelle déclarée : fonctionnalités cloud désactivées sur le serveur Ollama.");
+    console.log("Cette attestation n'inspecte pas la configuration du serveur.");
 
     while (asked.size < available.length) {
       console.log("\nQuestions restantes :");

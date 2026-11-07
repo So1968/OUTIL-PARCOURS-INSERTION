@@ -3,7 +3,7 @@
  * N'accepte ni nom, ni dossier, ni note, ni prompt arbitraire.
  *
  * À lancer depuis backend/ seulement :
- * LOCAL_AI_FICTIONAL_ONLY=1 node scripts/tryFictionalLocalAi.mjs \
+ * LOCAL_AI_FICTIONAL_ONLY=1 LOCAL_AI_NO_CLOUD_CONFIRMED=1 node scripts/tryFictionalLocalAi.mjs \
  *   --model qwen3:8b --confirm-fiction
  *
  * Aucun modèle ni serveur n'est installé automatiquement.
@@ -16,22 +16,25 @@ const args = process.argv.slice(2);
 const properlyConfirmed = args.length === 3
   && args[0] === "--model"
   && args[2] === "--confirm-fiction"
-  && process.env.LOCAL_AI_FICTIONAL_ONLY === "1";
+  && process.env.LOCAL_AI_FICTIONAL_ONLY === "1"
+  && process.env.LOCAL_AI_NO_CLOUD_CONFIRMED === "1";
 
 if (!properlyConfirmed) {
   console.error("ESSAI_LOCAL_DESACTIVE : scénario fictif fixe uniquement.");
-  console.error("Activer explicitement : LOCAL_AI_FICTIONAL_ONLY=1 node scripts/tryFictionalLocalAi.mjs --model <nom-local> --confirm-fiction");
+  console.error("Activer explicitement : LOCAL_AI_FICTIONAL_ONLY=1 LOCAL_AI_NO_CLOUD_CONFIRMED=1 node scripts/tryFictionalLocalAi.mjs --model <nom-local> --confirm-fiction");
   process.exitCode = 2;
 } else {
   const preview = previewFixedFictionalLocalAiDemo();
   console.log("Scénario fixe fictif :", preview.caseId);
   console.log("Événements fictifs :", preview.sourceEventIds.join(", "));
   console.log("Ne pas utiliser avec des informations réelles, même pseudonymisées.");
+  console.log("Mode hors cloud confirmé manuellement : la configuration du serveur Ollama n'est PAS vérifiée par ce script.");
 
   try {
     const result = await runFixedFictionalLocalAiDemo({
       enabled: true,
       fictionalOnlyAcknowledged: true,
+      offlineOnlyAcknowledged: true,
       modelName: args[1],
     });
     console.log("État :", result.status);

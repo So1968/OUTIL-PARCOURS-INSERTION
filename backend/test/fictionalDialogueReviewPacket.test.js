@@ -53,7 +53,8 @@ function fakeLocal() {
   };
   return {
     createSession: () => createFixedFictionalLocalDialogue({
-      enabled: true, fictionalOnlyAcknowledged: true, modelName, fetchImpl,
+      enabled: true, fictionalOnlyAcknowledged: true,
+      offlineOnlyAcknowledged: true, modelName, fetchImpl,
     }),
     getCallCount: () => networkCalls,
   };

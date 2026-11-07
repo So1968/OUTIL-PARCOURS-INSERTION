@@ -3,6 +3,7 @@ import { assembleFictionalDialogueContext } from "./fictionalDialogueContext.js"
 import { buildFictionalSocialAiRequest } from "./fictionalSocialAiContract.js";
 import { reviewFictionalSummaryDraft } from "./fictionalSummaryReview.js";
 import { reviewFixedFictionalCoverage } from "./fictionalLocalCoverage.js";
+import { checkFictionalOfflineGate } from "./fictionalOfflineCostGate.js";
 
 /**
  * Première connexion à une IA locale (Ollama), SUR UN UNIQUE JEU FIXE ET
@@ -198,10 +199,14 @@ async function ensureDownloadedLocalModel(modelName, fetchImpl) {
 export async function runFixedFictionalLocalAiDemo({
   enabled = false,
   fictionalOnlyAcknowledged = false,
+  offlineOnlyAcknowledged = false,
   modelName = "",
   fetchImpl = globalThis.fetch,
 } = {}) {
-  if (enabled !== true || fictionalOnlyAcknowledged !== true) {
+  const costGate = checkFictionalOfflineGate({
+    enabled, fictionalOnlyAcknowledged, offlineOnlyAcknowledged,
+  });
+  if (!costGate.permitted) {
     return Object.freeze({
       status: "DEMONSTRATION_DESACTIVEE",
       modelCalled: false, costIncurred: false,
@@ -286,6 +291,9 @@ export async function runFixedFictionalLocalAiDemo({
     modelCalled: true,
     localEndpointOnly: true,
     cloudConfigurationVerified: false,
+    offlineOnlyAttested: true,
+    paidModelApiAllowed: false,
+    perRequestBillingConfigured: false,
     providerUsed: "OLLAMA_LOCAL",
     externalApiChargeVerified: false,
     generatedByModel: true,
