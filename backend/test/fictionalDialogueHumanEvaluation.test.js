@@ -198,3 +198,29 @@ test("comparaison refuse un score absent, un modèle répété et un scénario i
     }), FictionalDialogueEvaluationError);
   }
 });
+
+
+test("la comparaison recalcule les notes et rejette les scores ou classements trafiqués", async () => {
+  const { turns } = await fakeSession();
+  const alpha = score(turns, { humanReview: humanReview() });
+  const beta = score(turns, { modelLabel: "gemma3:4b",
+    humanReview: humanReview({ correctionMinutes: 12 }) });
+  for (const forged of [
+    { ...beta, score: 18 },
+    { ...beta, maximumScore: 25 },
+    { ...beta, acceptedForFurtherStudy: false },
+    { ...beta, ratings: { ...beta.ratings, exactitude: 1 } },
+    { ...beta, criticalFlags: ["ACTION_NON_AUTORISEE"] },
+    { ...beta, criticalFlags: ["FAUSSE_ALERTE"] },
+    { ...beta, modelActuallyUsedNotIndependentlyVerified: false },
+    { ...beta, professionalUseAuthorized: true },
+    { ...beta, modelCallsMadeByEvaluation: 1 },
+  ]) {
+    assert.throws(() => compareFixedFictionalDialogueEvaluations({
+      evaluations: [alpha, forged], authorized: true,
+    }), FictionalDialogueEvaluationError);
+  }
+  assert.deepEqual(compareFixedFictionalDialogueEvaluations({
+    evaluations: [alpha, beta],
+  }), { status: "ACCES_REFUSE", compared: false });
+});
